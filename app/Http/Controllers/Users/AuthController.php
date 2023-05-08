@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Users;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -9,17 +9,19 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Libraries\Services;
 
-class UserController extends Controller
+class AuthController extends Controller
 {
     public function register(Request $req)
     {
-        $data = $req->only('language', 'name', 'phone', 'password', 'email');
+        $data = $req->only('language', 'name', 'password', 'email','mobile_no');
 
         $validator = Validator::make($data, [
             'language'          =>   'required',
             'name'   => 'required|regex:/^[\pL\s]+$/u|min:3',
             'password'   => 'required|max:20||min:8',
             'email' => 'required|unique:users',
+            'mobile_no' => 'required|numeric',
+
         ]);
 
         if ($validator->fails()) 
@@ -54,6 +56,7 @@ class UserController extends Controller
                     // $encrypted_password =
                     $register->password = md5($data['password']);
                     $register->email = $data['email'];
+                    $register->mobile_no = $data['mobile_no'];
                     //   $register->otp =  $otp;
                     //   $email = ['to' => $data['email']];
                     //   $mail_details = [
