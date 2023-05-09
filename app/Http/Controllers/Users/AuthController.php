@@ -12,36 +12,32 @@ use App\Libraries\Services;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ForgetPassword;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\App;
 
 class AuthController extends Controller
 {
+    public function __construct() {
+        $lang = (isset($_POST['language']) && !empty($_POST['language'])) ? $_POST['language'] : 'en';
+        App::setlocale($lang);
+    }
     public function register(Request $req)
     {
-        $data = $req->only('language', 'name', 'password', 'email','mobile_no');
-
-        $validator = Validator::make($data, [
+        $validator = Validator::make($req->all(), [
             'language'          =>   'required',
             'name'   => 'required|regex:/^[\pL\s]+$/u|min:3',
             'password'   => 'required|max:20||min:8',
             'email' => 'required|unique:users',
-            'mobile_no' => 'required|numeric',
-
+            'mobile' => 'required|numeric',
         ]);
 
-        if ($validator->fails()) 
-        {
-            return response()->json(
-                [
-                    'status'    => 'failed',
-                    'errors'    =>  $validator->errors(),
-                    'message'   =>  trans('validation.custom.input.invalid'),
-                ],
-                400
-            );
-        } 
-        else 
-        {
-            try
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => __('msg.user.validation.fail'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+           try
             {
                 $result = DB::table('users')
                 ->where('email', $req->input('email'))
@@ -55,14 +51,13 @@ class AuthController extends Controller
                       $otp = rand(1000, 9999);
                     $data = $req->input();
                     $register = new User;
-                
+                    $register->id = Str::uuid('36');
                     $register->name = $data['name'];
-                    $register->uid = rand(1000,9999);
                     // $encrypted_password =
                     $register->password = md5($data['password']);
                     $register->email = $data['email'];
-                    $register->mobile_no = $data['mobile_no'];
-                      $register->otp =  $otp;
+                    $register->mobile = $data['mobile'];
+                      $register->email_otp =  $otp;
                       $email = ['to' => $data['email']];
                       $mail_details = [
                         'subject' => 'Testing Application OTP',
@@ -81,7 +76,7 @@ class AuthController extends Controller
                             [
                                 'status'    => 'success',
                                 'data' => $register,
-                                'message'   =>  trans('validation.custom.user.otpsend'),
+                                'message'   => __('msg.user.register.success'),
                             ],
                             200
                         );
@@ -89,7 +84,7 @@ class AuthController extends Controller
                         return response()->json(
                             [
                                 'status'    => 'failed',
-                                'message'   =>  trans('validation.custom.user.smw'),
+                                'message'   => __('msg.user.register.fail'),
                             ],
                             400
                         );
@@ -100,11 +95,10 @@ class AuthController extends Controller
                 {
                     return response()->json([
                         'status'  => 'failed',
-                        'message' => trans('validation.custom.invalid.request'),
+                        'message' => __('msg.user.error'),
                         'error'   => $e->getMessage()
                     ],500);
-                }
-        }   
+                } 
     }
     public function verifyOTP(Request $req)
     {

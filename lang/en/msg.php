@@ -14,4 +14,21 @@ return [
         ],
     ],
 
+    'user' => [
+
+        'error' => 'Something went wrong, please try again ...',
+        
+        'validation' => [
+            'fail' => 'Validation Failed!',
+
+        ],
+
+        'register' => [
+            'success' => 'OTP sent to your entered email address',
+            'fail' => 'Failed to send OTP',
+        ],
+
+      
+    ],
+
 ];

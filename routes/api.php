@@ -22,20 +22,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //User Routes
 
-
-Route::post('/userregister',[AuthController::class,'register']);
-Route::post('/userverifyOTP',[AuthController::class,'verifyOTP']);
-Route::post('/userresendregOTP',[AuthController::class,'resendregOTP']);
-Route::post('/userforgetpassword',[AuthController::class,'forgetpassword']);
-Route::post('/userforgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
-Route::post('/userlogin',[AuthController::class,'login']);
+Route::prefix('user')->group( function () {
+Route::post('/register',[AuthController::class,'register']);
+Route::post('/verifyOTP',[AuthController::class,'verifyOTP']);
+Route::post('/resendregOTP',[AuthController::class,'resendregOTP']);
+Route::post('/forgetpassword',[AuthController::class,'forgetpassword']);
+Route::post('/forgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
+Route::post('/login',[AuthController::class,'login']);
 
 Route::group(['middleware' => 'jwt.verify'], function () {
     
-    Route::post('/userprofile',[AuthController::class,'profile']);
+    Route::post('/profile',[AuthController::class,'profile']);
 
 });
-
+});
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group( function () {
    Route::post('get-brands' , [CarBrandsController::class, 'getCarBrands']);
