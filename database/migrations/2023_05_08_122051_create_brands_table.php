@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
         });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\CarBrandsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
@@ -33,4 +34,10 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     
     Route::post('/userprofile',[AuthController::class,'profile']);
 
+});
+
+// Admin Panel By Javeriya Kauser
+Route::prefix('admin')->group( function () {
+   Route::post('get-brands' , [CarBrandsController::class, 'getCarBrands']);
+   Route::post('add-brand' , [CarBrandsController::class, 'addCarBrand']); 
 });
