@@ -26,3 +26,10 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::post('/userprofile',[AuthController::class,'profile']);
 
 });
+
+
+Route::group(['middleware' => 'jwt.verify'], function () {
+    
+    Route::post('/userprofile',[AuthController::class,'profile']);
+
+});
