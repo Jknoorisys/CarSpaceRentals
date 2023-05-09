@@ -27,6 +27,7 @@ class CarBrandsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language' => 'required',
+            'page_number'   => 'required||numeric',
         ]);
 
         if($validator->fails()){
@@ -38,11 +39,21 @@ class CarBrandsController extends Controller
         }
 
         try {
-            $brands = DB::table('brands')->get();
+            $per_page = 10;
+            $page_number = $request->input(key:'page_number', default:1);
+
+            $db = DB::table('brands');
+            $total = $db->count();
+
+            $brands = $db->offset(($page_number - 1) * $per_page)
+                        ->limit($per_page)
+                        ->get();
+
             if (!($brands->isEmpty())) {
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-brands.success'),
+                    'total'     => $total,
                     'data'      => $brands
                 ],200);
             } else {
@@ -79,9 +90,7 @@ class CarBrandsController extends Controller
         try {
             $name = $request->name;
             $brandData = [ 'id' => Str::uuid('36'), 'name' => $name, 'created_at' => Carbon::now()];
-            $brand = DB::table('brands')->insert(
-                $brandData
-            );
+            $brand = DB::table('brands')->insert($brandData);
             if ($brand) {
                 return response()->json([
                     'status'    => 'success',
