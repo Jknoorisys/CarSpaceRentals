@@ -18,7 +18,15 @@ use App\Http\Controllers\Users\AuthController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+//User Routes
+
+
 Route::post('/userregister',[AuthController::class,'register']);
+Route::post('/userverifyOTP',[AuthController::class,'verifyOTP']);
+Route::post('/userresendregOTP',[AuthController::class,'resendregOTP']);
+Route::post('/userforgetpassword',[AuthController::class,'forgetpassword']);
+Route::post('/userforgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
 Route::post('/userlogin',[AuthController::class,'login']);
 
 Route::group(['middleware' => 'jwt.verify'], function () {
