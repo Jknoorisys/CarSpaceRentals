@@ -29,7 +29,10 @@ Route::group(['middleware' => 'jwt.verify'], function () {
 });
 
 // Admin Panel By Javeriya Kauser
-Route::prefix('admin')->group( function () {
-   Route::post('get-brands' , [CarBrandsController::class, 'getCarBrands']);
+Route::prefix('admin')->group(['middleware' => 'jwt.verify'], function () {
+   Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
    Route::post('add-brand' , [CarBrandsController::class, 'addCarBrand']); 
+   Route::post('get-brand' , [CarBrandsController::class, 'getCarBrand']); 
+   Route::post('edit-brand' , [CarBrandsController::class, 'editCarBrand']); 
+
 });
