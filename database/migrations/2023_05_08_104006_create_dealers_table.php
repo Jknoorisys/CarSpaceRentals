@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('profile');
             $table->string('company');
-            $table->enum('is_verified',['no','yes']);
+            $table->enum('is_verified',['no','yes'])->default('no');
             $table->string('email_otp');
             $table->enum('is_admin',['no','admin','super_admin'])->default('no');
             $table->enum('status',['active','inactive'])->default('active');
