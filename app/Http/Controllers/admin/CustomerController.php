@@ -43,9 +43,10 @@ class CustomerController extends Controller
 
             $db = DB::table('users');
 
-            $name = $request->name ? $request->name : '';
-            if (!empty($name)) {
-                $db->where('name', 'LIKE', "%$name%");
+            $search = $request->search ? $request->search : '';
+            if (!empty($search)) {
+                $db->where('name', 'LIKE', "%$search%");
+                $db->orWhere('email', 'LIKE', "%$search%");
             }
 
             $total = $db->count();
@@ -62,10 +63,10 @@ class CustomerController extends Controller
                 ],200);
             } else {
                 return response()->json([
-                    'status'    => 'failed',
+                    'status'    => 'success',
                     'message'   => trans('msg.admin.get-customers.failure'),
                     'data'      => [],
-                ],400);
+                ],200);
             }
         } catch (\Throwable $e) {
             return response()->json([
@@ -79,13 +80,13 @@ class CustomerController extends Controller
     public function changeCustomerStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'language' => 'required',
-            'id'       => 'required|alpha_dash',
-            'admin_id' => 'required|alpha_dash',
-            'admin_type'   => ['required', 
+            'language'    => 'required',
+            'customer_id' => 'required|alpha_dash',
+            'admin_id'    => 'required|alpha_dash',
+            'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
             ],
-            'status'   => ['required', 
+            'status'       => ['required', 
                 Rule::in(['active', 'inactive'])
             ]
         ]);
@@ -99,7 +100,7 @@ class CustomerController extends Controller
         }
 
         try {
-            $user_id = $request->id;
+            $user_id = $request->customer_id;
             $status = $request->status;
 
             $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
@@ -156,8 +157,8 @@ class CustomerController extends Controller
     public function makeCustomerAdmin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'language' => 'required',
-            'id'       => 'required|alpha_dash',
+            'language'     => 'required',
+            'customer_id'  => 'required|alpha_dash',
             // 'admin_id' => 'required|alpha_dash',
             // 'admin_type'   => ['required', 
             //     Rule::in(['user', 'dealer'])
@@ -173,7 +174,7 @@ class CustomerController extends Controller
         }
 
         try {
-            $user_id = $request->id;
+            $user_id = $request->customer_id;
             $status = 'admin';
 
             // $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
@@ -206,6 +207,62 @@ class CustomerController extends Controller
                 ],400);
             }
             
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getCustomerLoginActivity(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language' => 'required',
+            'page_number'   => 'required|numeric',
+            'customer_id'   => 'required|alpha_dash'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+            $customer_id = $request->customer_id;
+
+            $per_page = 10;
+            $page_number = $request->input(key:'page_number', default:1);
+
+            $db = DB::table('login_activities')->where([['user_id', '=', $customer_id],['login_activities.user_type','=','user']])
+                            ->leftjoin('users', function($join) {
+                                $join->on('users.id','=','login_activities.user_id')
+                                    ->where('login_activities.user_type','=','user');
+                            });
+
+            $total = $db->count();
+            $activities = $db->offset(($page_number - 1) * $per_page)
+                                    ->limit($per_page)
+                                    ->get(['login_activities.*', 'users.name as user_name']);
+
+            if (!($activities->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.admin.get-customer-activities.success'),
+                    'total'     => $total,
+                    'data'      => $activities
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.admin.get-customer-activities.failure'),
+                    'data'      => [],
+                ],200);
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'status'    => 'failed',
