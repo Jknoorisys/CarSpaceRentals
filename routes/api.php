@@ -33,6 +33,7 @@ Route::post('/login',[AuthController::class,'login']);
 Route::group(['middleware' => 'jwt.verify'], function () {
     
     Route::post('/profile',[AuthController::class,'profile']);
+    Route::post('/logout',[AuthController::class,'logout']);
 
 });
 });

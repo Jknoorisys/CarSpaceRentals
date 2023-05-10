@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ForgetPassword;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -44,20 +45,12 @@ class AuthController extends Controller
                 ->get();
             
                 if (!empty($result)) {
-                    $req->validate([
-                        'name'   => 'required|alpha_num',
-                        'email' => 'required|unique:users',
-                    ]);
                       $otp = rand(1000, 9999);
                     $data = $req->input();
-                    $register = new User;
-                    $register->id = Str::uuid('36');
-                    $register->name = $data['name'];
-                    // $encrypted_password =
-                    $register->password = md5($data['password']);
-                    $register->email = $data['email'];
-                    $register->mobile = $data['mobile'];
-                      $register->email_otp =  $otp;
+                    $user = ['id'=>Str::uuid('36'),'name' => $data['name'], 'password'=> md5($data['password']),
+                     'email' => $data['email'],'mobile' => $data['mobile'], 'email_otp' => $otp, 'created_at' => Carbon::now()];
+                    $saveUser = DB::table('users')->insert($user);
+                    
                       $email = ['to' => $data['email']];
                       $mail_details = [
                         'subject' => 'Testing Application OTP',
@@ -70,12 +63,12 @@ class AuthController extends Controller
                       Mail::send('User_Mail.mail', $data, function ($message) use ($email) {
                         $message->to($email['to'])->subject('Email Verification');
                       });
-                    $user = $register->save();
-                    if ($user) {
+                    // $user = $register->save();
+                    if ($saveUser) {
                         return response()->json(
                             [
                                 'status'    => 'success',
-                                'data' => $register,
+                                'data' => $user,
                                 'message'   => __('msg.user.register.success'),
                             ],
                             200
@@ -102,11 +95,11 @@ class AuthController extends Controller
     }
     public function verifyOTP(Request $req)
     {
-        $data = $req->only('language','otp','id');
-        $validator = Validator::make($data, [
+        
+        $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'otp'   => 'required',
-            'id' => 'required||numeric'
+            'email_otp'   => 'required',
+            'id' => 'required||string'
             
         ]);
         if ($validator->fails()) {
@@ -114,25 +107,24 @@ class AuthController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  trans('validation.custom.input.invalid'),
+                    'message'   => __('msg.user.validation.fail'),
                 ],
                 400
             );
         } 
-        else
-        {
+        
             try
             {
-                $otp = $req->otp;
+                $otp = $req->email_otp;
                 $id =$req->id;
                 #Validation Logic
-                $verificationCode   =  DB::table('users')->where('otp', $otp)->where('id',$id)->update(['is_verified' => 'yes', 'email_verified_at' => date('Y-m-d H:i:s')]);
+                $verificationCode   =  DB::table('users')->where('email_otp', $otp)->where('id',$id)->update(['is_verified' => 'yes']);
                 if($verificationCode == true)
                 {
                     return response()->json(
                         [
                             'status'    => 'success',
-                            'message'   =>  trans('validation.custom.user.otpverified'),
+                            'message'   =>  __('msg.user.otp.otpver'),
                         ],
                         200
                     );
@@ -142,7 +134,7 @@ class AuthController extends Controller
                     return response()->json(
                         [
                             'status'    => 'failed',
-                            'message'   =>  trans('validation.custom.user.otpnotver'),
+                            'message'   =>   __('msg.user.otp.otpnotver'),
                         ],
                         400
                     );
@@ -152,17 +144,17 @@ class AuthController extends Controller
             {
                 return response()->json([
                     'status'  => 'failed',
-                    'message' => trans('validation.custom.invalid.request'),
+                    'message' =>  __('msg.user.error'),
                     'error'   => $e->getMessage()
                 ],500);
             }
                 
-        }
+        
     }
     public function resendregOTP(Request $req)
     {
-        $data = $req->only('language', 'email');
-        $validator = Validator::make($data, [
+        
+        $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email'   => 'required',
             
@@ -173,13 +165,11 @@ class AuthController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  trans('validation.custom.input.invalid'),
+                    'message'   =>  __('msg.user.validation.fail'),
                 ],
                 400
             );
         } 
-        else
-        {
             try
             {
                 $email = $req->email;
@@ -191,7 +181,7 @@ class AuthController extends Controller
                     {
                         // echo 'Hiiiii';exit();
                         $email_otp = rand(1000,9999);
-                        $resend =  User :: where('email','=',$email)->update(['otp' => $email_otp, 'is_verified' => 'yes', 'email_verified_at' => date('Y-m-d H:i:s'),'updated_at' => date('Y-m-d H:i:s')]);
+                        $resend =  User :: where('email','=',$email)->update(['email_otp' => $email_otp, 'is_verified' => 'yes','updated_at' => date('Y-m-d H:i:s')]);
                         if($resend == true)
                         {
                             $user = User::where('email','=',$email)->first();
@@ -208,7 +198,7 @@ class AuthController extends Controller
                             });
                             return response()->json([
                                 'status'    => 'success',
-                                'message'   =>  trans('validation.custom.user.resendotp'),
+                                'message'   =>  __('msg.user.otp.resendotp'),
                             ],200);
 
                         }
@@ -217,7 +207,7 @@ class AuthController extends Controller
                     {
                         return response()->json([
                             'status'    => 'failed',
-                            'message'   =>  trans('validation.custom.user.alreadymailverified'),
+                            'message'   =>   __('msg.user.otp.alreadyverify'),
                         ],400);
                     }
                 }
@@ -225,7 +215,7 @@ class AuthController extends Controller
                 {
                     return response()->json([
                         'status'    => 'failed',
-                        'message'   =>  trans('validation.custom.user.registerfirst'),
+                        'message'   =>  __('msg.user.otp.registerfirst'),
                     ],400);
                 }
             }
@@ -233,11 +223,10 @@ class AuthController extends Controller
             {
                 return response()->json([
                     'status'  => 'failed',
-                    'message' => trans('validation.custom.invalid.request'),
+                    'message' => __('msg.user.error'),
                     'error'   => $e->getMessage()
                 ],500);
             }
-        }
 
     }
     public function login(Request $req)
@@ -254,7 +243,7 @@ class AuthController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  trans('validation.custom.input.invalid'),
+                    'message'   =>  __('msg.user.validation.fail'),
                 ],
                 400
             );
@@ -274,14 +263,16 @@ class AuthController extends Controller
 
                 if ($user) {
                     // if ($user->is_email_verified == 'verified') {
-                        if ($user->status == 0) {
+                        if ($user->status == 'active') {
                             $claims = array(
                                 'exp'   => Carbon::now()->addDays(1)->timestamp,
                                 'uuid'  => $user->id
                             );
                             // return $claims;exit;
                             $user->token = $service->getSignedAccessTokenForUser($user,$claims);
-                            // return $user->token;exit;
+                            // $user = ['id'=>Str::uuid('36'),'user_id' => $user['id'],  'login_date' => Carbon::now()];
+                            //         $logintime =  DB::table('login_activities')->insert($user);
+                            
                             return response()->json(
                                 [
                                     'status'    => 'success',
@@ -314,7 +305,7 @@ class AuthController extends Controller
             {
                 return response()->json([
                     'status'  => 'failed',
-                    'message' => trans('validation.custom.invalid.request'),
+                    'message' =>  __('msg.user.error'),
                     'error'   => $e->getMessage()
                 ],500);
             }
@@ -323,8 +314,7 @@ class AuthController extends Controller
     }
     public function forgetpassword(Request $req)
     {
-        $data = $req->only('language', 'email');
-        $validator = Validator::make($data, [
+        $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email'   => 'required',
             
@@ -334,13 +324,11 @@ class AuthController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  trans('validation.custom.input.invalid'),
+                    'message'   =>  __('msg.user.validation.fail'),
                 ],
                 400
             );
         } 
-        else
-        {
             try
             {
                 
@@ -360,7 +348,7 @@ class AuthController extends Controller
                                 'status'    => 'success',
                                 'data' => $user,
                                 // 'url' => $url,
-                                'message'   =>  trans('validation.custom.user.emailsent'),
+                                'message'   =>  __('msg.user.forgetpass.emailsent'),
                             ],
                             200
                         );
@@ -368,7 +356,7 @@ class AuthController extends Controller
                         return response()->json(
                             [
                                 'status'    => 'failed',
-                                'message'   =>  trans('validation.custom.user.emailnotsend'),
+                                'message'   =>  __('msg.user.forgetpass.emailnotsent'),
                             ],
                             400
                         );
@@ -379,7 +367,7 @@ class AuthController extends Controller
                     return response()->json(
                         [
                             'status'    => 'failed',
-                            'message'   =>  trans('validation.custom.user.notreg'),
+                            'message'   =>  __('msg.user.forgetpass.notreg'),
                         ],
                         400
                     );
@@ -390,16 +378,13 @@ class AuthController extends Controller
             {
                 return response()->json([
                     'status'  => 'failed',
-                    'message' => trans('validation.custom.invalid.request'),
-                    'error'   => $e->getMessage()
+                    'message' =>  __('msg.user.error'),
                 ],500);
             }
-        }
     }
     public function forgotPasswordValidate(Request $req)
     {
-        $data = $req->only('language', 'token', 'password', 'confirm_password');
-        $validator = Validator::make($data, [
+        $validator = Validator::make($req->all(), [
             'language'  =>   'required',
             'token' => 'required',
             'password'   => 'required|max:20||min:8',
@@ -411,13 +396,11 @@ class AuthController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  trans('validation.custom.input.invalid'),
+                    'message'   =>  __('msg.user.validation.fail'),
                 ],
                 400
             );
         } 
-        else 
-        {
             try
             {
                 $user = User::where('token', $req->token)->first();
@@ -432,7 +415,7 @@ class AuthController extends Controller
                             return response()->json(
                                 [
                                     'status'    => 'success',
-                                    'message'   =>  trans('validation.custom.user.resetsucc'),
+                                    'message'   =>  __('msg.user.forgetpass.reset'),
                                 ],
                                 200
                             );
@@ -440,7 +423,7 @@ class AuthController extends Controller
                             return response()->json(
                                 [
                                     'status'    => 'failed',
-                                    'message'   =>  trans('validation.custom.user.invalid'),
+                                    'message'   =>  __('msg.user.forgetpass.notreset'),
                                 ],
                                 400
                             );
@@ -449,7 +432,7 @@ class AuthController extends Controller
                         return response()->json(
                             [
                                 'status'    => 'failed',
-                                'message'   =>  trans('validation.custom.user.passnotmatch'),
+                                'message'   =>  __('msg.user.forgetpass.passnotmatch'),
                             ],
                             400
                         );
@@ -460,7 +443,7 @@ class AuthController extends Controller
                     return response()->json(
                         [
                             'status'    => 'failed',
-                            'message'   =>  trans('validation.custom.user.wrong'),
+                            'message'   =>  __('msg.user.forgetpass.swr'),
                         ],
                         400
                     );
@@ -470,14 +453,59 @@ class AuthController extends Controller
             {
                 return response()->json([
                     'status'  => 'failed',
-                    'message' => trans('validation.custom.invalid.request'),
+                    'message' =>  __('msg.user.error'),
                     'error'   => $e->getMessage()
                 ],500);
             }
-        }
+        
     }
-    public function profile(Request $req)
+    public function logout(Request $req)
     {
-        echo "hiiii";
+    
+
+        $validator = Validator::make($req->all(), [
+            'language'  =>   'required',
+            'id' => 'required',
+            
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        } 
+            try
+            {
+                // return "hiiii";exit;
+                
+                     JWTAuth::parseToken()->invalidate();
+                 
+                        return response()->json(
+                            [
+                                'status'    => 'success',
+                                'message'   =>  __('msg.user.logout.success'),
+                            ],
+                            200
+                        );
+                    
+            }
+            catch (\Throwable $e)
+            {
+                return response()->json([
+                    'status'  => 'failed',
+                    'message' =>  __('msg.user.error'),
+                    'error'   => $e->getMessage()
+                ],500);
+            }
+        // try {
+        //     JWTAuth::parseToken()->invalidate();
+        //     return response()->json(['message' => 'Logged out successfully']);
+        // } catch (\Throwable $e) {
+        //     return response()->json(['message' => 'Failed to logout'], 500);
+        // }
     }
 }
