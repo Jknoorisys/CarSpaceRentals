@@ -13,15 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('dealer_locations', function (Blueprint $table) {
+        Schema::create('plots', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->string('location_id');
-            $table->string('dealer_id');
-            $table->string('car_id');
             $table->string('plot_number');
-            $table->string('park_in_date');
-            $table->string('park_out_date');
-            $table->enum('status',['available','booked','assigned'])->default('available');
+            $table->string('location_id');
+            // $table->string('dealer_id');
+            // $table->string('car_id');
+            // $table->string('park_in_date');
+            // $table->string('park_out_date');
+            $table->enum('status',['available','booked'])->default('available');
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dealer_locations');
+        Schema::dropIfExists('plots');
     }
 };

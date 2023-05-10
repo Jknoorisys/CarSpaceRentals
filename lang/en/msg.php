@@ -59,8 +59,58 @@ return [
             'failure' => 'Unable to make Customer as Admin',
             'invalid' => 'Customer Not Found',
         ],
+
+        'get-customer-activities' => [
+            'success' => 'Customer Login Activities Fetched Successfully',
+            'failure' => 'No Customer Login Activity Found',
+        ],
+
+        // Mange Dealers
+        'get-dealers' => [
+            'success' => 'Dealers List Fetched Successfully',
+            'failure' => 'No Dealer Found',
+        ],
+
+        'get-dealer' => [
+            'success' => 'Dealer Detail Fetched Successfully',
+            'failure' => 'Dealer Not Found',
+        ],
+
+        'dealer-status' => [
+            'active'   => 'Dealer Activated Successfully',
+            'inactive' => 'Dealer Inactivated Successfully',
+            'failure'  => 'Unable to Change Dealer Status',
+            'invalid'  => 'Dealer Not Found',
+        ],
+
+        'make-dealer-admin'   => [
+            'success' => 'Dealer Successfully Marked as Admin',
+            'failure' => 'Unable to make Dealer as Admin',
+            'invalid' => 'Dealer Not Found',
+        ],
+
+        'get-dealer-activities' => [
+            'success' => 'Dealer Login Activities Fetched Successfully',
+            'failure' => 'No Dealer Login Activity Found',
+        ],
+
+        'get-dealer-details' => [
+            'success' => 'Dealer Details Fetched Successfully',
+            'failure' => 'Dealer Not Found',
+        ],
+
+        'get-dealer-cars' => [
+            'success' => 'Dealer Car List Fetched Successfully',
+            'failure' => 'Dealer Car Not Found',
+        ],
+
+        'get-dealer-plots' => [
+            'success' => 'Dealer Booked Plot List Fetched Successfully',
+            'failure' => 'Dealer Booked Plot Not Found',
+        ],
     ],
 
+    // User By Aisha Shaikh 
     'user' => [
 
         'error' => 'Something went wrong, please try again ...',

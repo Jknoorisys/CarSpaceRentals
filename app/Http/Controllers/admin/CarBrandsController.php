@@ -44,9 +44,9 @@ class CarBrandsController extends Controller
 
             $db = DB::table('brands');
 
-            $name = $request->name ? $request->name : '';
-            if (!empty($name)) {
-                $db->where('name', 'LIKE', "%$name%");
+            $search = $request->search ? $request->search : '';
+            if (!empty($search)) {
+                $db->where('name', 'LIKE', "%$search%");
             }
             
             $total = $db->count();
@@ -64,10 +64,10 @@ class CarBrandsController extends Controller
                 ],200);
             } else {
                 return response()->json([
-                    'status'    => 'failed',
+                    'status'    => 'success',
                     'message'   => trans('msg.admin.get-brands.failure'),
                     'data'      => [],
-                ],400);
+                ],200);
             }
         } catch (\Throwable $e) {
             return response()->json([

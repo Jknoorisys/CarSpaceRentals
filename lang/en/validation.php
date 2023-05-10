@@ -162,33 +162,6 @@ return [
     |
     */
 
-    'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
-        ],
-        
-            'user' =>[
-                'otpsend' => 'OTP send successfully on your regisered mail.',
-                'smw' => 'Something went wrong.',
-                'otpverified' => 'OTP is Verified',
-                'otpnotver' => 'OTP not match!!',
-                'registerfirst' => 'Please Register First',
-                'alreadymailverified' => 'Your mail is already verified',
-                'resendotp' => 'Resend OTP',
-                'login' => 'User Login SUccessfuly!!',
-                'block' => 'User Blocked',
-                'incemailpass' => 'Incorrect Email Password!',
-                'emailsent' => 'Email Sent Successfuly!',
-                'emailnotsend' => 'Email not send',
-                'notreg' => 'Provided email not registered',
-                'resetsucc' => 'Password Rest Successfull',
-                'invalid' => 'Invalid Credentials',
-                'passnotmatch' => 'Password Not Match',
-                'wrong' => 'Something went wrong'
-            ]
-        
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Attributes
@@ -201,5 +174,11 @@ return [
     */
 
     'attributes' => [],
+    'custom' => [
+        'input' => [
+            'tokenotfound' => 'Bearer Token Not Set',
+            'invalidtoken' => 'Invalid Bearer Token'
+        ]
+    ],
 
 ];
