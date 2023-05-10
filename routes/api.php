@@ -6,7 +6,8 @@ use App\Http\Controllers\admin\DealerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
-
+use App\Http\Controllers\Users\UserController;
+use App\Http\Controllers\Provider\ProAuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,15 +29,23 @@ Route::prefix('user')->group( function () {
     Route::post('/login',[AuthController::class,'login']);
 
     Route::group(['middleware' => 'jwt.verify'], function () {
-        
-        Route::post('/profile',[AuthController::class,'profile']);
-        Route::post('/logout',[AuthController::class,'logout']);
-
-    });
+    
+    Route::post('/profile',[UserController::class,'profile']);
+    Route::post('/logout',[AuthController::class,'logout']);
+   
+});
 });
 
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group(function () {
+    // Manage Car Brands
+    
+
+   Route::post('/get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
+   Route::post('/add-brand' , [CarBrandsController::class, 'addCarBrand']); 
+   Route::post('/get-brand' , [CarBrandsController::class, 'getCarBrand']); 
+   Route::post('/edit-brand' , [CarBrandsController::class, 'editCarBrand']); 
+
     Route::group(['middleware' => 'jwt.verify'], function () {
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
@@ -50,6 +59,17 @@ Route::prefix('admin')->group(function () {
         Route::post('make-customer-admin' , [CustomerController::class, 'makeCustomerAdmin']);
         Route::post('customer-login-activity' , [CustomerController::class, 'getCustomerLoginActivity']);
 
+});
+});
+
+//Dealer Routes
+
+Route::prefix('dealer')->group( function () {
+
+Route::post('/register',[ProAuthController::class,'register']);
+Route::post('/verifyOTP',[ProAuthController::class,'verifyOTP']);
+Route::post('/login',[ProAuthController::class,'login']);
+
         // Manage Dealers
         Route::post('get-all-dealers' , [DealerController::class, 'getDealers']);
         Route::post('change-dealer-status' , [DealerController::class, 'changeDealerstatus']);
@@ -59,5 +79,5 @@ Route::prefix('admin')->group(function () {
         Route::post('get-dealer-cars' , [DealerController::class, 'getDealerCars']);
         Route::post('get-dealer-plots' , [DealerController::class, 'dealersBookedPlots']);
 
-    });
+    
 });
