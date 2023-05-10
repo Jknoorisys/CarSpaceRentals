@@ -20,15 +20,24 @@ use App\Http\Controllers\Users\AuthController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/userregister',[AuthController::class,'register']);
-Route::post('/userlogin',[AuthController::class,'login']);
+
+//User Routes
+
+Route::prefix('user')->group( function () {
+Route::post('/register',[AuthController::class,'register']);
+Route::post('/verifyOTP',[AuthController::class,'verifyOTP']);
+Route::post('/resendregOTP',[AuthController::class,'resendregOTP']);
+Route::post('/forgetpassword',[AuthController::class,'forgetpassword']);
+Route::post('/forgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
+Route::post('/login',[AuthController::class,'login']);
 
 Route::group(['middleware' => 'jwt.verify'], function () {
     
-    Route::post('/userprofile',[AuthController::class,'profile']);
+    Route::post('/profile',[AuthController::class,'profile']);
+    Route::post('/logout',[AuthController::class,'logout']);
 
 });
-
+});
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group(function () {
     // Manage Car Brands
