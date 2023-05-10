@@ -43,6 +43,12 @@ class CarBrandsController extends Controller
             $page_number = $request->input(key:'page_number', default:1);
 
             $db = DB::table('brands');
+
+            $name = $request->name ? $request->name : '';
+            if (!empty($name)) {
+                $db->where('name', 'LIKE', "%$name%");
+            }
+            
             $total = $db->count();
 
             $brands = $db->offset(($page_number - 1) * $per_page)

@@ -8,6 +8,13 @@ return [
     // Admin By javeriya Kauser
     'admin' => [
 
+        // admin activity
+        'invalid-admin' => 'Admin Not Found',
+        'invalid-super-admin' => 'Not a Super Admin',
+        'Customer'      => 'Customer',
+        'Activated'     => 'Activated',
+        'Inactivated'   => 'Inactivated',
+
         // Manage Car Brands
         'get-brands' => [
             'success' => 'Car Brands Fetched Successfully',
@@ -37,12 +44,20 @@ return [
 
         'get-customer' => [
             'success' => 'Customer Detail Fetched Successfully',
-            'failure' => 'No Such Customer Found',
+            'failure' => 'Customer Not Found',
         ],
 
         'customer-status' => [
-            'success' => 'Customer Updated Successfully',
-            'failure' => 'Unable to Update Customer',
+            'active'   => 'Customer Activated Successfully',
+            'inactive' => 'Customer Inactivated Successfully',
+            'failure'  => 'Unable to Change Customer Status',
+            'invalid'  => 'Customer Not Found',
+        ],
+
+        'make-admin'   => [
+            'success' => 'Customer Successfully Marked as Admin',
+            'failure' => 'Unable to make Customer as Admin',
+            'invalid' => 'Customer Not Found',
         ],
     ],
 
