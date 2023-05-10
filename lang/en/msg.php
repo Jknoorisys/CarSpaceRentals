@@ -67,12 +67,17 @@ return [
 
         'validation' => [
             'fail' => 'Validation Failed!',
-
+            'inactive' => 'INactive User',
+            'incpass' => 'Incorrect Password',
+            'incmail' => 'Incorrect Mail',
+            'login' => 'Login Successfull'
         ],
 
         'register' => [
             'success' => 'OTP sent to your entered email address',
             'fail' => 'Failed to send OTP',
+            'incmail' => 'Incorrect Mail',
+            'incpass' => 'Incorrect Password'
         ],
     
         'otp' => [

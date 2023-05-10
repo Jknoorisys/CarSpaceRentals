@@ -12,5 +12,9 @@ use App\Libraries\Services;
 
 class UserController extends Controller
 {
-    
+    public function profile(Request $req)
+    {
+        $req->all();
+        return $req;
+    }
 }
