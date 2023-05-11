@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Provider;
+namespace App\Http\Controllers\dealers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,13 +16,14 @@ use Illuminate\Support\Facades\App;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 
-class ProAuthController extends Controller
+class AuthController extends Controller
 {
     public function __construct()
     {
         $lang = (isset($_POST['language']) && !empty($_POST['language'])) ? $_POST['language'] : 'en';
         App::setlocale($lang);
     }
+
     public function register(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -94,6 +95,7 @@ class ProAuthController extends Controller
             ], 500);
         }
     }
+
     public function verifyOTP(Request $req)
     {
 
@@ -144,6 +146,7 @@ class ProAuthController extends Controller
             ], 500);
         }
     }
+    
     public function login(Request $req)
     {
         $data = $req->only('language', 'email', 'password');
