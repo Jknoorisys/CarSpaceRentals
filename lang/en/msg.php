@@ -23,7 +23,7 @@ return [
 
         'get-brand' => [
             'success' => 'Car Brand Detail Fetched Successfully',
-            'failure' => 'No Such Car Brand Found',
+            'failure' => 'Car Brand Not Found',
         ],
 
         'add-brand' => [
@@ -156,4 +156,17 @@ return [
       
     ],
 
+    // Dealer
+    'dealer' => [
+        // Location Module By Javeriya Kauser
+        'get-locations' => [
+            'success' => 'Locations List Fetched Successfully',
+            'failure' => 'Location Not Found',
+        ],
+
+        'get-location-details' => [
+            'success' => 'Locations Details Fetched Successfully',
+            'failure' => 'Location Not Found',
+        ]
+    ],
 ];

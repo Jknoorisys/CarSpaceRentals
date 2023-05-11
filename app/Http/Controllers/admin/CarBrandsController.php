@@ -122,7 +122,7 @@ class CarBrandsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language' => 'required',
-            'id'       => 'required|alpha_dash',
+            'brand_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
         ]);
 
         if($validator->fails()){
@@ -134,7 +134,7 @@ class CarBrandsController extends Controller
         }
 
         try {
-            $brand = DB::table('brands')->where('id', '=', $request->id)->first();
+            $brand = DB::table('brands')->where('id', '=', $request->brand_id)->first();
             if ($brand) {
                 return response()->json([
                     'status'    => 'success',
@@ -160,7 +160,7 @@ class CarBrandsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language' => 'required',
-            'id'       => 'required|alpha_dash',
+            'brand_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
             'name'     => 'required|unique:brands,name',
         ]);
 
@@ -174,7 +174,7 @@ class CarBrandsController extends Controller
 
         try {
             $name = $request->name;
-            $brand = DB::table('brands')->where('id', '=', $request->id)->update(['name' => $name, 'updated_at' => Carbon::now()]);
+            $brand = DB::table('brands')->where('id', '=', $request->brand_id)->update(['name' => $name, 'updated_at' => Carbon::now()]);
             if ($brand) {
                 return response()->json([
                     'status'    => 'success',

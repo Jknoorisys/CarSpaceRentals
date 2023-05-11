@@ -81,8 +81,8 @@ class CustomerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'    => 'required',
-            'customer_id' => 'required|alpha_dash',
-            'admin_id'    => 'required|alpha_dash',
+            'customer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
             ],
@@ -158,8 +158,8 @@ class CustomerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'     => 'required',
-            'customer_id'  => 'required|alpha_dash',
-            // 'admin_id' => 'required|alpha_dash',
+            'customer_id'  => ['required','alpha_dash', Rule::notIn('undefined')],
+            // 'admin_id' => ['required','alpha_dash', Rule::notIn('undefined')],
             // 'admin_type'   => ['required', 
             //     Rule::in(['user', 'dealer'])
             // ],
@@ -221,7 +221,7 @@ class CustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'language' => 'required',
             'page_number'   => 'required|numeric',
-            'customer_id'   => 'required|alpha_dash'
+            'customer_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
         ]);
 
         if($validator->fails()){
