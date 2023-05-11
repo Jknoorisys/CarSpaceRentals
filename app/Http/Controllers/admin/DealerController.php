@@ -81,8 +81,8 @@ class DealerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'   => 'required',
-            'dealer_id'  => 'required|alpha_dash',
-            'admin_id'   => 'required|alpha_dash',
+            'dealer_id'  => ['required','alpha_dash', Rule::notIn('undefined')],
+            'admin_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type' => ['required', 
                 Rule::in(['user', 'dealer'])
             ],
@@ -118,10 +118,10 @@ class DealerController extends Controller
 
                     $status == 'active' ? $msg = trans('msg.admin.Activated') : $msg = trans('msg.admin.Inactivated');
                     $adminData = [
-                        'id'        => Str::uuid('36'),
+                        'id'        => Str::uuid(),
                         'user_id'   => $request->admin_id,
                         'user_type' => $request->admin_type,
-                        'type'      => trans('msg.admin.Customer').' '.$msg,
+                        'type'      => trans('msg.admin.Dealer').' '.$msg,
                         'description' => $user->name.' '.$msg,
                         'created_at'  => Carbon::now()
                     ];
@@ -158,8 +158,8 @@ class DealerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language' => 'required',
-            'dealer_id'       => 'required|alpha_dash',
-            // 'admin_id' => 'required|alpha_dash',
+            'dealer_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
+            // 'admin_id' => ['required','alpha_dash', Rule::notIn('undefined')],
             // 'admin_type'   => ['required', 
             //     Rule::in(['user', 'dealer'])
             // ],
@@ -220,7 +220,7 @@ class DealerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'    => 'required',
-            'dealer_id'   => 'required|alpha_dash',
+            'dealer_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
             'page_number' => 'required||numeric',
         ]);
 
@@ -276,7 +276,7 @@ class DealerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'  => 'required',
-            'dealer_id' => 'required|alpha_dash',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
         ]);
 
         if($validator->fails()){
@@ -293,6 +293,11 @@ class DealerController extends Controller
 
             if (!empty($dealer)) {
                 $dealer->cars = DB::table('cars')->where('dealer_id', '=', $dealer_id)->get();
+
+                foreach ($dealer->cars as $car) {
+                    $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
+                }
+
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-dealer-details.success'),
@@ -317,7 +322,7 @@ class DealerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'  => 'required',
-            'dealer_id' => 'required|alpha_dash',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
             'page_number' => 'required|numeric'
         ]);
 
@@ -348,6 +353,11 @@ class DealerController extends Controller
                                     ->get();
 
             if (!($cars->isEmpty())) {
+
+                foreach ($cars as $car) {
+                    $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
+                }
+
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-dealer-cars.success'),
@@ -374,7 +384,7 @@ class DealerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'  => 'required',
-            'dealer_id' => 'required|alpha_dash',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
             'page_number' => 'required|numeric'
         ]);
 

@@ -3,7 +3,9 @@
 use App\Http\Controllers\admin\CarBrandsController;
 use App\Http\Controllers\admin\CustomerController;
 use App\Http\Controllers\admin\DealerController;
+use App\Http\Controllers\admin\LocationController as AdminLocationController;
 use App\Http\Controllers\dealers\AuthController as DealersAuthController;
+use App\Http\Controllers\dealers\LocationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
@@ -39,7 +41,7 @@ Route::prefix('user')->group( function () {
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group(function () {
 
-    Route::group(['middleware' => 'jwt.verify'], function () {
+    // Route::group(['middleware' => 'jwt.verify'], function () {
 
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
@@ -62,18 +64,26 @@ Route::prefix('admin')->group(function () {
         Route::post('get-dealer-cars' , [DealerController::class, 'getDealerCars']);
         Route::post('get-dealer-plots' , [DealerController::class, 'dealersBookedPlots']);
 
-    });
+        // Manage Rental Locations
+        Route::post('add-location' , [AdminLocationController::class, 'addLocation']); 
+        Route::post('get-all-locations' , [AdminLocationController::class, 'getLocations']); 
+        Route::post('get-location-details' , [AdminLocationController::class, 'getLocationDetails']); 
+        Route::post('get-location' , [AdminLocationController::class, 'getLocation']); 
+        Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
+
+    // });
 });
 
-//Dealer Routes
-
+// Dealer Panel
 Route::prefix('dealer')->group( function () {
 
+    // By Aaisha Shaikh
     Route::post('/register',[DealersAuthController::class,'register']);
     Route::post('/verifyOTP',[DealersAuthController::class,'verifyOTP']);
     Route::post('/login',[DealersAuthController::class,'login']);
 
-       
+    // By Javeriya Kauser
+    Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
+    Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
 
-    
 });
