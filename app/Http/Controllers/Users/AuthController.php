@@ -49,7 +49,7 @@ class AuthController extends Controller
                 $otp = rand(1000, 9999);
                 $data = $req->input();
                 $user = [
-                    'id' => Str::uuid('36'), 'name' => $data['name'], 'password' => Hash::make($data['password']),
+                    'id' => Str::uuid(), 'name' => $data['name'], 'password' => Hash::make($data['password']),
                     'email' => $data['email'], 'mobile' => $data['mobile'], 'email_otp' => $otp, 'created_at' => Carbon::now()
                 ];
                 $saveUser = DB::table('users')->insert($user);
@@ -251,11 +251,12 @@ class AuthController extends Controller
                             // return $claims;exit;
                             $user->token = $service->getSignedAccessTokenForUser($user, $claims);
                             $currentDate = Carbon::now()->format('Y-m-d');
-                            $currentTime = Carbon::now()->format('H:i:m');
+                            $currentTime = Carbon::now()->format('H:i:s');
                             // return ($currentTime);exit;
                             $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
                             // return $user_id->id;exit;
 
+                            $userLog = ['id' => Str::uuid(), 'user_id' => $user_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'user'];
                             $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'user','created_at' => Carbon::now()];
                             $logintime =  DB::table('login_activities')->insert($userLog);
                             $user->user_login_activity_id=$userLog['id'];
@@ -456,7 +457,7 @@ class AuthController extends Controller
         }
         try {
 
-            $currentlogoutTime = Carbon::now()->format('H:i:m');
+            $currentlogoutTime = Carbon::now()->format('H:i:s');
             $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime]);
             if ($logoutime) {
                 JWTAuth::parseToken()->invalidate();

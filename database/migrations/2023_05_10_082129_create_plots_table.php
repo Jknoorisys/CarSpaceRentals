@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('plots', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->uuid('id')->primary();
             $table->string('plot_number');
             $table->string('location_id');
             // $table->string('dealer_id');

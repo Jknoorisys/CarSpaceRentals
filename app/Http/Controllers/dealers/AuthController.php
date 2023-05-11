@@ -50,7 +50,7 @@ class AuthController extends Controller
                 $otp = rand(1000, 9999);
                 $data = $req->input();
                 $dealer = [
-                    'id' => Str::uuid('36'), 'name' => $data['name'], 'password' => Hash::make($data['password']),
+                    'id' => Str::uuid(), 'name' => $data['name'], 'password' => Hash::make($data['password']),
                     'email' => $data['email'], 'mobile' => $data['mobile'], 'email_otp' => $otp, 'created_at' => Carbon::now()
                 ];
                 $saveDealer = DB::table('dealers')->insert($dealer);
@@ -392,7 +392,7 @@ class AuthController extends Controller
                             // return $claims;exit;
                             $dealer->token = $service->getSignedAccessTokenForUser($dealer, $claims);
                             $currentDate = Carbon::now()->format('Y-m-d');
-                            $currentTime = Carbon::now()->format('H:i:m');
+                            $currentTime = Carbon::now()->format('H:i:s');
                             // return ($currentTime);exit;
                             $dealer_id  = DB::table('dealers')->where('email', $email)->where('password', $dealer->password)->take(1)->first();
                             // return $dealer_id;exit;

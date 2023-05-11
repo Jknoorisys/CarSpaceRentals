@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('featured_cars', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->uuid('id')->primary();
             $table->string('dealer_id');
             $table->string('car_id');
             $table->string('start_date');

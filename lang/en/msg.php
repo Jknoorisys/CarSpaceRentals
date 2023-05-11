@@ -12,6 +12,7 @@ return [
         'invalid-admin' => 'Admin Not Found',
         'invalid-super-admin' => 'Not a Super Admin',
         'Customer'      => 'Customer',
+        'Dealer'        => 'Dealer',
         'Activated'     => 'Activated',
         'Inactivated'   => 'Inactivated',
 
@@ -23,7 +24,7 @@ return [
 
         'get-brand' => [
             'success' => 'Car Brand Detail Fetched Successfully',
-            'failure' => 'No Such Car Brand Found',
+            'failure' => 'Car Brand Not Found',
         ],
 
         'add-brand' => [
@@ -108,6 +109,29 @@ return [
             'success' => 'Dealer Booked Plot List Fetched Successfully',
             'failure' => 'Dealer Booked Plot Not Found',
         ],
+
+        // Manage Locations
+        'add-location' => [
+            'success' => 'Rental Location Added Successfully',
+            'failure' => 'Unable to Add Rental Location',
+        ],
+
+        'get-locations' => [
+            'success' => 'Locations List Fetched Successfully',
+            'failure' => 'Location Not Found',
+        ],
+
+        'get-location-details' => [
+            'success' => 'Locations Details Fetched Successfully',
+            'failure' => 'Location Not Found',
+        ],
+
+        'location-status' => [
+            'active'   => 'Location Activated Successfully',
+            'inactive' => 'Location Inactivated Successfully',
+            'failure'  => 'Unable to Change Location Status',
+            'invalid'  => 'Location Not Found',
+        ],
     ],
 
     // User By Aisha Shaikh 
@@ -173,4 +197,17 @@ return [
         ],
     ],
 
+    // Dealer
+    'dealer' => [
+        // Location Module By Javeriya Kauser
+        'get-locations' => [
+            'success' => 'Locations List Fetched Successfully',
+            'failure' => 'Location Not Found',
+        ],
+
+        'get-location-details' => [
+            'success' => 'Locations Details Fetched Successfully',
+            'failure' => 'Location Not Found',
+        ]
+    ],
 ];

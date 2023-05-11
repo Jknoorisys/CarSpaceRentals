@@ -19,7 +19,7 @@ class SuperAdminSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
-            'id' => Str::uuid('36'),
+            'id' => Str::uuid(),
             'name' => 'Super Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('Admin@123'),
