@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\UserController;
+use App\Http\Controllers\dealers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -71,9 +72,19 @@ Route::prefix('dealer')->group( function () {
 
     Route::post('/register',[DealersAuthController::class,'register']);
     Route::post('/verifyOTP',[DealersAuthController::class,'verifyOTP']);
+    Route::post('/resendregOTP',[DealersAuthController::class,'resendregOTP']);
+    Route::post('/forgetpassword',[DealersAuthController::class,'forgetpassword']);
+    Route::post('/forgotPasswordValidate',[DealersAuthController::class,'forgotPasswordValidate']);
     Route::post('/login',[DealersAuthController::class,'login']);
 
-       
+    Route::group(['middleware' => 'jwt.verify'], function () {
+
+    Route::post('getProfile',[ProfileController::class,'getProfile']);
+    Route::post('UpdateProfile',[ProfileController::class,'UpdateProfile']);
+    Route::post('UpdateProfileDetail',[ProfileController::class,'UpdateProfileDetail']);
+
+
+    });
 
     
 });

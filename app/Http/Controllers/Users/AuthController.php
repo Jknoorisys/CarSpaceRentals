@@ -256,14 +256,13 @@ class AuthController extends Controller
                             $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
                             // return $user_id->id;exit;
 
-                            $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'user'];
+                            $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'user','created_at' => Carbon::now()];
                             $logintime =  DB::table('login_activities')->insert($userLog);
-
+                            $user->user_login_activity_id=$userLog['id'];
                             return response()->json(
                                 [
                                     'status'    => 'success',
                                     'data' => $user,
-                                    'login_activity_id' => $userLog['id'],
                                     'message'   =>   __('msg.user.validation.login'),
                                 ],
                                 200
@@ -330,14 +329,12 @@ class AuthController extends Controller
                 $user['token'] = $token;
                 $user['is_verified'] = 'yes';
                 $userPass = $user->save();
-                // $url = 'https://umrahmall.net/ndashaka/cust-forgot-password/'.$user['token'];
                 $mailsent = Mail::to($req->email)->send(new ForgetPassword($user->name, $token));
                 if ($mailsent == true) {
                     return response()->json(
                         [
                             'status'    => 'success',
                             'data' => $user,
-                            // 'url' => $url,
                             'message'   =>  __('msg.user.forgetpass.emailsent'),
                         ],
                         200
@@ -425,7 +422,7 @@ class AuthController extends Controller
                 return response()->json(
                     [
                         'status'    => 'failed',
-                        'message'   =>  __('msg.user.forgetpass.swr'),
+                        'message'   =>  __('msg.user.forgetpass.tokennotmatch'),
                     ],
                     400
                 );

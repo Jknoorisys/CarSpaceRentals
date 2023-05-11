@@ -146,7 +146,8 @@ return [
             'reset' => 'Password reset successfuly',
             'notreset' => 'Password not set',
             'passnotmatch' => 'Password not match',
-            'swr' => 'Something Went Wrong'
+            'swr' => 'Something Went Wrong',
+            'tokennotmatch' => 'Token not match!'
         ],
 
         'logout' => [
@@ -154,6 +155,22 @@ return [
         ],
 
       
+    ],
+
+
+    //Dealer By Aaisha Shaikh
+
+    'dealer' => [
+
+        'profile' => [
+
+            'success' => 'Dealer Profile',
+            'dealernotfound' => 'Dealer not Found!',
+            'image' => 'Profile Updated Successfuly',
+            'notimage' => 'Profile not Updated',
+            'updated' => 'Dealer Profile Updated Successfuly',
+            'notupdated' => 'Unable to update profile'
+        ],
     ],
 
 ];
