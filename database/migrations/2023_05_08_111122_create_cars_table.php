@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('cars', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->uuid('id')->primary();
             $table->string('dealer_id');
             $table->enum('condition',['New','Old']);
             $table->string('name');

@@ -3,6 +3,7 @@
 use App\Http\Controllers\admin\CarBrandsController;
 use App\Http\Controllers\admin\CustomerController;
 use App\Http\Controllers\admin\DealerController;
+use App\Http\Controllers\admin\LocationController as AdminLocationController;
 use App\Http\Controllers\dealers\AuthController as DealersAuthController;
 use App\Http\Controllers\dealers\LocationController;
 use Illuminate\Http\Request;
@@ -40,7 +41,7 @@ Route::prefix('user')->group( function () {
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group(function () {
 
-    Route::group(['middleware' => 'jwt.verify'], function () {
+    // Route::group(['middleware' => 'jwt.verify'], function () {
 
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
@@ -64,8 +65,13 @@ Route::prefix('admin')->group(function () {
         Route::post('get-dealer-plots' , [DealerController::class, 'dealersBookedPlots']);
 
         // Manage Rental Locations
-        
-    });
+        Route::post('add-location' , [AdminLocationController::class, 'addLocation']); 
+        Route::post('get-all-locations' , [AdminLocationController::class, 'getLocations']); 
+        Route::post('get-location-details' , [AdminLocationController::class, 'getLocationDetails']); 
+        Route::post('get-location' , [AdminLocationController::class, 'getLocation']); 
+        Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
+
+    // });
 });
 
 // Dealer Panel

@@ -98,8 +98,8 @@ class LocationController extends Controller
             $locationDetails = DB::table('locations')->where([['id', '=', $location_id],['status', '=', 'active']])->first();
 
             if (!empty($locationDetails)) {
-                $locationDetails->total_plots = DB::table('plots')->where('id', '=', $location_id)->count();
-                $locationDetails->plots = DB::table('plots')->where('id', '=', $location_id)->get();
+                $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
+                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->get();
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.dealer.get-location-details.success'),

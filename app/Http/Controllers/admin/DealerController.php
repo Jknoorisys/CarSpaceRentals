@@ -118,10 +118,10 @@ class DealerController extends Controller
 
                     $status == 'active' ? $msg = trans('msg.admin.Activated') : $msg = trans('msg.admin.Inactivated');
                     $adminData = [
-                        'id'        => Str::uuid('36'),
+                        'id'        => Str::uuid(),
                         'user_id'   => $request->admin_id,
                         'user_type' => $request->admin_type,
-                        'type'      => trans('msg.admin.Customer').' '.$msg,
+                        'type'      => trans('msg.admin.Dealer').' '.$msg,
                         'description' => $user->name.' '.$msg,
                         'created_at'  => Carbon::now()
                     ];

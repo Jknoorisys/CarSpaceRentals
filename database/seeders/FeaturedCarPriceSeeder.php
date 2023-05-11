@@ -18,7 +18,7 @@ class FeaturedCarPriceSeeder extends Seeder
     public function run()
     {
         DB::table('featured_car_prices')->insert([
-            'id' => Str::uuid('36'),
+            'id' => Str::uuid(),
             'name' => 'Featured Car Daily Price',
             'price' => '10.00',
             'currency' => '$',

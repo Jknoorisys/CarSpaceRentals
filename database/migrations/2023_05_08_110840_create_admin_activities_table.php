@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('admin_activities', function (Blueprint $table) {
-            $table->string('id')->primary();
+            $table->uuid('id')->primary();
             $table->string('user_id');
             $table->enum('user_type',['user','dealer','admin']);
             $table->string('type');

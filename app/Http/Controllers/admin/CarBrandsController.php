@@ -95,7 +95,7 @@ class CarBrandsController extends Controller
 
         try {
             $name = $request->name;
-            $brandData = [ 'id' => Str::uuid('36'), 'name' => $name, 'created_at' => Carbon::now()];
+            $brandData = [ 'id' => Str::uuid(), 'name' => $name, 'created_at' => Carbon::now()];
             $brand = DB::table('brands')->insert($brandData);
             if ($brand) {
                 return response()->json([
