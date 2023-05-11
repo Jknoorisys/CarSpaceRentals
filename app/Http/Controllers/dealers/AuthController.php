@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Libraries\Services;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ForgetPassword;
+use App\Mail\dealerforgetpass;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -147,6 +147,211 @@ class AuthController extends Controller
         }
     }
     
+    public function resendregOTP(Request $req)
+    {
+
+        $validator = Validator::make($req->all(), [
+            'language' => 'required',
+            'email'   => 'required',
+
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try {
+            $email = $req->email;
+            $dealer = Dealers::where('email', $email)->take(1)->first();
+            // return $provider;exit;
+            if (!empty($dealer)) {
+                if ($dealer->is_verified == 'no') {
+                    // echo 'Hiiiii';exit();
+                    $email_otp = rand(1000, 9999);
+                    $resend =  Dealers::where('email', '=', $email)->update(['email_otp' => $email_otp, 'is_verified' => 'yes', 'updated_at' => date('Y-m-d H:i:s')]);
+                    if ($resend == true) {
+                        $dealer = Dealers::where('email', '=', $email)->first();
+                        $email = ['to' => $req->email];
+                        $mail_details = [
+                            'subject' => 'Testing Application OTP',
+                            'body' => 'Your OTP is : ' . $email_otp
+                        ];
+                        $data = array(
+                            'name' => $dealer->name,
+                            'otp' => $email_otp
+                        );
+                        Mail::send('Dealer_Mail.resenOTPmail', $data, function ($message) use ($email) {
+                            $message->to($email['to'])->subject('Resend Email Verification');
+                        });
+                        return response()->json([
+                            'status'    => 'success',
+                            'message'   =>  __('msg.user.otp.resendotp'),
+                        ], 200);
+                    }
+                } else {
+                    return response()->json([
+                        'status'    => 'failed',
+                        'message'   =>   __('msg.user.otp.alreadyverify'),
+                    ], 400);
+                }
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   =>  __('msg.user.otp.registerfirst'),
+                ], 400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' => __('msg.user.error'),
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function forgetpassword(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'language' => 'required',
+            'email'   => 'required',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try {
+
+            $email = $req->email;
+            $dealer = Dealers::where('email', $email)->first();
+            if (!empty($dealer)) {
+                $token = Str::random(60);
+                $dealer['token'] = $token;
+                $dealer['is_verified'] = 'yes';
+                $dealerPass = $dealer->save();
+                $mailsent = Mail::to($req->email)->send(new dealerforgetpass($dealer->name, $token));
+                if ($mailsent == true) {
+                    return response()->json(
+                        [
+                            'status'    => 'success',
+                            'data' => $dealer,
+                            'message'   =>  __('msg.user.forgetpass.emailsent'),
+                        ],
+                        200
+                    );
+                } 
+                else 
+                {
+
+                    return response()->json(
+                        [
+                            'status'    => 'failed',
+                            'message'   =>  __('msg.user.forgetpass.emailnotsent'),
+                        ],
+                        400
+                    );
+                }
+            } else {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   =>  __('msg.user.forgetpass.notreg'),
+                    ],
+                    400
+                );
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+            ], 500);
+        }
+    }
+
+    public function forgotPasswordValidate(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'language'  =>   'required',
+            'token' => 'required',
+            'password'   => 'required|max:20||min:8',
+            'confirm_password' => 'required|same:password',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try {
+            $dealer = Dealers::where('token', $req->token)->first();
+            if ($dealer) {
+
+                $password = $req->password;
+                if ($password == $req->confirm_password) {
+                    $dealer->password = Hash::make($req->password);
+                    $dealer->token = '';
+                    $info = $dealer->save();
+                    if ($info) {
+                        return response()->json(
+                            [
+                                'status'    => 'success',
+                                'message'   =>  __('msg.user.forgetpass.reset'),
+                            ],
+                            200
+                        );
+                    } else {
+                        return response()->json(
+                            [
+                                'status'    => 'failed',
+                                'message'   =>  __('msg.user.forgetpass.notreset'),
+                            ],
+                            400
+                        );
+                    }
+                } else {
+                    return response()->json(
+                        [
+                            'status'    => 'failed',
+                            'message'   =>  __('msg.user.forgetpass.passnotmatch'),
+                        ],
+                        400
+                    );
+                }
+            } else {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   =>  __('msg.user.forgetpass.tokennotmatch'),
+                    ],
+                    400
+                );
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function login(Request $req)
     {
         $data = $req->only('language', 'email', 'password');
@@ -165,7 +370,7 @@ class AuthController extends Controller
                 ],
                 400
             );
-        } else {
+        }
             try {
                 $service = new Services();
                 $email = $req->email;
@@ -192,14 +397,13 @@ class AuthController extends Controller
                             $dealer_id  = DB::table('dealers')->where('email', $email)->where('password', $dealer->password)->take(1)->first();
                             // return $dealer_id;exit;
 
-                            $dealerLog = ['id' => Str::uuid(), 'user_id' => $dealer_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'dealer'];
+                            $dealerLog = ['id' => Str::uuid('36'), 'user_id' => $dealer_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'dealer','created_at' => Carbon::noW()];
                             $logintime =  DB::table('login_activities')->insert($dealerLog);
-
+                            $dealer->dealer_login_activity_id = $dealerLog['id'];
                             return response()->json(
                                 [
                                     'status'    => 'success',
                                     'data' => $dealer,
-                                    'login_activity_id' => $dealerLog['id'],
                                     'message'   =>   __('msg.user.validation.login'),
                                 ],
                                 200
@@ -238,6 +442,7 @@ class AuthController extends Controller
                     'error'   => $e->getMessage()
                 ], 500);
             }
-        }
+        
     }
+
 }
