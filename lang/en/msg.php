@@ -117,16 +117,16 @@ return [
 
         'validation' => [
             'fail' => 'Validation Failed!',
-            'inactive' => 'INactive User',
+            'inactive' => 'Inactive User',
             'incpass' => 'Incorrect Password',
-            'incmail' => 'Incorrect Mail',
+            'incmail' => 'Incorrect Email',
             'login' => 'Login Successfull'
         ],
 
         'register' => [
             'success' => 'OTP sent to your entered email address',
             'fail' => 'Failed to send OTP',
-            'incmail' => 'Incorrect Mail',
+            'incmail' => 'Incorrect Email',
             'incpass' => 'Incorrect Password'
         ],
     
@@ -150,7 +150,6 @@ return [
         ],
 
         'logout' => [
-
             'success' => 'Logout Successful',
         ],
 
