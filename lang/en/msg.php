@@ -35,6 +35,7 @@ return [
         'edit-brand' => [
             'success' => 'Car Brands Updated Successfully',
             'failure' => 'Unable to Update Car Brand',
+            'invalid' => 'Car Brand Not Found',
         ],
 
         // Mange Customers
@@ -121,6 +122,12 @@ return [
             'failure' => 'Location Not Found',
         ],
 
+        'edit-location' => [
+            'success' => 'Rental Location Updated Successfully',
+            'failure' => 'Unable to Update Rental Location',
+            'invalid' => 'Location Not Found',
+        ],
+
         'get-location-details' => [
             'success' => 'Locations Details Fetched Successfully',
             'failure' => 'Location Not Found',
@@ -192,5 +199,12 @@ return [
             'success' => 'Locations Details Fetched Successfully',
             'failure' => 'Location Not Found',
         ]
+    ],
+
+    // Helpers
+    'helper' => [
+        'invalid-customer' => 'Customer Not Found',
+        'invalid-dealer'   => 'Dealer Not Found',
+        'invalid-location' => 'Dealer Not Found',
     ],
 ];

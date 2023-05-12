@@ -107,10 +107,9 @@ class LocationController extends Controller
                 ],200);
             } else {
                 return response()->json([
-                    'status'    => 'success',
+                    'status'    => 'failed',
                     'message'   => trans('msg.dealer.get-location-details.failure'),
-                    'data'      => [],
-                ],200);
+                ],400);
             }
         } catch (\Throwable $e) {
             return response()->json([

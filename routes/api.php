@@ -69,6 +69,7 @@ Route::prefix('admin')->group(function () {
         Route::post('get-all-locations' , [AdminLocationController::class, 'getLocations']); 
         Route::post('get-location-details' , [AdminLocationController::class, 'getLocationDetails']); 
         Route::post('get-location' , [AdminLocationController::class, 'getLocation']); 
+        Route::post('edit-location' , [AdminLocationController::class, 'updateLocation']); 
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
 
     // });

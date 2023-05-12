@@ -40,6 +40,10 @@ class LocationController extends Controller
             'rent_per_month'       => 'required',
             'rent_per_year'        => 'required',
             'photo'                => 'required|image|mimes:jpeg,png,jpg,svg',
+            'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
+            'admin_type'  => ['required', 
+                Rule::in(['user', 'dealer'])
+            ],
         ]);
 
         if($validator->fails()){
@@ -51,6 +55,15 @@ class LocationController extends Controller
         }
 
         try {
+
+            $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
+            if (empty($admin) || $admin->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.admin.invalid-admin'),
+                ],400);
+            }
+
             $id                     = Str::uuid();
             $name                   = $request->name ? : '';
             $lat                    = $request->lat ? : '';
@@ -107,6 +120,17 @@ class LocationController extends Controller
                     DB::table('plots')->insert($plotData);
                 }
 
+                $adminData = [
+                    'id'        => Str::uuid(),
+                    'user_id'   => $request->admin_id,
+                    'user_type' => $request->admin_type,
+                    'activity'  => 'Rental Location named '.$name.' is added by '.ucfirst($request->admin_type).' '.$admin->name,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+
+                DB::table('admin_activities')->insert($adminData);
+
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.add-location.success'),
@@ -157,6 +181,7 @@ class LocationController extends Controller
             $total = $db->count();
             $locations = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
+                                    ->orderBy('name')
                                     ->get();
 
             if (!($locations->isEmpty())) {
@@ -204,7 +229,7 @@ class LocationController extends Controller
 
             if (!empty($locationDetails)) {
                 $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
-                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->get();
+                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_number')->get();
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-location-details.success'),
@@ -212,10 +237,9 @@ class LocationController extends Controller
                 ],200);
             } else {
                 return response()->json([
-                    'status'    => 'success',
+                    'status'    => 'failed',
                     'message'   => trans('msg.admin.get-location-details.failure'),
-                    'data'      => [],
-                ],200);
+                ],400);
             }
         } catch (\Throwable $e) {
             return response()->json([
@@ -254,10 +278,9 @@ class LocationController extends Controller
                 ],200);
             } else {
                 return response()->json([
-                    'status'    => 'success',
+                    'status'    => 'failed',
                     'message'   => trans('msg.admin.get-location-details.failure'),
-                    'data'      => [],
-                ],200);
+                ],400);
             }
         } catch (\Throwable $e) {
             return response()->json([
@@ -285,6 +308,10 @@ class LocationController extends Controller
             'rent_per_month'       => 'required',
             'rent_per_year'        => 'required',
             'photo'                => 'required|image|mimes:jpeg,png,jpg,svg',
+            'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
+            'admin_type'  => ['required', 
+                Rule::in(['user', 'dealer'])
+            ],
         ]);
 
         if($validator->fails()){
@@ -297,6 +324,23 @@ class LocationController extends Controller
 
         try {
             $location_id            = $request->location_id;
+
+            $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
+            if (empty($admin) || $admin->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.admin.invalid-admin'),
+                ],400);
+            }
+
+            $oldLocation = validateLocation($location_id);
+            if (empty($oldLocation)) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-location'),
+                ],400);
+            }
+
             $name                   = $request->name ? : '';
             $lat                    = $request->lat ? : '';
             $long                   = $request->long ? : '';
@@ -339,15 +383,27 @@ class LocationController extends Controller
             $location = DB::table('locations')->where('id', '=', $location_id)->update($locationData);
 
             if ($location) {
+
+                $adminData = [
+                    'id'        => Str::uuid(),
+                    'user_id'   => $request->admin_id,
+                    'user_type' => $request->admin_type,
+                    'activity'  => 'The Rental location ('.$oldLocation->name.') details are updated by '.ucfirst($request->admin_type).' '.$admin->name,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+
+                DB::table('admin_activities')->insert($adminData);
+
                 return response()->json([
                     'status'    => 'success',
-                    'message'   => trans('msg.admin.add-location.success'),
+                    'message'   => trans('msg.admin.edit-location.success'),
                     'data'      => $locationData
                 ],200);
             } else {
                 return response()->json([
                     'status'    => 'failed',
-                    'message'   => trans('msg.admin.add-location.failure'),
+                    'message'   => trans('msg.admin.edit-location.failure'),
                 ],400);
             }
         } catch (\Throwable $e) {
@@ -366,7 +422,11 @@ class LocationController extends Controller
             'location_id' => ['required','alpha_dash', Rule::notIn('undefined')],
             'status'      => ['required', 
                                 Rule::in(['active', 'inactive'])
-                            ]
+                            ],
+            'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
+            'admin_type'  => ['required', 
+                Rule::in(['user', 'dealer'])
+            ],
         ]);
 
         if($validator->fails()){
@@ -381,30 +441,31 @@ class LocationController extends Controller
             $location_id = $request->location_id;
             $status = $request->status;
 
-            // $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
-            // if (empty($admin) || $admin->status != 'active') {
-            //     return response()->json([
-            //         'status'    => 'failed',
-            //         'message'   => trans('msg.admin.invalid-admin'),
-            //     ],400);
-            // }
-
-            $user = DB::table('locations')->where('id', '=', $location_id)->first();
-            if (!empty($user)) {
+            $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
+            if (empty($admin) || $admin->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.admin.invalid-admin'),
+                ],400);
+            }
+            
+            $location = DB::table('locations')->where('id', '=', $location_id)->first();
+            if (!empty($location)) {
                 $statusChange = DB::table('locations')->where('id', '=', $location_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
                 if ($statusChange) {
 
-                    // $status == 'active' ? $msg = trans('msg.admin.Activated') : $msg = trans('msg.admin.Inactivated');
-                    // $adminData = [
-                    //     'id'        => Str::uuid(),
-                    //     'user_id'   => $request->admin_id,
-                    //     'user_type' => $request->admin_type,
-                    //     'type'      => trans('msg.admin.Customer').' '.$msg,
-                    //     'description' => $user->name.' '.$msg,
-                    //     'created_at'  => Carbon::now()
-                    // ];
+                    $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';
+                    $adminData = [
+                        'id'        => Str::uuid(),
+                        'user_id'   => $request->admin_id,
+                        'user_type' => $request->admin_type,
+                        'activity'  => 'Rental Location ('.$location->name.') is '.$msg.' by '.ucfirst($request->admin_type).' '.$admin->name,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
+                    ];
+    
+                    DB::table('admin_activities')->insert($adminData);
 
-                    // DB::table('admin_activities')->insert($adminData);
                     return response()->json([
                         'status'    => 'success',
                         'message'   => trans('msg.admin.location-status.'.$status),
