@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
+    use Illuminate\Support\Facades\DB;
 
     function validateAdmin($data)
     {
@@ -11,4 +11,19 @@ use Illuminate\Support\Facades\DB;
         }
         
         return $admin;
+    }
+
+    function validateCustomer($customer_id)
+    {
+        return DB::table('users')->where('id', '=', $customer_id)->first();
+    }
+
+    function validateDealer($dealer_id)
+    {
+        return DB::table('dealers')->where('id', '=', $dealer_id)->first();
+    }
+
+    function validateLocation($location_id)
+    {
+        return DB::table('locations')->where('id', '=', $location_id)->first();
     }

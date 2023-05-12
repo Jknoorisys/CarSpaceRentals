@@ -83,6 +83,10 @@ class CarBrandsController extends Controller
         $validator = Validator::make($request->all(), [
             'language' => 'required',
             'name'     => 'required|unique:brands,name',
+            'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
+            'admin_type'  => ['required', 
+                Rule::in(['user', 'dealer'])
+            ],
         ]);
 
         if($validator->fails()){
@@ -95,9 +99,31 @@ class CarBrandsController extends Controller
 
         try {
             $name = $request->name;
+
+            $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
+            if (empty($admin) || $admin->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.admin.invalid-admin'),
+                ],400);
+            }
+
             $brandData = [ 'id' => Str::uuid(), 'name' => $name, 'created_at' => Carbon::now()];
             $brand = DB::table('brands')->insert($brandData);
+
             if ($brand) {
+
+                $adminData = [
+                    'id'        => Str::uuid(),
+                    'user_id'   => $request->admin_id,
+                    'user_type' => $request->admin_type,
+                    'activity'  => 'Car brand named '.$name.' is added by '.ucfirst($request->admin_type).' '.$admin->name,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+
+                DB::table('admin_activities')->insert($adminData);
+
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.add-brand.success'),
@@ -162,6 +188,10 @@ class CarBrandsController extends Controller
             'language' => 'required',
             'brand_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
             'name'     => 'required|unique:brands,name',
+            'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
+            'admin_type'  => ['required', 
+                Rule::in(['user', 'dealer'])
+            ],
         ]);
 
         if($validator->fails()){
@@ -174,8 +204,37 @@ class CarBrandsController extends Controller
 
         try {
             $name = $request->name;
-            $brand = DB::table('brands')->where('id', '=', $request->brand_id)->update(['name' => $name, 'updated_at' => Carbon::now()]);
-            if ($brand) {
+
+            $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
+            if (empty($admin) || $admin->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.admin.invalid-admin'),
+                ],400);
+            }
+
+            $brand = DB::table('brands')->where('id', '=', $request->brand_id)->first();
+            if (empty($brand)) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.admin.edit-brand.invalid'),
+                ],400);
+            }
+
+            $updateBrand = DB::table('brands')->where('id', '=', $request->brand_id)->update(['name' => $name, 'updated_at' => Carbon::now()]);
+            if ($updateBrand) {
+
+                $adminData = [
+                    'id'        => Str::uuid(),
+                    'user_id'   => $request->admin_id,
+                    'user_type' => $request->admin_type,
+                    'activity'  => 'The Car brand name is updated by '.ucfirst($request->admin_type).' '.$admin->name.' from '.$brand->name.' to '.$name,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+
+                DB::table('admin_activities')->insert($adminData);
+
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.edit-brand.success'),

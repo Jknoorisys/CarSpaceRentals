@@ -17,8 +17,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('user_id');
             $table->enum('user_type',['user','dealer','admin']);
-            $table->string('type');
-            $table->string('description');
+            $table->text('activity');
             $table->timestamps();
         });
     }
