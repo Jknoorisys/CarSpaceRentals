@@ -42,7 +42,7 @@ Route::prefix('user')->group( function () {
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group(function () {
 
-    // Route::group(['middleware' => 'jwt.verify'], function () {
+    Route::group(['middleware' => 'jwt.verify'], function () {
 
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
@@ -73,7 +73,7 @@ Route::prefix('admin')->group(function () {
         Route::post('edit-location' , [AdminLocationController::class, 'updateLocation']); 
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
 
-    // });
+    });
 });
 
 // Dealer Panel
