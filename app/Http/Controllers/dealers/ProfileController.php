@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
+
 class ProfileController extends Controller
 {
     public function getProfile(Request $req)
@@ -29,11 +30,9 @@ class ProfileController extends Controller
                 400
             );
         }
-        try 
-        {
-            $d_id = DB::table('dealers')->where('id',$req->dealer_id)->take(1)->first();
-            if(!empty($d_id))
-            {
+        try {
+            $d_id = DB::table('dealers')->where('id', $req->dealer_id)->take(1)->first();
+            if (!empty($d_id)) {
                 return response()->json(
                     [
                         'status'    => 'success',
@@ -42,9 +41,7 @@ class ProfileController extends Controller
                     ],
                     200
                 );
-            }
-            else 
-            {
+            } else {
                 return response()->json(
                     [
                         'status'    => 'failed',
@@ -53,8 +50,6 @@ class ProfileController extends Controller
                     400
                 );
             }
-
-
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
@@ -81,19 +76,16 @@ class ProfileController extends Controller
                 400
             );
         }
-        try 
-        {
-            $dealer = DB::table('dealers')->where('id',$req->dealer_id)->take(1)->first();
+        try {
+            $dealer = DB::table('dealers')->where('id', $req->dealer_id)->take(1)->first();
             // return $req->profile_image;exit;
-            if(!empty($dealer))
-            {
-                
+            if (!empty($dealer)) {
+
                 $profile = optional($req->file('profile_image'))->getClientOriginalName();
                 $file_name = time() . '.' . $profile;
                 $save = $req->file('profile_image')->move('dealer_profile_photo', $file_name);
-                $saveProfile = dealers::where('id',$req->dealer_id)->update(['profile' => ('dealer_profile_photo/'.$file_name)]);
-                if($saveProfile)
-                {
+                $saveProfile = dealers::where('id', $req->dealer_id)->update(['profile' => ('dealer_profile_photo/' . $file_name)]);
+                if ($saveProfile) {
                     return response()->json(
                         [
                             'status'    => 'success',
@@ -101,9 +93,7 @@ class ProfileController extends Controller
                         ],
                         200
                     );
-                }
-                else
-                {
+                } else {
                     return response()->json(
                         [
                             'status'    => 'failed',
@@ -112,9 +102,7 @@ class ProfileController extends Controller
                         400
                     );
                 }
-            }
-            else
-            {
+            } else {
                 return response()->json(
                     [
                         'status'    => 'failed',
@@ -123,7 +111,6 @@ class ProfileController extends Controller
                     400
                 );
             }
-
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
@@ -132,7 +119,6 @@ class ProfileController extends Controller
         }
     }
 
-    
     public function UpdateProfileDetail(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -155,62 +141,63 @@ class ProfileController extends Controller
                 400
             );
         }
-        try 
-        {
-                $dealer_id  = $request->dealer_id;
-                $name      = $request->name;
-                $mobile    = $request->mobile;
-                $email   = $request->email;
-                $company_name   = $request->company_name;
-                // $profile   = $request->profile;
-                 
-                $dealer = DB::table('dealers')->where('id',$dealer_id)->first();
-                
-                    $file = $request->file('profile_image');
-                    if ($file)
-                    {
+        try {
+            $dealer_id  = $request->dealer_id;
+            $name      = $request->name;
+            $mobile    = $request->mobile;
+            $email   = $request->email;
+            $company_name   = $request->company_name;
+            // $profile   = $request->profile;
 
-                        $extension = $file->getClientOriginalName();
-                        $file_path = 'dealer_profile_photo/';
-                        $filename = time().'.'.$extension;
+            $dealer = DB::table('dealers')->where('id', $dealer_id)->first();
+            if (!empty($dealer)) {
+                $file = $request->file('profile_image');
+                if ($file) {
 
-                        $upload = $file->move($file_path, $filename);
-                    }
-                        $update_data = array(
-                        'name'       => (isset($name) && !empty($name)) ? $name : $dealer->name,
-                        'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $dealer->mobile,
-                        'profile'    => (isset($filename) && !empty($filename)) ? ('dealer_profile_photo/'.$filename) : $dealer->profile,
-                        'email'    => (isset($email) && !empty($email)) ? $email : $dealer->email,
-                        'company'    => (isset($company_name) && !empty($company_name)) ? $company_name : $dealer->company,
-                        'updated_at' => date('Y-m-d H:i:s')
-                        );
+                    $extension = $file->getClientOriginalName();
+                    $file_path = 'dealer_profile_photo/';
+                    $filename = time() . '.' . $extension;
 
-                    $updateProfile = Dealers::where('id',$dealer_id)->update($update_data);
+                    $upload = $file->move($file_path, $filename);
+                }
+                $update_data = array(
+                    'name'       => (isset($name) && !empty($name)) ? $name : $dealer->name,
+                    'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $dealer->mobile,
+                    'profile'    => (isset($filename) && !empty($filename)) ? ('dealer_profile_photo/' . $filename) : $dealer->profile,
+                    'email'    => (isset($email) && !empty($email)) ? $email : $dealer->email,
+                    'company'    => (isset($company_name) && !empty($company_name)) ? $company_name : $dealer->company,
+                    'updated_at' => date('Y-m-d H:i:s')
+                );
 
-                    if($updateProfile)
-                    {
-                        $storeInfo = Dealers::where('id',$dealer_id)->where('status','active')->first();
-                        return response()->json([
-                            'status'  =>  'success',
-                            'message' => __('msg.dealer.profile.updated'),
-                            'patient' => $storeInfo,
-                        ],200);
-                    }
-                    else
-                    {
-                        return response()->json([
-                            'status'      => 'failed',
-                            'message'     => __('msg.dealer.profile.notupdated'),
-                        ],400);
-                    }
-                
-        } 
-        catch (\Throwable $e) 
-        {
-             return response()->json([
+                $updateProfile = Dealers::where('id', $dealer_id)->update($update_data);
+
+                if ($updateProfile) {
+                    $storeInfo = DB::table('dealers')->where('id', $dealer_id)->where('status', 'active')->first();
+                    return response()->json([
+                        'status'  =>  'success',
+                        'message' => __('msg.dealer.profile.updated'),
+                        'patient' => $storeInfo,
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status'      => 'failed',
+                        'message'     => __('msg.dealer.profile.notupdated'),
+                    ], 400);
+                }
+            } else {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   =>  __('msg.dealer.profile.dealernotfound'),
+                    ],
+                    400
+                );
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
                 'status'  => 'failed',
-                 'message' =>  __('msg.user.error'),
+                'message' =>  __('msg.user.error'),
             ], 500);
-        }      
+        }
     }
 }
