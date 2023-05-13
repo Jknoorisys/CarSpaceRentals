@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('fuel_type',['diesel','petrol','gas']);
             $table->integer('no_of_seats');
             $table->string('ownership');
-            $table->string('insurance _validity');
+            $table->string('insurance_validity');
             $table->string('engin');
             $table->string('kms_driven');
             $table->string('top_speed');

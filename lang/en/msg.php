@@ -182,20 +182,7 @@ return [
     ],
 
 
-    //Dealer By Aaisha Shaikh
-
-    'dealer' => [
-
-        'profile' => [
-
-            'success' => 'Dealer Profile',
-            'dealernotfound' => 'Dealer not Found!',
-            'image' => 'Profile Updated Successfuly',
-            'notimage' => 'Profile not Updated',
-            'updated' => 'Dealer Profile Updated Successfuly',
-            'notupdated' => 'Unable to update profile'
-        ],
-    ],
+    
 
     // Dealer
     'dealer' => [
@@ -208,6 +195,25 @@ return [
         'get-location-details' => [
             'success' => 'Locations Details Fetched Successfully',
             'failure' => 'Location Not Found',
-        ]
+        ],
+
+        'profile' => [
+
+            'success' => 'Dealer Profile',
+            'dealernotfound' => 'Dealer not Found!',
+            'image' => 'Profile Updated Successfuly',
+            'notimage' => 'Profile not Updated',
+            'updated' => 'Dealer Profile Updated Successfuly',
+            'notupdated' => 'Unable to update profile'
+        ],
+
+        'car' => [
+            
+            'success' => 'Car added successfuly',
+            'fail' => 'Unable to add add',
+            'carnotfound' => 'Car not found',
+            'carupdated' => 'Car Updated Successfuly!',
+            'carnotupdate' => 'Unable to update the car'
+        ],
     ],
 ];

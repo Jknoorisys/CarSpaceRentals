@@ -54,7 +54,7 @@ class AuthController extends Controller
                     'email' => $data['email'], 'mobile' => $data['mobile'], 'email_otp' => $otp, 'created_at' => Carbon::now()
                 ];
                 $saveDealer = DB::table('dealers')->insert($dealer);
-
+                
                 $email = ['to' => $data['email']];
                 $mail_details = [
                     'subject' => 'Testing Application OTP',
@@ -354,11 +354,13 @@ class AuthController extends Controller
 
     public function login(Request $req)
     {
-        $data = $req->only('language', 'email', 'password');
-        $validator = Validator::make($data, [
+       
+        $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email' => 'required',
             'password'   => 'required',
+            'device_id' => 'required',
+            'ip_address' => 'required'
 
         ]);
         if ($validator->fails()) {
@@ -393,17 +395,19 @@ class AuthController extends Controller
                             $dealer->token = $service->getSignedAccessTokenForUser($dealer, $claims);
                             $currentDate = Carbon::now()->format('Y-m-d');
                             $currentTime = Carbon::now()->format('H:i:s');
-                            // return ($currentTime);exit;
+                            // return ($dealer->token);exit;
                             $dealer_id  = DB::table('dealers')->where('email', $email)->where('password', $dealer->password)->take(1)->first();
                             // return $dealer_id;exit;
 
-                            $dealerLog = ['id' => Str::uuid('36'), 'user_id' => $dealer_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'dealer','created_at' => Carbon::noW()];
+                            $dealerLog = ['id' => Str::uuid('36'), 'user_id' => $dealer_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime,
+                             'user_type' => 'dealer','device_id' => $req->device_id,'ip_address' => $req->ip_address,'created_at' => Carbon::now()];
                             $logintime =  DB::table('login_activities')->insert($dealerLog);
-                            $dealer->dealer_login_activity_id = $dealerLog['id'];
+                            $dealer_id->dealer_login_activity_id = $dealerLog['id'];
+                            $dealer_id->JWT_token = $dealer->token;
                             return response()->json(
                                 [
                                     'status'    => 'success',
-                                    'data' => $dealer,
+                                    'data' => $dealer_id,
                                     'message'   =>   __('msg.user.validation.login'),
                                 ],
                                 200
@@ -430,7 +434,7 @@ class AuthController extends Controller
                     return response()->json(
                         [
                             'status'    => 'failed',
-                            'message'   =>  __('msg.user.validation.incmail'),
+                            'message'   => __('msg.user.forgetpass.notreg'),
                         ],
                         400
                     );
