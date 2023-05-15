@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\CarBrandsController;
 use App\Http\Controllers\admin\CustomerController;
+use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\DealerController;
 use App\Http\Controllers\admin\LocationController as AdminLocationController;
 use App\Http\Controllers\dealers\AuthController as DealersAuthController;
@@ -34,16 +35,19 @@ Route::prefix('user')->group( function () {
 
     Route::group(['middleware' => 'jwt.verify'], function () {
     
-    Route::post('/profile',[UserController::class,'profile']);
-    Route::post('/logout',[AuthController::class,'logout']);
-   
-});
+        Route::post('/profile',[UserController::class,'profile']);
+        Route::post('/logout',[AuthController::class,'logout']);
+        
+    });
 });
 
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group(function () {
 
-    // Route::group(['middleware' => 'jwt.verify'], function () {
+    Route::group(['middleware' => 'jwt.verify'], function () {
+
+        // Dashboard
+        Route::post('dashboard' , [DashboardController::class, 'dashboard']);
 
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
@@ -74,7 +78,7 @@ Route::prefix('admin')->group(function () {
         Route::post('edit-location' , [AdminLocationController::class, 'updateLocation']); 
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
 
-    // });
+    });
 });
 
 // Dealer Panel
@@ -97,10 +101,8 @@ Route::prefix('dealer')->group( function () {
     Route::post('getCarbyID',[CarController::class,'getCarbyID']);
     Route::post('editCar',[CarController::class,'editCar']);
 
-
     });
 
-    
     // By Javeriya Kauser
     Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
     Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
