@@ -139,6 +139,41 @@ return [
             'failure'  => 'Unable to Change Location Status',
             'invalid'  => 'Location Not Found',
         ],
+
+        // Manage Admins
+        'get-admins' => [
+            'success' => 'Admins List Fetched Successfully',
+            'failure' => 'No Dealer Found',
+        ],
+
+        'admin-status' => [
+            'active'   => 'Admin Activated Successfully',
+            'inactive' => 'Admin Inactivated Successfully',
+            'failure'  => 'Unable to Change Admin Status',
+            'invalid'  => 'Admin Not Found',
+        ],
+
+        'get-admin-activities' => [
+            'success' => 'Admin Login Activities Fetched Successfully',
+            'failure' => 'No Admin Login Activity Found',
+        ],
+
+        'get-admin-actions-history' => [
+            'success' => 'Admins Action History Fetched Successfully',
+            'failure' => 'No Admin Action History Found',
+        ],
+
+        // Manage Featured Car Price
+        'get-featured-car-price' => [
+            'success' => 'Featured Car Price Fetched Successfully',
+            'failure' => 'Featured Car Price Not Found',
+        ],
+
+        'edit-featured-car-price' => [
+            'success' => 'Featured Car Price Updated Successfully',
+            'failure' => 'Unable to Update Featured Car Price',
+            'invalid' => 'Featured Car Price Not Found',
+        ],
     ],
 
     // User By Aisha Shaikh 
