@@ -53,6 +53,7 @@ class CarBrandsController extends Controller
 
             $brands = $db->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
+                        ->orderBy('name')
                         ->get();
 
             if (!($brands->isEmpty())) {
