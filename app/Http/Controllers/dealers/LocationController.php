@@ -99,6 +99,49 @@ class LocationController extends Controller
 
             if (!empty($locationDetails)) {
                 $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
+                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_number')->get();
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-location-details.success'),
+                    'data'      => $locationDetails
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-location-details.failure'),
+                ],400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getDealerPlots(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')]
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+
+            $location_id = $request->location_id;
+            $locationDetails = DB::table('locations')->where([['id', '=', $location_id],['status', '=', 'active']])->first();
+
+            if (!empty($locationDetails)) {
+                $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
                 $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->get();
                 return response()->json([
                     'status'    => 'success',

@@ -113,5 +113,6 @@ Route::prefix('dealer')->group( function () {
     // By Javeriya Kauser
     Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
     Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
+    Route::post('get-dealer-plots' , [LocationController::class, 'getDealerPlots']); 
 
 });
