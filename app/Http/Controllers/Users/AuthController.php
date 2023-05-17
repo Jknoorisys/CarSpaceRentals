@@ -213,11 +213,13 @@ class AuthController extends Controller
     }
     public function login(Request $req)
     {
-        $data = $req->only('language', 'email', 'password');
-        $validator = Validator::make($data, [
+        
+        $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email' => 'required',
             'password'   => 'required',
+            'device_id' => 'required',
+            'ip_address' => 'required',
 
         ]);
         if ($validator->fails()) {
@@ -256,14 +258,17 @@ class AuthController extends Controller
                             $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
                             // return $user_id->id;exit;
 
-                            $userLog = ['id' => Str::uuid(), 'user_id' => $user_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'user'];
-                            $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime, 'user_type' => 'user','created_at' => Carbon::now()];
+                            
+                            $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 
+                            'device_id' => $req->device_id,'ip_address' => $req->ip_address,'login_time' => $currentTime, 
+                            'user_type' => 'user','device_id' => $req->device_id,'ip_address' => $req->ip_address,'created_at' => Carbon::now()];
                             $logintime =  DB::table('login_activities')->insert($userLog);
-                            $user->user_login_activity_id=$userLog['id'];
+                            $user_id->user_login_activity_id=$userLog['id'];
+                            $user_id->JWT_token = $user->token;
                             return response()->json(
                                 [
                                     'status'    => 'success',
-                                    'data' => $user,
+                                    'data' => $user_id,
                                     'message'   =>   __('msg.user.validation.login'),
                                 ],
                                 200
@@ -456,9 +461,16 @@ class AuthController extends Controller
             );
         }
         try {
-
+            $login_time = DB::table('login_activities')->where('id',$req->login_activity_id)->first();
+            $currentloginTime = $login_time->login_time;
             $currentlogoutTime = Carbon::now()->format('H:i:s');
-            $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime]);
+            $loginTime = Carbon::parse($currentlogoutTime);
+            $logoutTime = Carbon::parse($currentloginTime);
+
+            // Calculate the duration
+            $duration = $logoutTime->diffInMinutes($loginTime);
+            // return $duration;exit;
+            $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime, 'duration' => $duration.' Minutes','updated_at' => Carbon::now()]);
             if ($logoutime) {
                 JWTAuth::parseToken()->invalidate();
 

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\dealers\ProfileController;
+use App\Http\Controllers\dealers\CarController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -107,6 +108,9 @@ Route::prefix('dealer')->group( function () {
     Route::post('getProfile',[ProfileController::class,'getProfile']);
     Route::post('UpdateProfile',[ProfileController::class,'UpdateProfile']);
     Route::post('UpdateProfileDetail',[ProfileController::class,'UpdateProfileDetail']);
+    Route::post('addCar',[CarController::class,'addCar']);
+    Route::post('getCarbyID',[CarController::class,'getCarbyID']);
+    Route::post('editCar',[CarController::class,'editCar']);
 
     });
 
