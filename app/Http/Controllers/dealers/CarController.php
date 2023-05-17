@@ -26,7 +26,7 @@ class CarController extends Controller
                 Rule::in(['Old','New']),
             ],
             'car_name' => 'required||regex:/^[\pL\s]+$/u|min:3',
-            'car_brand' => 'required||regex:/^[\pL\s]+$/u|min:3',
+            'car_brand' => 'required',
             'year_register' => 'required',
             'milage' => 'required',
             'car_type' => [
@@ -123,7 +123,7 @@ class CarController extends Controller
 
                 $saveCarimage = DB::table('car_photos')->where('car_id',$car['id'])->insert($carImage);
                 $saveCar = DB::table('cars')->insert($car);
-                $SavedCar = DB::table('cars')->where('id',$car['id'])->first();
+                $SavedCar = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$car['id'])->select('cars.*','brands.name as brand_name')->first();
                 $SavedCar->Images = DB::table('car_photos')->where('id',$carImage['id'])->first();
 
                 if($saveCar && $saveCarimage)
@@ -131,8 +131,8 @@ class CarController extends Controller
                     return response()->json(
                         [
                             'status'    => 'success',
-                            'data' => $SavedCar,
                             'message'   => __('msg.dealer.car.success'),
+                            'data' => $SavedCar,
                         ],
                         200
                     );
@@ -169,7 +169,8 @@ class CarController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language'  => 'required',
-            'car_id' => 'required'
+            'car_id' => 'required',
+            'dealer_id' => 'required'
         ]);
 
         if($validator->fails()){
@@ -182,14 +183,26 @@ class CarController extends Controller
 
         try 
         {
-            $car = DB::table('cars')->find($req->car_id);
-            return $car;exit;
-            // $car = DB::table('cars')->leftJoin('dealers','dealers.id','=','cars.dealer_id')->leftJoin('dealer_plots','')->where('id','=',$req->car_id)
-            // ->select('cars.*','dealers.name as dealer_name')->first();
-            $carDetails = DB::table('dealer_plots')->leftJoin('location','location.id','=','dealer_plots.location_id')
-            ->leftJoin('plot','plot.id','=','dealer_plots.plot_id')->leftJoin('dealers','dealers.id','=','dealer_plots.dealer_id')
-            ->where('car_id',$req->car_id)->select('dealer_plots.*','location.name as location_name','plot.name as plot_name','dealer.name as daeler_name')
+            $car = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
+            ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
+            ->select('cars.*','brands.name as brand_name')
             ->first();
+            $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
+            ->where('car_photos.id',$req->car_id)->get(); 
+            $carDetails = DB::table('dealer_plots')
+            ->leftJoin('locations','locations.id','=','dealer_plots.location_id')
+            ->leftJoin('plots','plots.id','=','dealer_plots.plot_id')
+            ->leftJoin('dealers','dealers.id','=','dealer_plots.dealer_id')
+            ->leftJoin('cars','cars.id','=','dealer_plots.car_id')
+            ->where('dealer_plots.car_id',$req->car_id)
+            ->where('dealer_plots.dealer_id',$req->dealer_id)
+            ->select('dealer_plots.*','locations.name as location_name','plots.plot_number as plot_number','dealers.name as dealer_name','cars.name as car_name')
+            ->first();
+            $car_detail = $carDetails;
+            $car_images = $carImages;
+            $car->Details = $car_detail;
+            $car->Images = $car_images;
+            return $car;exit;
         } catch (\Throwable $e) {
             return response()->json([
                 'status'    => 'failed',
@@ -293,7 +306,7 @@ class CarController extends Controller
                 // return $updateImage;exit;
                 if($update && $updateImage)
                 {
-                    $carDetail = DB::table('cars')->where('id',$req->car_id)->first();
+                    $carDetail = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$req->car_id)->select('cars.*','brands.name as brand_name')->first();
                     $carUpdatedImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
                     $carDetail->Images = $carUpdatedImage;
                     return response()->json(

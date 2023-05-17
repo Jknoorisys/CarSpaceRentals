@@ -134,6 +134,7 @@ return [
         ],
     ],
 
+
     // User By Aisha Shaikh 
     'user' => [
 
@@ -178,11 +179,23 @@ return [
             'success' => 'Logout Successful',
         ],
 
+        'profile' => [
+            'success' => 'User Profile details',
+            'usernotfound' => 'User Not Found',
+            'image' => 'Profile Photo Updated Successfully',
+            'notimage' => 'Unable to update the profile',
+            'updated' => 'User Details Updated Successfully',
+            'notupdated' => 'Unable to update the details',
+            
+        ],
+
+        'get-car' => [
+            'success' => 'Car List',
+            'failure' => 'Car Not Found'
+        ],
       
     ],
 
-
-    
 
     // Dealer
     'dealer' => [
