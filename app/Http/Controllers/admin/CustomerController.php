@@ -41,7 +41,7 @@ class CustomerController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('users');
+            $db = DB::table('users')->where('is_admin', '=', 'no');
 
             $search = $request->search ? $request->search : '';
             if (!empty($search)) {
@@ -52,6 +52,7 @@ class CustomerController extends Controller
             $total = $db->count();
             $customers = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
+                                    ->orderBy('name')
                                     ->get();
 
             if (!($customers->isEmpty())) {
@@ -116,17 +117,18 @@ class CustomerController extends Controller
                 $statusChange = DB::table('users')->where('id', '=', $user_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
                 if ($statusChange) {
 
-                    $status == 'active' ? $msg = trans('msg.admin.Activated') : $msg = trans('msg.admin.Inactivated');
+                    $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';
                     $adminData = [
                         'id'        => Str::uuid(),
                         'user_id'   => $request->admin_id,
                         'user_type' => $request->admin_type,
-                        'type'      => trans('msg.admin.Customer').' '.$msg,
-                        'description' => $user->name.' '.$msg,
-                        'created_at'  => Carbon::now()
+                        'activity'  => 'Customer '.$user->name.' is '.$msg.' by '.ucfirst($request->admin_type).' '.$admin->name,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
                     ];
-
+    
                     DB::table('admin_activities')->insert($adminData);
+                    
                     return response()->json([
                         'status'    => 'success',
                         'message'   => trans('msg.admin.customer-status.'.$status),
@@ -159,10 +161,6 @@ class CustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'language'     => 'required',
             'customer_id'  => ['required','alpha_dash', Rule::notIn('undefined')],
-            // 'admin_id' => ['required','alpha_dash', Rule::notIn('undefined')],
-            // 'admin_type'   => ['required', 
-            //     Rule::in(['user', 'dealer'])
-            // ],
         ]);
 
         if($validator->fails()){
@@ -176,14 +174,6 @@ class CustomerController extends Controller
         try {
             $user_id = $request->customer_id;
             $status = 'admin';
-
-            // $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
-            // if (empty($admin) || $admin->is_admin != 'super_admin' || $admin->status != 'active') {
-            //     return response()->json([
-            //         'status'    => 'failed',
-            //         'message'   => trans('msg.admin.invalid-admin'),
-            //     ],400);
-            // }
 
             $user = DB::table('users')->where('id', '=', $user_id)->first();
             if (!empty($user)) {
@@ -235,6 +225,14 @@ class CustomerController extends Controller
         try {
             $customer_id = $request->customer_id;
 
+            $customer = validateCustomer($customer_id);
+            if (empty($customer)) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-customer'),
+                ],400);
+            }
+
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
@@ -247,6 +245,7 @@ class CustomerController extends Controller
             $total = $db->count();
             $activities = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
+                                    ->orderBy('login_date')
                                     ->get(['login_activities.*', 'users.name as user_name']);
 
             if (!($activities->isEmpty())) {

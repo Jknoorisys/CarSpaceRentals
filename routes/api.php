@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CarBrandsController;
 use App\Http\Controllers\admin\CustomerController;
+use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\DealerController;
+use App\Http\Controllers\admin\FeaturedcarPriceController;
 use App\Http\Controllers\admin\LocationController as AdminLocationController;
 use App\Http\Controllers\dealers\AuthController as DealersAuthController;
 use App\Http\Controllers\dealers\LocationController;
@@ -50,7 +53,10 @@ Route::prefix('user')->group( function () {
 // Admin Panel By Javeriya Kauser
 Route::prefix('admin')->group(function () {
 
-    // Route::group(['middleware' => 'jwt.verify'], function () {
+    Route::group(['middleware' => 'jwt.verify'], function () {
+
+        // Dashboard
+        Route::post('dashboard' , [DashboardController::class, 'dashboard']);
 
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
@@ -78,9 +84,19 @@ Route::prefix('admin')->group(function () {
         Route::post('get-all-locations' , [AdminLocationController::class, 'getLocations']); 
         Route::post('get-location-details' , [AdminLocationController::class, 'getLocationDetails']); 
         Route::post('get-location' , [AdminLocationController::class, 'getLocation']); 
+        Route::post('edit-location' , [AdminLocationController::class, 'updateLocation']); 
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
 
-    // });
+        // Manage Admins
+        Route::post('get-all-admins' , [AdminController::class, 'getAllAdmins']);
+        Route::post('change-admin-status' , [AdminController::class, 'changeAdminStatus']);
+        Route::post('admin-login-activity' , [AdminController::class, 'getAdminLoginActivity']);
+        Route::post('get-admin-action-history' , [AdminController::class, 'getAdminActionHistory']);
+
+        // Manage Featured Car Price
+        Route::post('get-featured-car-price' , [FeaturedcarPriceController::class, 'getFeaturedcarPrice']);
+        Route::post('edit-featured-car-price' , [FeaturedcarPriceController::class, 'editFeaturedcarPrice']);
+    });
 });
 
 // Dealer Panel
@@ -103,10 +119,9 @@ Route::prefix('dealer')->group( function () {
     Route::post('getCarbyID',[CarController::class,'getCarbyID']);
     Route::post('editCar',[CarController::class,'editCar']);
 
-
     });
 
-    
+
     // By Javeriya Kauser
     Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
     Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
