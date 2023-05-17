@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\dealers\ProfileController;
+use App\Http\Controllers\Users\ProfileController as UserProfileController;
 use App\Http\Controllers\dealers\CarController;
+use App\Http\Controllers\users\CarController as UserCarController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -34,13 +36,18 @@ Route::prefix('user')->group( function () {
     Route::post('/forgetpassword',[AuthController::class,'forgetpassword']);
     Route::post('/forgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
     Route::post('/login',[AuthController::class,'login']);
+    Route::post('getCarListByname',[UserCarController::class,'getCarListByname']);
+    Route::post('CarList',[UserCarController::class,'CarList']);
+    Route::post('carFilter',[UserCarController::class,'carFilter']);
 
     Route::group(['middleware' => 'jwt.verify'], function () {
     
-        Route::post('/profile',[UserController::class,'profile']);
-        Route::post('/logout',[AuthController::class,'logout']);
-        
-    });
+    Route::post('getProfile',[UserProfileController::class,'getProfile']);
+    Route::post('UpdateProfile',[UserProfileController::class,'UpdateProfile']);
+    Route::post('UpdateProfileDetail',[UserProfileController::class,'UpdateProfileDetail']);
+    Route::post('/logout',[AuthController::class,'logout']);
+   
+});
 });
 
 // Admin Panel By Javeriya Kauser
@@ -113,6 +120,7 @@ Route::prefix('dealer')->group( function () {
     Route::post('editCar',[CarController::class,'editCar']);
 
     });
+
 
     // By Javeriya Kauser
     Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
