@@ -234,6 +234,72 @@ class CarController extends Controller
                 'message' =>  __('msg.user.error'),
             ], 500);
         }
+    }  
+
+    public function featuredCarList(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'language' => 'required',
+            'page_number'   => 'required||numeric',
+            
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try 
+        {
+            $per_page = 4;
+            $page_number = $req->input(key:'page_number', default:1);
+            // $db = DB::table('featured_cars')->join('cars','cars.id','=','featured_cars.car_id')
+            //             // ->join('dealers','dealers.id','=','featured_cars.dealer_id')
+            //             ->join('dealers','dealers.id','=','dealer_plots.dealer_id')
+            //             ->join('locations','locations.id','=','dealer_plots.location_id')
+            //             ->select('featured_cars.*','cars.name as car_name','cars.condition as car_condition',
+            //             'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type','locations.name as location_name',
+            //             'cars.fuel_type as car_fuel_type','cars.price as car_price')
+            //             ->get();
+            $db = DB::table('cars')->leftjoin('dealers','dealers.id','=','cars.dealer_id')
+                        ->leftjoin('dealer_plots','dealer_plots.car_id','=','cars.id')
+                        ->leftjoin('locations','locations.id','=','dealer_plots.location_id')
+                        ->leftjoin('brands','brands.id','=','cars.brand')
+                        ->where('cars.is_featured','=','yes')
+                        ->select('cars.*','locations.name as location_name','brands.name as brand_name');
+                        
+            
+            $total = $db->count();
+
+            $featured = $db->offset(($page_number - 1) * $per_page)
+                        ->limit($per_page)
+                        ->get();
+                // return $brands;
+            if (!($featured->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.user.get-car.featured'),
+                    'total'     => $total,
+                    'data'      => $featured
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.user.get-car.notfeature'),
+                    'data'      => [],
+                ],200);
+            }
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+            ], 500);
+        }
     }
 
 }

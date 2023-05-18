@@ -233,7 +233,9 @@ return [
 
         'get-car' => [
             'success' => 'Car List',
-            'failure' => 'Car Not Found'
+            'failure' => 'Car Not Found',
+            'featured' => 'Featured Car List',
+            'notfeature' => 'No Featured Car List'
         ],
       
     ],
@@ -268,7 +270,8 @@ return [
             'fail' => 'Unable to add add',
             'carnotfound' => 'Car not found',
             'carupdated' => 'Car Updated Successfuly!',
-            'carnotupdate' => 'Unable to update the car'
+            'carnotupdate' => 'Unable to update the car',
+            'cardetail' => 'Car Details'
         ],
     ],
 
