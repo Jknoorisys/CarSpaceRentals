@@ -183,26 +183,79 @@ class CarController extends Controller
 
         try 
         {
-            $car = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
-            ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
-            ->select('cars.*','brands.name as brand_name')
-            ->first();
-            $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
-            ->where('car_photos.id',$req->car_id)->get(); 
-            $carDetails = DB::table('dealer_plots')
-            ->leftJoin('locations','locations.id','=','dealer_plots.location_id')
-            ->leftJoin('plots','plots.id','=','dealer_plots.plot_id')
-            ->leftJoin('dealers','dealers.id','=','dealer_plots.dealer_id')
-            ->leftJoin('cars','cars.id','=','dealer_plots.car_id')
-            ->where('dealer_plots.car_id',$req->car_id)
-            ->where('dealer_plots.dealer_id',$req->dealer_id)
-            ->select('dealer_plots.*','locations.name as location_name','plots.plot_number as plot_number','dealers.name as dealer_name','cars.name as car_name')
-            ->first();
-            $car_detail = $carDetails;
-            $car_images = $carImages;
-            $car->Details = $car_detail;
-            $car->Images = $car_images;
-            return $car;exit;
+            $dealer = DB::table('dealers')->where('id',$req->dealer_id)->first();
+            if(!empty($dealer))
+            {
+                $dealer_car = DB::table('cars')->where('id',$req->car_id)->first();
+                if(!empty($dealer_car))
+                {
+                    $car = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
+                    ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
+                    ->select('cars.*','brands.name as brand_name')
+                    ->first();
+                    $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
+                    ->where('car_photos.id',$req->car_id)->get(); 
+                    $carDetails = DB::table('dealer_plots')
+                    ->leftJoin('locations','locations.id','=','dealer_plots.location_id')
+                    ->leftJoin('plots','plots.id','=','dealer_plots.plot_id')
+                    ->leftJoin('dealers','dealers.id','=','dealer_plots.dealer_id')
+                    ->leftJoin('cars','cars.id','=','dealer_plots.car_id')
+                    ->where('dealer_plots.car_id',$req->car_id)
+                    ->where('dealer_plots.dealer_id',$req->dealer_id)
+                    ->select('dealer_plots.*','locations.name as location_name','plots.plot_number as plot_number','cars.name as car_name',
+                    'dealers.name as dealer_name','dealers.email as dealer_email',
+                    'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
+                    ->get();
+                    $car_detail = $carDetails;
+                    $car_images = $carImages;
+                    $car->Details = $car_detail;
+                    $car->Images = $car_images;
+                    if(!empty($car))
+                    {
+                        return response()->json(
+                            [
+                                'status'    => 'success',
+                                'message'   => __('msg.dealer.car.cardetail'),
+                                'data' => $car,
+                            ],
+                            200
+                        );
+                    }
+                    else
+                    {
+                        return response()->json(
+                            [
+                                'status'    => 'failed',
+                                'message'   => __('msg.dealer.car.fail'),
+                                'data' => $car,
+                            ],
+                            200
+                        );
+                    }
+                }
+                else
+                {
+                    return response()->json(
+                        [
+                            'status'    => 'failed',
+                            'message'   =>  __('msg.dealer.car.carnotfound'),
+                        ],
+                        400
+                    );
+                }
+                
+            }
+            else
+            {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   =>  __('msg.dealer.profile.dealernotfound'),
+                    ],
+                    400
+                );
+            }
+            
         } catch (\Throwable $e) {
             return response()->json([
                 'status'    => 'failed',
@@ -348,4 +401,6 @@ class CarController extends Controller
             ],500);
         }
     }
+    
+    
 }
