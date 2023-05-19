@@ -124,7 +124,212 @@ class LocationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language'  => 'required',
-            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')]
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'page_number' => 'required|numeric'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+
+            $per_page = 10;
+            $page_number = $request->input(key:'page_number', default:1);
+
+            $search = $request->search ? $request->search : '';
+            $status = $request->status ? $request->status : '';
+
+            $dealer_id = $request->dealer_id;
+            $dealer = validateDealer($dealer_id);
+            if (empty($dealer) || $dealer->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-dealer'),
+                ],400);
+            }
+
+            $db = DB::table('dealer_plots as sc')
+                        ->where('sc.dealer_id', '=', $dealer_id)
+                        ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
+                        ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
+                        ->leftJoin('cars', 'cars.id', '=', 'sc.car_id');
+
+            if (!empty($search)) {
+                $db->where('cars.name', 'LIKE', "%$search%");
+                $db->orWhere('locations.name', 'LIKE', "%$search%");
+            }
+
+            if (!empty($status)) {
+                $db->where('sc.status', '=', $status);
+            }
+
+            $total = $db->count();
+            $plots = $db->orderBy('park_in_date')
+                        ->offset(($page_number - 1) * $per_page)
+                        ->limit($per_page)
+                        ->get(['locations.name as location_name', 'plots.plot_number as plot_number', 'cars.name as car_name', 'sc.*']);
+
+            if (!($plots->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-plots.success'),
+                    'total'     => $total,
+                    'data'      => $plots
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-plots.failure'),
+                    'data'      => []
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getDealerCars(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'page_number' => 'required|numeric'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+            $dealer_id = $request->dealer_id;
+
+            $dealer = validateDealer($dealer_id);
+            if (empty($dealer)) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-dealer'),
+                ],400);
+            }
+
+            $per_page = 10;
+            $page_number = $request->input(key:'page_number', default:1);
+
+            $db = DB::table('cars')->where('dealer_id', '=', $dealer_id);
+
+            $search = $request->search ? $request->search : '';
+            if (!empty($search)) {
+                $db->where('name', 'LIKE', "%$search%");
+            }
+
+            $total = $db->count();
+            $cars = $db->offset(($page_number - 1) * $per_page)
+                                    ->limit($per_page)
+                                    ->orderBy('name')
+                                    ->get();
+
+            if (!($cars->isEmpty())) {
+
+                foreach ($cars as $car) {
+                    $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
+                }
+
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-cars.success'),
+                    'total'     => $total,
+                    'data'      => $cars
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-cars.failure'),
+                    'data'      => [],
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getDealerLocations(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+
+            $dealer_id = $request->dealer_id;
+            $dealer = validateDealer($dealer_id);
+            if (empty($dealer) || $dealer->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-dealer'),
+                ],400);
+            }
+
+            $locations = DB::table('dealer_plots as sc')
+                        ->where('sc.dealer_id', '=', $dealer_id)
+                        ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
+                        ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
+                        ->leftJoin('cars', 'cars.id', '=', 'sc.car_id')
+                        ->distinct()
+                        ->orderBy('park_in_date')
+                        ->get(['locations.*']);
+
+            if (!($locations->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-locations.success'),
+                    'data'      => $locations
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-locations.failure'),
+                    'data'      => []
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getPlotsBasedOnLocation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'location_id' => ['required','alpha_dash', Rule::notIn('undefined')],
         ]);
 
         if($validator->fails()){
@@ -138,21 +343,94 @@ class LocationController extends Controller
         try {
 
             $location_id = $request->location_id;
-            $locationDetails = DB::table('locations')->where([['id', '=', $location_id],['status', '=', 'active']])->first();
+            $location = validateLocation($location_id);
+            if (empty($location) || $location->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-location'),
+                ],400);
+            }
 
-            if (!empty($locationDetails)) {
-                $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
-                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->get();
+            $plots = DB::table('plots as sc')
+                        ->where('sc.location_id', '=', $location_id)
+                        ->orderBy('sc.plot_number')
+                        ->get();
+
+            if (!($plots->isEmpty())) {
                 return response()->json([
                     'status'    => 'success',
-                    'message'   => trans('msg.dealer.get-location-details.success'),
-                    'data'      => $locationDetails
+                    'message'   => trans('msg.dealer.get-dealer-plots.success'),
+                    'data'      => $plots
                 ],200);
             } else {
                 return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-plots.failure'),
+                    'data'      => []
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getDealerAllPlotsList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'page_number' => 'required|numeric'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+
+            $per_page = 10;
+            $page_number = $request->input(key:'page_number', default:1);
+
+            $dealer_id = $request->dealer_id;
+            $dealer = validateDealer($dealer_id);
+            if (empty($dealer) || $dealer->status != 'active') {
+                return response()->json([
                     'status'    => 'failed',
-                    'message'   => trans('msg.dealer.get-location-details.failure'),
+                    'message'   => trans('msg.helper.invalid-dealer'),
                 ],400);
+            }
+
+            $db = DB::table('dealer_plots as sc')
+                        ->where('sc.dealer_id', '=', $dealer_id)
+                        ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id');
+
+            $total = $db->count();
+            $plots = $db->orderBy('park_in_date')
+                        ->offset(($page_number - 1) * $per_page)
+                        ->limit($per_page)
+                        ->get(['plots.*']);
+
+            if (!($plots->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-plots.success'),
+                    'total'     => $total,
+                    'data'      => $plots
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-plots.failure'),
+                    'data'      => []
+                ],200);
             }
         } catch (\Throwable $e) {
             return response()->json([

@@ -239,8 +239,24 @@ return [
             'failure' => 'Location Not Found',
         ],
 
-        'profile' => [
+        // Dealer Car Module By Javeriya
+        'get-dealer-cars' => [
+            'success' => 'Dealer Car List Fetched Successfully',
+            'failure' => 'No Car Found',
+        ],
 
+        'get-dealer-plots' => [
+            'success' => 'Dealer Plots List Fetched Successfully',
+            'failure' => 'No Plot Found',
+        ],
+
+        'get-dealer-locations' => [
+            'success' => 'Dealer Locations List Fetched Successfully',
+            'failure' => 'No Location Found',
+        ],
+
+        // Dealer Auth and Profile Module By Aaisha Shaikh
+        'profile' => [
             'success' => 'Dealer Profile',
             'dealernotfound' => 'Dealer not Found!',
             'image' => 'Profile Updated Successfuly',
@@ -250,19 +266,19 @@ return [
         ],
 
         'car' => [
-            
             'success' => 'Car added successfuly',
             'fail' => 'Unable to add add',
             'carnotfound' => 'Car not found',
             'carupdated' => 'Car Updated Successfuly!',
             'carnotupdate' => 'Unable to update the car'
         ],
+
     ],
 
     // Helpers
     'helper' => [
         'invalid-customer' => 'Customer Not Found',
         'invalid-dealer'   => 'Dealer Not Found',
-        'invalid-location' => 'Dealer Not Found',
+        'invalid-location' => 'Location Not Found',
     ],
 ];

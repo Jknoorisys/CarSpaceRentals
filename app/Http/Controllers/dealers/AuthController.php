@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -30,7 +31,7 @@ class AuthController extends Controller
             'language'          =>   'required',
             'name'   => 'required|regex:/^[\pL\s]+$/u|min:3',
             'password'   => 'required|max:20||min:8',
-            'email' => 'required|unique:dealers',
+            'email' => 'required|unique:dealers|email',
             'mobile' => 'required|numeric',
         ]);
 
@@ -102,7 +103,7 @@ class AuthController extends Controller
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email_otp'   => 'required',
-            'id' => 'required||string'
+            'id' => ['required','alpha_dash', Rule::notIn('undefined')]
 
         ]);
         if ($validator->fails()) {
@@ -152,10 +153,9 @@ class AuthController extends Controller
 
         $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'email'   => 'required',
-
-
+            'email'   => 'required|email',
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -169,10 +169,10 @@ class AuthController extends Controller
         try {
             $email = $req->email;
             $dealer = Dealers::where('email', $email)->take(1)->first();
-            // return $provider;exit;
+
             if (!empty($dealer)) {
+
                 if ($dealer->is_verified == 'no') {
-                    // echo 'Hiiiii';exit();
                     $email_otp = rand(1000, 9999);
                     $resend =  Dealers::where('email', '=', $email)->update(['email_otp' => $email_otp, 'is_verified' => 'yes', 'updated_at' => date('Y-m-d H:i:s')]);
                     if ($resend == true) {
@@ -219,7 +219,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'email'   => 'required',
+            'email'   => 'required|email',
 
         ]);
         if ($validator->fails()) {
@@ -357,7 +357,7 @@ class AuthController extends Controller
        
         $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'password'   => 'required',
             'device_id' => 'required',
             'ip_address' => 'required'

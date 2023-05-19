@@ -22,8 +22,8 @@ return new class extends Migration
             $table->year('year_of_registration');
             $table->string('milage');
             $table->year('year_of_manufacturing');
-            $table->enum('type',['manual','automatic']);
-            $table->enum('fuel_type',['diesel','petrol','gas']);
+            $table->enum('type',['Manual','Automatic']);
+            $table->enum('fuel_type',['Diesel','Petrol','Gas'])->default('Petrol');
             $table->integer('no_of_seats');
             $table->string('ownership');
             $table->string('insurance_validity');
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('top_speed');
             $table->string('color');
             $table->string('price');
-            $table->string('description');
+            $table->text('description');
             $table->enum('is_featured',['no','yes'])->default('no');
             $table->enum('is_assgined',['no','yes'])->default('no');
             $table->enum('status',['active','inactive'])->default('active');
