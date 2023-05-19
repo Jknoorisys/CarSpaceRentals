@@ -31,8 +31,8 @@ class AuthController extends Controller
             'language'          =>   'required',
             'name'   => 'required|regex:/^[\pL\s]+$/u|min:3',
             'password'   => 'required|max:20||min:8',
-            'email' => 'required|unique:dealers|email',
-            'mobile' => 'required|numeric',
+            'email' => 'required|unique:dealers',
+            'mobile' => 'required|numeric|unique:dealers',
         ]);
 
         if ($validator->fails()) {

@@ -155,14 +155,14 @@ class CarController extends Controller
 
                 if($saveCar && $saveCarimage)
                 {
-                    $SavedCar = DB::table('cars')->where('id',$car['id'])->first();
+                    $SavedCar = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$car['id'])->select('cars.*','brands.name as brand_name')->first();
                     $SavedCar->Images = DB::table('car_photos')->where('id',$carImage['id'])->first();
 
                     return response()->json(
                         [
                             'status'    => 'success',
-                            'data' => $SavedCar,
                             'message'   => __('msg.dealer.car.success'),
+                            'data' => $SavedCar,
                         ],
                         200
                     );
@@ -199,7 +199,8 @@ class CarController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language'  => 'required',
-            'car_id' => 'required'
+            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
         if($validator->fails()){
@@ -212,14 +213,79 @@ class CarController extends Controller
 
         try 
         {
-            $car = DB::table('cars')->find($req->car_id);
-            return $car;exit;
-            // $car = DB::table('cars')->leftJoin('dealers','dealers.id','=','cars.dealer_id')->leftJoin('dealer_plots','')->where('id','=',$req->car_id)
-            // ->select('cars.*','dealers.name as dealer_name')->first();
-            $carDetails = DB::table('dealer_plots')->leftJoin('location','location.id','=','dealer_plots.location_id')
-            ->leftJoin('plot','plot.id','=','dealer_plots.plot_id')->leftJoin('dealers','dealers.id','=','dealer_plots.dealer_id')
-            ->where('car_id',$req->car_id)->select('dealer_plots.*','location.name as location_name','plot.name as plot_name','dealer.name as daeler_name')
-            ->first();
+            $dealer = DB::table('dealers')->where('id',$req->dealer_id)->first();
+            if(!empty($dealer))
+            {
+                $dealer_car = DB::table('cars')->where('id',$req->car_id)->first();
+                if(!empty($dealer_car))
+                {
+                    $car = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
+                    ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
+                    ->select('cars.*','brands.name as brand_name')
+                    ->first();
+                    $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
+                    ->where('car_photos.id',$req->car_id)->get(); 
+                    $carDetails = DB::table('dealer_plots')
+                    ->leftJoin('locations','locations.id','=','dealer_plots.location_id')
+                    ->leftJoin('plots','plots.id','=','dealer_plots.plot_id')
+                    ->leftJoin('dealers','dealers.id','=','dealer_plots.dealer_id')
+                    ->leftJoin('cars','cars.id','=','dealer_plots.car_id')
+                    ->where('dealer_plots.car_id',$req->car_id)
+                    ->where('dealer_plots.dealer_id',$req->dealer_id)
+                    ->select('dealer_plots.*','locations.name as location_name','plots.plot_number as plot_number','cars.name as car_name',
+                    'dealers.name as dealer_name','dealers.email as dealer_email',
+                    'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
+                    ->get();
+                    $car_detail = $carDetails;
+                    $car_images = $carImages;
+                    $car->Details = $car_detail;
+                    $car->Images = $car_images;
+                    if(!empty($car))
+                    {
+                        return response()->json(
+                            [
+                                'status'    => 'success',
+                                'message'   => __('msg.dealer.car.cardetail'),
+                                'data' => $car,
+                            ],
+                            200
+                        );
+                    }
+                    else
+                    {
+                        return response()->json(
+                            [
+                                'status'    => 'failed',
+                                'message'   => __('msg.dealer.car.fail'),
+                                'data' => $car,
+                            ],
+                            200
+                        );
+                    }
+                }
+                else
+                {
+                    return response()->json(
+                        [
+                            'status'    => 'failed',
+                            'message'   =>  __('msg.dealer.car.carnotfound'),
+                        ],
+                        400
+                    );
+                }
+                
+            }
+            else
+            {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   =>  __('msg.dealer.profile.dealernotfound'),
+                    ],
+                    400
+                );
+            }
+            
         } catch (\Throwable $e) {
             return response()->json([
                 'status'    => 'failed',
@@ -231,12 +297,10 @@ class CarController extends Controller
 
     public function editCar(Request $req)
     {
-        $param = $req->only('language','car_id','car_codition','car_name','car_brand','year_register','milage','car_type','fuel_type',
-        'no_seats','year_manufacture','ownership','insurance_validity','engin','kms_driven','price','description','color','top_speed',
-        'image1','image2','image3','image4','image5');
-        $validator = Validator::make($param, [
+        
+        $validator = Validator::make($req->all(), [
             'language'  => 'required',
-            'car_id' => 'required'
+            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
         if($validator->fails()){
@@ -250,9 +314,8 @@ class CarController extends Controller
         try 
         {
             $car = DB::table('cars')->find($req->car_id);
-            // return $car->condition;exit;
             $carImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
-            // return $carImage;exit;
+
             if(!empty($car))
             {
                 $dealer_id = $req->dealer_id;
@@ -309,7 +372,7 @@ class CarController extends Controller
                     'top_speed' => isset($top_speed) ? $top_speed : $car->top_speed,
                     'updated_at' => Carbon::now()
                 ];
-                // return $req->car_id;exit;
+               
                 $update = Cars::where('id',$req->car_id)->update($data);
                 $images = [
                     'photo1' => isset($req->image1) ? ('dealer_car_photos/'.$image1name) : $carImage->photo1,
@@ -320,10 +383,9 @@ class CarController extends Controller
                     'updated_at' => Carbon::now()
                 ];
                 $updateImage = CarPhotos::where('car_id',$req->car_id)->update($images);
-                // return $updateImage;exit;
                 if($update && $updateImage)
                 {
-                    $carDetail = DB::table('cars')->where('id',$req->car_id)->first();
+                    $carDetail = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$req->car_id)->select('cars.*','brands.name as brand_name')->first();
                     $carUpdatedImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
                     $carDetail->Images = $carUpdatedImage;
                     return response()->json(
@@ -365,4 +427,6 @@ class CarController extends Controller
             ],500);
         }
     }
+    
+    
 }
