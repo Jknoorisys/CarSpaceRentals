@@ -204,7 +204,7 @@ class CarController extends Controller
                     ->where('dealer_plots.dealer_id',$req->dealer_id)
                     ->select('dealer_plots.*','locations.name as location_name','plots.plot_number as plot_number','cars.name as car_name',
                     'dealers.name as dealer_name','dealers.email as dealer_email',
-                    'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
+                    'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')->orderBy('id','asc')
                     ->get();
                     $car_detail = $carDetails;
                     $car_images = $carImages;
