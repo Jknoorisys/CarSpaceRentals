@@ -17,11 +17,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('plot_number');
             $table->string('location_id');
-            // $table->string('dealer_id');
-            // $table->string('car_id');
-            // $table->string('park_in_date');
-            // $table->string('park_out_date');
-            $table->enum('status',['available','booked'])->default('available');
+            $table->string('line_id');
+            $table->enum('position',['left','right'])->default('left');
+            $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
         });
     }
