@@ -25,8 +25,8 @@ class CarController extends Controller
                 'required' ,
                 Rule::in(['Old','New']),
             ],
-            'car_name' => 'required||regex:/^[\pL\s]+$/u|min:3',
-            'car_brand' => 'required',
+            'car_name' => 'required',
+            'car_brand' => ['required','alpha_dash', Rule::notIn('undefined')],
             'year_register' => 'required',
             'milage' => 'required',
             'car_type' => [
@@ -52,9 +52,6 @@ class CarController extends Controller
             'image5' => 'required',
             'color' => 'required',
             'top_speed' => 'required'
-
-
-            
         ]);
         
         if ($validator->fails()) {
@@ -70,64 +67,97 @@ class CarController extends Controller
         try 
         {
             $dealer = DB::table('dealers')->where('id',$req->dealer_id)->first();
-            // return $dealer;exit;
+
             if(!empty($dealer))
             {
                 $car = [
-                    'id' => Str::uuid(),'dealer_id' => $req->dealer_id, 'condition' => $req->car_codition, 'name' => $req->car_name,
-                    'brand' => $req->car_brand, 'year_of_registration' => $req->year_register, 'milage' => $req->milage, 
-                    'year_of_manufacturing' => $req->year_manufacture, 'type' => $req->car_type, 'fuel_type' => $req->fuel_type, 
-                    'no_of_seats' => $req->no_seats, 'ownership' => $req->ownership, 'insurance_validity' => $req->insurance_validity,
-                    'engin' => $req->engin, 'kms_driven' => $req->kms_driven, 'top_speed' => $req->top_speed, 'color' => $req->color,
-                    'price' => $req->price, 'description' => $req->description, 'status' => 'active', 'created_at' => Carbon::now()
+                    'id' => Str::uuid(),
+                    'dealer_id' => $req->dealer_id, 
+                    'condition' => $req->car_codition, 
+                    'name' => $req->car_name,
+                    'brand' => $req->car_brand, 
+                    'year_of_registration' => $req->year_register, 
+                    'milage' => $req->milage, 
+                    'year_of_manufacturing' => $req->year_manufacture, 
+                    'type' => $req->car_type, 
+                    'fuel_type' => $req->fuel_type, 
+                    'no_of_seats' => $req->no_seats, 
+                    'ownership' => $req->ownership, 
+                    'insurance_validity' => $req->insurance_validity,
+                    'engin' => $req->engin, 
+                    'kms_driven' => $req->kms_driven, 
+                    'top_speed' => $req->top_speed, 
+                    'color' => $req->color,
+                    'price' => $req->price, 
+                    'description' => $req->description, 
+                    'status' => 'active', 
+                    'created_at' => Carbon::now()
                 ];
+
                 $file1 = $req->file('image1');
-                $extension1 = $file1->getClientOriginalName();
-                $file_path1 = 'dealer_car_photos/';
-                $filename1 = time() . '.' . $extension1;
-                $upload1 = $file1->move($file_path1, $filename1);
-                $image1 = 'dealer_car_photos/' . $filename1;
+                if ($file1) {
+                    $extension1 = $file1->getClientOriginalName();
+                    $file_path1 = 'dealer_car_photos/';
+                    $filename1 = time() . '.' . $extension1;
+                    $upload1 = $file1->move($file_path1, $filename1);
+                    $image1 = 'dealer_car_photos/' . $filename1;
+                }
 
                 $file2 = $req->file('image2');
-                $extension2 = $file2->getClientOriginalName();
-                $file_path2 = 'dealer_car_photos/';
-                $filename2 = time() . '.' . $extension2;
-                $upload2 = $file2->move($file_path2, $filename2);
-                $image2 = 'dealer_car_photos/' . $filename2;
+                if ($file2) {
+                    $extension2 = $file2->getClientOriginalName();
+                    $file_path2 = 'dealer_car_photos/';
+                    $filename2 = time() . '.' . $extension2;
+                    $upload2 = $file2->move($file_path2, $filename2);
+                    $image2 = 'dealer_car_photos/' . $filename2;
+                }
 
                 $file3 = $req->file('image3');
-                $extension3 = $file3->getClientOriginalName();
-                $file_path3 = 'dealer_car_photos/';
-                $filename3 = time() . '.' . $extension3;
-                $upload3 = $file3->move($file_path3, $filename3);
-                $image3 = 'dealer_car_photos/' . $filename3;
+                if ($file3) {
+                    $extension3 = $file3->getClientOriginalName();
+                    $file_path3 = 'dealer_car_photos/';
+                    $filename3 = time() . '.' . $extension3;
+                    $upload3 = $file3->move($file_path3, $filename3);
+                    $image3 = 'dealer_car_photos/' . $filename3;
+                }
 
                 $file4 = $req->file('image4');
-                $extension4 = $file4->getClientOriginalName();
-                $file_path4 = 'dealer_car_photos/';
-                $filename4 = time() . '.' . $extension4;
-                $upload4 = $file4->move($file_path4, $filename4);
-                $image4 = 'dealer_car_photos/' . $filename4;
+                if ($file4) {
+                    $extension4 = $file4->getClientOriginalName();
+                    $file_path4 = 'dealer_car_photos/';
+                    $filename4 = time() . '.' . $extension4;
+                    $upload4 = $file4->move($file_path4, $filename4);
+                    $image4 = 'dealer_car_photos/' . $filename4;
+                }
 
                 $file5 = $req->file('image5');
-                $extension5 = $file5->getClientOriginalName();
-                $file_path5 = 'dealer_car_photos/';
-                $filename5 = time() . '.' . $extension5;
-                $upload5 = $file5->move($file_path5, $filename5);
-                $image5 = 'dealer_car_photos/' . $filename5;
+                if ($file5) {
+                    $extension5 = $file5->getClientOriginalName();
+                    $file_path5 = 'dealer_car_photos/';
+                    $filename5 = time() . '.' . $extension5;
+                    $upload5 = $file5->move($file_path5, $filename5);
+                    $image5 = 'dealer_car_photos/' . $filename5;
+                }
 
                 $carImage = [
-                    'id' => Str::uuid(),'car_id' => $car['id'],'photo1' => $image1, 'photo2' => $image2,'photo3' => $image3,
-                    'photo4' => $image4,'photo5' => $image5, 'created_at' => Carbon::now()
+                    'id' => Str::uuid(),
+                    'car_id' => $car['id'],
+                    'photo1' => $image1, 
+                    'photo2' => $image2,
+                    'photo3' => $image3,
+                    'photo4' => $image4,
+                    'photo5' => $image5, 
+                    'created_at' => Carbon::now()
                 ];
-
-                $saveCarimage = DB::table('car_photos')->where('car_id',$car['id'])->insert($carImage);
-                $saveCar = DB::table('cars')->insert($car);
-                $SavedCar = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$car['id'])->select('cars.*','brands.name as brand_name')->first();
-                $SavedCar->Images = DB::table('car_photos')->where('id',$carImage['id'])->first();
+                
+                $saveCar = DB::table('cars')->insert($car);   
+                $saveCarimage = DB::table('car_photos')->insert($carImage);
 
                 if($saveCar && $saveCarimage)
                 {
+                    $SavedCar = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$car['id'])->select('cars.*','brands.name as brand_name')->first();
+                    $SavedCar->Images = DB::table('car_photos')->where('id',$carImage['id'])->first();
+
                     return response()->json(
                         [
                             'status'    => 'success',
@@ -169,8 +199,8 @@ class CarController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language'  => 'required',
-            'car_id' => 'required',
-            'dealer_id' => 'required'
+            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
         if($validator->fails()){
@@ -267,12 +297,10 @@ class CarController extends Controller
 
     public function editCar(Request $req)
     {
-        $param = $req->only('language','car_id','car_codition','car_name','car_brand','year_register','milage','car_type','fuel_type',
-        'no_seats','year_manufacture','ownership','insurance_validity','engin','kms_driven','price','description','color','top_speed',
-        'image1','image2','image3','image4','image5');
-        $validator = Validator::make($param, [
+        
+        $validator = Validator::make($req->all(), [
             'language'  => 'required',
-            'car_id' => 'required'
+            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
         if($validator->fails()){
@@ -286,9 +314,8 @@ class CarController extends Controller
         try 
         {
             $car = DB::table('cars')->find($req->car_id);
-            // return $car->condition;exit;
             $carImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
-            // return $carImage;exit;
+
             if(!empty($car))
             {
                 $dealer_id = $req->dealer_id;
@@ -345,7 +372,7 @@ class CarController extends Controller
                     'top_speed' => isset($top_speed) ? $top_speed : $car->top_speed,
                     'updated_at' => Carbon::now()
                 ];
-                // return $req->car_id;exit;
+               
                 $update = Cars::where('id',$req->car_id)->update($data);
                 $images = [
                     'photo1' => isset($req->image1) ? ('dealer_car_photos/'.$image1name) : $carImage->photo1,
@@ -356,7 +383,6 @@ class CarController extends Controller
                     'updated_at' => Carbon::now()
                 ];
                 $updateImage = CarPhotos::where('car_id',$req->car_id)->update($images);
-                // return $updateImage;exit;
                 if($update && $updateImage)
                 {
                     $carDetail = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$req->car_id)->select('cars.*','brands.name as brand_name')->first();
