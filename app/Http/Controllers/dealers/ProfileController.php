@@ -86,10 +86,12 @@ class ProfileController extends Controller
                 $save = $req->file('profile_image')->move('dealer_profile_photo', $file_name);
                 $saveProfile = dealers::where('id', $req->dealer_id)->update(['profile' => ('dealer_profile_photo/' . $file_name)]);
                 if ($saveProfile) {
+                    $updatedProfile = DB::table('dealers')->where('id',$req->dealer_id)->first();
                     return response()->json(
                         [
                             'status'    => 'success',
                             'message'   =>  __('msg.dealer.profile.image'),
+                            'data' => $updatedProfile,
                         ],
                         200
                     );
@@ -200,4 +202,6 @@ class ProfileController extends Controller
             ], 500);
         }
     }
+
+    
 }
