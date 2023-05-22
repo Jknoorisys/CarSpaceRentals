@@ -32,7 +32,7 @@ class LocationController extends Controller
             'lat'                  => 'required',
             'long'                 => 'required',
             'location'             => 'required',
-            'layout'                => 'required|image|mimes:jpeg,png,jpg,svg',
+            'layout'               => 'required|image|mimes:jpeg,png,jpg,svg',
             'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
@@ -57,11 +57,11 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $id                     = Str::uuid();
-            $name                   = $request->name ? : '';
-            $lat                    = $request->lat ? : '';
-            $long                   = $request->long ? : '';
-            $location               = $request->location ? : '';
+            $id         = Str::uuid();
+            $name       = $request->name ? $request->name : '';
+            $lat        = $request->lat ? $request->lat : '';
+            $long       = $request->long ? $request->long : '';
+            $location   = $request->location ? $request->location : '';
 
             $file = $request->file('layout');
             if ($file) {
@@ -77,39 +77,23 @@ class LocationController extends Controller
                 'lat'           => $lat, 
                 'long'          => $long,
                 'location'      => $location,
-                'layout'         => $request->file('layout') ? $layout : '',
+                'layout'        => $request->file('layout') ? $layout : '',
                 'created_at'    => Carbon::now()
             ];
 
             $location = DB::table('locations')->insert($locationData);
 
-            // if ($location) {
+            $adminData = [
+                'id'        => Str::uuid(),
+                'user_id'   => $request->admin_id,
+                'user_type' => $request->admin_type,
+                'activity'  => 'Rental Location named '.$name.' is added by '.ucfirst($request->admin_type).' '.$admin->name,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ];
 
-            //     foreach ($plots as $plot) {
-            //         $plotData = [
-            //             'id'          => Str::uuid(),
-            //             'location_id' => $id,
-            //             'plot_number' => $plot,
-            //             'created_at'  => Carbon::now()
-            //         ];
-                    
-            //         DB::table('plots')->insert($plotData);
-            //     }
-
-                $adminData = [
-                    'id'        => Str::uuid(),
-                    'user_id'   => $request->admin_id,
-                    'user_type' => $request->admin_type,
-                    'activity'  => 'Rental Location named '.$name.' is added by '.ucfirst($request->admin_type).' '.$admin->name,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now()
-                ];
-
-                $admin_activity = DB::table('admin_activities')->insert($adminData);
-                if($location && $admin_activity == true)
-                {
-
-                
+            $admin_activity = DB::table('admin_activities')->insert($adminData);
+            if($location && $admin_activity){
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.add-location.success'),
@@ -277,7 +261,7 @@ class LocationController extends Controller
             'lat'                  => 'required',
             'long'                 => 'required',
             'location'             => 'required',
-            'layout'                => 'required|image|mimes:jpeg,png,jpg,svg',
+            'layout'               => 'required|image|mimes:jpeg,png,jpg,svg',
             'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
@@ -293,6 +277,7 @@ class LocationController extends Controller
         }
 
         try {
+
             $location_id            = $request->location_id;
 
             $admin = validateAdmin(['id' => $request->admin_id, 'admin_type' => $request->admin_type]);
@@ -311,10 +296,10 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $name                   = $request->name ? : '';
-            $lat                    = $request->lat ? : '';
-            $long                   = $request->long ? : '';
-            $location               = $request->location ? : '';
+            $name      = $request->name ? $request->name : '';
+            $lat       = $request->lat ? $request->lat : '';
+            $long      = $request->long ? $request->long : '';
+            $location  = $request->location ? $request->location : '';
 
             $file = $request->file('layout');
             if ($file) {
@@ -329,7 +314,7 @@ class LocationController extends Controller
                 'lat'           => $lat, 
                 'long'          => $long,
                 'location'      => $location,
-                'layout'         => $request->file('layout') ? $photo : '',
+                'layout'        => $request->file('layout') ? $photo : '',
                 'updated_at'    => Carbon::now()
             ];
 
