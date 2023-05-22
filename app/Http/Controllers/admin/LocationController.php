@@ -32,14 +32,7 @@ class LocationController extends Controller
             'lat'                  => 'required',
             'long'                 => 'required',
             'location'             => 'required',
-            'plot_numbers'         => 'required',
-            'no_of_lines'          => 'required',
-            'no_of_plots_per_line' => 'required',
-            'rent_per_day'         => 'required',
-            'rent_per_week'        => 'required',
-            'rent_per_month'       => 'required',
-            'rent_per_year'        => 'required',
-            'photo'                => 'required|image|mimes:jpeg,png,jpg,svg',
+            'layout'                => 'required|image|mimes:jpeg,png,jpg,svg',
             'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
@@ -69,23 +62,13 @@ class LocationController extends Controller
             $lat                    = $request->lat ? : '';
             $long                   = $request->long ? : '';
             $location               = $request->location ? : '';
-            $plot_numbers           = $request->plot_numbers ? : '';
-            $no_of_lines            = $request->no_of_lines ? : '';
-            $no_of_plots_per_line   = $request->no_of_plots_per_line ? : '';
-            $rent_per_day           = $request->rent_per_day ? : '';
-            $rent_per_week          = $request->rent_per_week ? : '';
-            $rent_per_month         = $request->rent_per_month ? : '';
-            $rent_per_year          = $request->rent_per_year ? : '';
 
-            $plots = explode(',',$plot_numbers);
-            $plote_name = $plots ? ($plots[0].'-'.end($plots)) : '';
-
-            $file = $request->file('photo');
+            $file = $request->file('layout');
             if ($file) {
                 $extension = $file->getClientOriginalExtension();
                 $filename = time().'.'.$extension;
                 $file->move('assets/uploads/location-photos/', $filename);
-                $photo = 'assets/uploads/location-photos/'.$filename  ;
+                $layout = 'assets/uploads/location-photos/'.$filename  ;
             }
 
             $locationData = [ 
@@ -94,31 +77,24 @@ class LocationController extends Controller
                 'lat'           => $lat, 
                 'long'          => $long,
                 'location'      => $location,
-                'plot_numbers'  => $plote_name,
-                'no_of_lines'   => $no_of_lines,
-                'no_of_plots_per_line' => $no_of_plots_per_line,
-                'rent_per_day'  => $rent_per_day,
-                'rent_per_week' => $rent_per_week,
-                'rent_per_month'=> $rent_per_month,
-                'rent_per_year' => $rent_per_year,
-                'photo'         => $request->file('photo') ? $photo : '',
+                'layout'         => $request->file('layout') ? $layout : '',
                 'created_at'    => Carbon::now()
             ];
 
             $location = DB::table('locations')->insert($locationData);
 
-            if ($location) {
+            // if ($location) {
 
-                foreach ($plots as $plot) {
-                    $plotData = [
-                        'id'          => Str::uuid(),
-                        'location_id' => $id,
-                        'plot_number' => $plot,
-                        'created_at'  => Carbon::now()
-                    ];
+            //     foreach ($plots as $plot) {
+            //         $plotData = [
+            //             'id'          => Str::uuid(),
+            //             'location_id' => $id,
+            //             'plot_number' => $plot,
+            //             'created_at'  => Carbon::now()
+            //         ];
                     
-                    DB::table('plots')->insert($plotData);
-                }
+            //         DB::table('plots')->insert($plotData);
+            //     }
 
                 $adminData = [
                     'id'        => Str::uuid(),
@@ -129,8 +105,11 @@ class LocationController extends Controller
                     'updated_at' => Carbon::now()
                 ];
 
-                DB::table('admin_activities')->insert($adminData);
+                $admin_activity = DB::table('admin_activities')->insert($adminData);
+                if($location && $admin_activity == true)
+                {
 
+                
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.add-location.success'),
@@ -228,8 +207,6 @@ class LocationController extends Controller
             $locationDetails = DB::table('locations')->where('id', '=', $location_id)->first();
 
             if (!empty($locationDetails)) {
-                $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
-                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_number')->get();
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-location-details.success'),
@@ -300,14 +277,7 @@ class LocationController extends Controller
             'lat'                  => 'required',
             'long'                 => 'required',
             'location'             => 'required',
-            'plot_numbers'         => 'required',
-            'no_of_lines'          => 'required',
-            'no_of_plots_per_line' => 'required',
-            'rent_per_day'         => 'required',
-            'rent_per_week'        => 'required',
-            'rent_per_month'       => 'required',
-            'rent_per_year'        => 'required',
-            'photo'                => 'required|image|mimes:jpeg,png,jpg,svg',
+            'layout'                => 'required|image|mimes:jpeg,png,jpg,svg',
             'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
@@ -345,18 +315,8 @@ class LocationController extends Controller
             $lat                    = $request->lat ? : '';
             $long                   = $request->long ? : '';
             $location               = $request->location ? : '';
-            $plot_numbers           = $request->plot_numbers ? : '';
-            $no_of_lines            = $request->no_of_lines ? : '';
-            $no_of_plots_per_line   = $request->no_of_plots_per_line ? : '';
-            $rent_per_day           = $request->rent_per_day ? : '';
-            $rent_per_week          = $request->rent_per_week ? : '';
-            $rent_per_month         = $request->rent_per_month ? : '';
-            $rent_per_year          = $request->rent_per_year ? : '';
 
-            $plots = explode(',',$plot_numbers);
-            $plote_name = $plots ? ($plots[0].'-'.end($plots)) : '';
-
-            $file = $request->file('photo');
+            $file = $request->file('layout');
             if ($file) {
                 $extension = $file->getClientOriginalExtension();
                 $filename = time().'.'.$extension;
@@ -369,14 +329,7 @@ class LocationController extends Controller
                 'lat'           => $lat, 
                 'long'          => $long,
                 'location'      => $location,
-                'plot_numbers'  => $plote_name,
-                'no_of_lines'   => $no_of_lines,
-                'no_of_plots_per_line' => $no_of_plots_per_line,
-                'rent_per_day'  => $rent_per_day,
-                'rent_per_week' => $rent_per_week,
-                'rent_per_month'=> $rent_per_month,
-                'rent_per_year' => $rent_per_year,
-                'photo'         => $request->file('photo') ? $photo : '',
+                'layout'         => $request->file('layout') ? $photo : '',
                 'updated_at'    => Carbon::now()
             ];
 
@@ -492,4 +445,6 @@ class LocationController extends Controller
             ],500);
         }
     }
+
+    
 }

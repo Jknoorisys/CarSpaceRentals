@@ -10,6 +10,7 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\DealerController;
 use App\Http\Controllers\admin\FeaturedcarPriceController;
 use App\Http\Controllers\admin\LocationController as AdminLocationController;
+use App\Http\Controllers\admin\FeaturedCarController;
 use App\Http\Controllers\admin\LocationLineController;
 // Dealer
 use App\Http\Controllers\dealers\AuthController as DealersAuthController;
@@ -106,6 +107,10 @@ Route::prefix('admin')->group(function () {
         // Manage Featured Car Price
         Route::post('get-featured-car-price' , [FeaturedcarPriceController::class, 'getFeaturedcarPrice']);
         Route::post('edit-featured-car-price' , [FeaturedcarPriceController::class, 'editFeaturedcarPrice']);
+
+        //Manage Featured Car
+        Route::post('getFeaturedCar' , [FeaturedCarController::class, 'getFeaturedCar']);
+
     });
 });
 
