@@ -440,4 +440,84 @@ class LocationController extends Controller
             ],500);
         }
     }
+
+    public function getAvailablePlotsByDate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'      => 'required',
+            'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
+            'start_date'    => 'required|date',
+            'duration_type' => ['required', Rule::in(['day', 'week', 'month', 'year'])],
+            'duration'      => 'required|numeric'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+
+            $location_id = $request->location_id;
+
+            $location = validateLocation($location_id);
+            if (empty($location) || $location->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-location'),
+                ],400);
+            }
+
+            if (!empty($location)) {
+
+                $duration_type = $request->duration_type;
+                $duration = $request->duration;
+                $start_date = Carbon::createFromFormat('Y-m-d', $request->start_date);
+                
+                if (!empty($duration_type) && $duration_type == 'day') {
+                    $end_date = $start_date->addDays($duration);
+                } elseif(!empty($duration_type) && $duration_type == 'week') {
+                    $end_date = $start_date->addWeeks($duration);
+                } elseif(!empty($duration_type) && $duration_type == 'month') {
+                    $end_date = $start_date->addMonths($duration);
+                } elseif(!empty($duration_type) && $duration_type == 'year') {
+                    $end_date = $start_date->addYears($duration);
+                } else{
+                    return response()->json([
+                        'status'    => 'failed',
+                        'message'   => trans('msg.dealer.get-available-plots.invalid-duration-type'),
+                    ],400);
+                }
+                
+                if (!empty($end_date)) {
+                    $db = DB::table('bookings as sc');
+                    
+                    $availablePlots = $db->where([['location_id', '=' , $location_id], ['status', '=', 'active']])
+                                         
+                                        ->where(function ($query) use ($start_date, $end_date) {
+                                            $query->whereDate('sc.park_in_date', '>=', $start_date)
+                                                ->whereDate('sc.park_in_date', '<=', $end_date);
+                                        })
+                                         ->orderBy('park_in_date')
+                                         ->get();
+
+                                         return $availablePlots;
+                }
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-location-details.failure'),
+                ],400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
 }
