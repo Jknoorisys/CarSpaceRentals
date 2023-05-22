@@ -61,7 +61,7 @@ Route::prefix('admin')->group(function () {
     Route::group(['middleware' => 'jwt.verify'], function () {
 
         // Dashboard
-        Route::post('dashboard' , [DashboardController::class, 'dashboard'])->name('dashboard');
+        Route::post('dashboard' , [DashboardController::class, 'dashboard']);
 
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
