@@ -10,7 +10,7 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\DealerController;
 use App\Http\Controllers\admin\FeaturedcarPriceController;
 use App\Http\Controllers\admin\LocationController as AdminLocationController;
-
+use App\Http\Controllers\admin\LocationLineController;
 // Dealer
 use App\Http\Controllers\dealers\AuthController as DealersAuthController;
 use App\Http\Controllers\dealers\LocationController;
@@ -91,6 +91,11 @@ Route::prefix('admin')->group(function () {
         Route::post('get-location' , [AdminLocationController::class, 'getLocation']); 
         Route::post('edit-location' , [AdminLocationController::class, 'updateLocation']); 
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
+
+        // Manage Location Lines
+        Route::post('add-line' , [LocationLineController::class, 'addLocationLine']); 
+        Route::post('get-all-locations' , [AdminLocationController::class, 'getLocations']); 
+        Route::post('get-location-details' , [AdminLocationController::class, 'getLocationDetails']); 
 
         // Manage Admins
         Route::post('get-all-admins' , [AdminController::class, 'getAllAdmins']);
