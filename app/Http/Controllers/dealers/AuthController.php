@@ -449,4 +449,65 @@ class AuthController extends Controller
         
     }
 
+    public function logout(Request $req)
+    {
+
+
+        $validator = Validator::make($req->all(), [
+            'language'  =>   'required',
+            'login_activity_id' => 'required',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try {
+            $login_time = DB::table('login_activities')->where('id',$req->login_activity_id)->first();
+            $currentloginTime = $login_time->login_time;
+            $currentlogoutTime = Carbon::now()->format('H:i:s');
+            $loginTime = Carbon::parse($currentlogoutTime);
+            $logoutTime = Carbon::parse($currentloginTime);
+
+            // Calculate the duration
+            $duration = $logoutTime->diffInMinutes($loginTime);
+            // return $duration;exit;
+            $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime, 'duration' => $duration.' Minutes','updated_at' => Carbon::now()]);
+            if ($logoutime) {
+                JWTAuth::parseToken()->invalidate();
+
+                return response()->json(
+                    [
+                        'status'    => 'success',
+                        'message'   =>  __('msg.user.logout.success'),
+                    ],
+                    200
+                );
+            }
+            else
+            {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   =>  __('msg.user.logout.fail'),
+                    ],
+                    400
+                );
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
 }

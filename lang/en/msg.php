@@ -219,6 +219,7 @@ return [
 
         'logout' => [
             'success' => 'Logout Successful',
+            'fail' => 'Incorrect ID',
         ],
 
         'profile' => [

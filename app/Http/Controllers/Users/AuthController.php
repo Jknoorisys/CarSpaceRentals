@@ -482,6 +482,16 @@ class AuthController extends Controller
                     200
                 );
             }
+            else
+            {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   =>  __('msg.user.logout.fail'),
+                    ],
+                    400
+                );
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
