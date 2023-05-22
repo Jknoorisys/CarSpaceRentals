@@ -119,7 +119,8 @@ Route::prefix('dealer')->group( function () {
     Route::post('addCar',[CarController::class,'addCar']);
     Route::post('getCarbyID',[CarController::class,'getCarbyID']);
     Route::post('editCar',[CarController::class,'editCar']);
-
+    Route::post('/logout',[AuthController::class,'logout']);
+    
     });
 
 

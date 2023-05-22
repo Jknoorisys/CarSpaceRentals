@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class CarController extends Controller
 {
@@ -292,6 +293,44 @@ class CarController extends Controller
                     'message'   => trans('msg.user.get-car.notfeature'),
                     'data'      => [],
                 ],200);
+            }
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+            ], 500);
+        }
+    }
+
+    public function CarDetails(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'language' => 'required',
+            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            ''
+            
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try 
+        {
+            $car = DB::table('cars')->where('id',$req->car_id)->first();
+            if(!empty($car))
+            {
+                return "car";
+            }
+            else
+            {
+                return "not found";
             }
 
         } catch (\Throwable $e) {

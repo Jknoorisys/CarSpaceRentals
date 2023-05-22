@@ -19,13 +19,7 @@ return new class extends Migration
             $table->string('lat');
             $table->string('long');
             $table->string('location');
-            $table->string('plot_numbers');
-            $table->integer('no_of_lines');
-            $table->string('rent_per_day');
-            $table->string('rent_per_week');
-            $table->string('rent_per_month');
-            $table->string('rent_per_year');
-            $table->string('photo');
+            $table->string('layout');
             $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
         });

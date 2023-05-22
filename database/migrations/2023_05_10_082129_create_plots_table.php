@@ -15,10 +15,20 @@ return new class extends Migration
     {
         Schema::create('plots', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('plot_number');
-            $table->string('location_id');
             $table->string('line_id');
-            $table->enum('position',['left','right'])->default('left');
+            $table->string('location_id');
+            $table->string('plot_name');
+            $table->string('plot_direction');
+            $table->enum('plot_position',['left','right'])->default('left');
+            $table->float('single_daily');
+            $table->float('single_weekly');
+            $table->float('single_monthly');
+            $table->float('five_daily');
+            $table->float('five_weekly');
+            $table->float('five_monthly');
+            $table->float('ten_daily');
+            $table->float('ten_weekly');
+            $table->float('ten_monthly');
             $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
         });
