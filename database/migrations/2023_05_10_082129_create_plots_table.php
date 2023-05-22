@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('line_id');
             $table->string('location_id');
             $table->string('plot_name');
-            $table->string('plot_direction');
-            $table->enum('plot_position',['left','right'])->default('left');
+            $table->enum('plot_direction',['left','right'])->default('left');
+            $table->string('plot_position');
             $table->float('single_daily');
             $table->float('single_weekly');
             $table->float('single_monthly');

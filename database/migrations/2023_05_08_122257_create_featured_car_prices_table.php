@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('featured_car_prices', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->string('price');
+            $table->float('price');
             $table->string('currency');
             $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
