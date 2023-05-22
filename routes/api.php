@@ -132,4 +132,7 @@ Route::prefix('dealer')->group( function () {
     Route::post('get-plots-based-on-location' , [LocationController::class, 'getPlotsBasedOnLocation']); 
     Route::post('get-dealer-all-plots-list' , [LocationController::class, 'getDealerAllPlotsList']); 
 
+    // Testing
+    Route::post('get-available-plots' , [LocationController::class, 'getAvailablePlotsByDate']); 
+
 });

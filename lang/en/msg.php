@@ -270,6 +270,12 @@ return [
             'failure' => 'No Location Found',
         ],
 
+        'get-available-plots' => [
+            'success' => 'Available Plots List Fetched Successfully',
+            'failure' => 'No Plot Available',
+            'invalid-duration-type' => 'Invalid Duration Type',
+        ],
+
         // Dealer Auth and Profile Module By Aaisha Shaikh
         'profile' => [
             'success' => 'Dealer Profile',
