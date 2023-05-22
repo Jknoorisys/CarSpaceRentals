@@ -1,5 +1,8 @@
 <?php
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
+// Admin
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CarBrandsController;
 use App\Http\Controllers\admin\CustomerController;
@@ -7,15 +10,16 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\DealerController;
 use App\Http\Controllers\admin\FeaturedcarPriceController;
 use App\Http\Controllers\admin\LocationController as AdminLocationController;
+
+// Dealer
 use App\Http\Controllers\dealers\AuthController as DealersAuthController;
 use App\Http\Controllers\dealers\LocationController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Users\AuthController;
-use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\dealers\ProfileController;
-use App\Http\Controllers\Users\ProfileController as UserProfileController;
 use App\Http\Controllers\dealers\CarController;
+
+// Users
+use App\Http\Controllers\users\AuthController;
+use App\Http\Controllers\users\ProfileController as UserProfileController;
 use App\Http\Controllers\users\CarController as UserCarController;
 /*
 |--------------------------------------------------------------------------
