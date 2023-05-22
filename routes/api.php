@@ -34,12 +34,12 @@ use App\Http\Controllers\users\CarController as UserCarController;
 
 // User Panel By Aaisha Shaikh
 Route::prefix('user')->group( function () {
-    Route::post('/register',[AuthController::class,'register']);
-    Route::post('/verifyOTP',[AuthController::class,'verifyOTP']);
-    Route::post('/resendregOTP',[AuthController::class,'resendregOTP']);
-    Route::post('/forgetpassword',[AuthController::class,'forgetpassword']);
-    Route::post('/forgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
-    Route::post('/login',[AuthController::class,'login']);
+    Route::post('register',[AuthController::class,'register']);
+    Route::post('verifyOTP',[AuthController::class,'verifyOTP']);
+    Route::post('resendregOTP',[AuthController::class,'resendregOTP']);
+    Route::post('forgetpassword',[AuthController::class,'forgetpassword']);
+    Route::post('forgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
+    Route::post('login',[AuthController::class,'login']);
     Route::post('getCarListByname',[UserCarController::class,'getCarListByname']);
     Route::post('CarList',[UserCarController::class,'CarList']);
     Route::post('carFilter',[UserCarController::class,'carFilter']);
@@ -50,7 +50,7 @@ Route::prefix('user')->group( function () {
     Route::post('getProfile',[UserProfileController::class,'getProfile']);
     Route::post('UpdateProfile',[UserProfileController::class,'UpdateProfile']);
     Route::post('UpdateProfileDetail',[UserProfileController::class,'UpdateProfileDetail']);
-    Route::post('/logout',[AuthController::class,'logout']);
+    Route::post('logout',[AuthController::class,'logout']);
    
 });
 });
@@ -61,7 +61,7 @@ Route::prefix('admin')->group(function () {
     Route::group(['middleware' => 'jwt.verify'], function () {
 
         // Dashboard
-        Route::post('dashboard' , [DashboardController::class, 'dashboard']);
+        Route::post('dashboard' , [DashboardController::class, 'dashboard'])->name('dashboard');
 
         // Manage Car Brands
         Route::post('get-all-brands' , [CarBrandsController::class, 'getCarBrands']);
@@ -108,12 +108,12 @@ Route::prefix('admin')->group(function () {
 Route::prefix('dealer')->group( function () {
 
     // By Aaisha Shaikh
-    Route::post('/register',[DealersAuthController::class,'register']);
-    Route::post('/verifyOTP',[DealersAuthController::class,'verifyOTP']);
-    Route::post('/resendregOTP',[DealersAuthController::class,'resendregOTP']);
-    Route::post('/forgetpassword',[DealersAuthController::class,'forgetpassword']);
-    Route::post('/forgotPasswordValidate',[DealersAuthController::class,'forgotPasswordValidate']);
-    Route::post('/login',[DealersAuthController::class,'login']);
+    Route::post('register',[DealersAuthController::class,'register']);
+    Route::post('verifyOTP',[DealersAuthController::class,'verifyOTP']);
+    Route::post('resendregOTP',[DealersAuthController::class,'resendregOTP']);
+    Route::post('forgetpassword',[DealersAuthController::class,'forgetpassword']);
+    Route::post('forgotPasswordValidate',[DealersAuthController::class,'forgotPasswordValidate']);
+    Route::post('login',[DealersAuthController::class,'login']);
 
     Route::group(['middleware' => 'jwt.verify'], function () {
 
@@ -123,7 +123,7 @@ Route::prefix('dealer')->group( function () {
     Route::post('addCar',[CarController::class,'addCar']);
     Route::post('getCarbyID',[CarController::class,'getCarbyID']);
     Route::post('editCar',[CarController::class,'editCar']);
-    Route::post('/logout',[AuthController::class,'logout']);
+    Route::post('logout',[AuthController::class,'logout']);
     
     });
 
