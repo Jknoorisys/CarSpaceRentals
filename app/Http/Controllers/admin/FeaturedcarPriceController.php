@@ -136,4 +136,5 @@ class FeaturedcarPriceController extends Controller
             ],500);
         }
     }
+    
 }
