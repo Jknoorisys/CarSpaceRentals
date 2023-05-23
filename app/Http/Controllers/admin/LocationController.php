@@ -113,7 +113,7 @@ class LocationController extends Controller
             ],500);
         }
     }
-
+    //get detail with filter
     public function getLocations(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -169,7 +169,7 @@ class LocationController extends Controller
             ],500);
         }
     }
-
+    //get detail without filter
     public function getLocationDetails(Request $request)
     {
         $validator = Validator::make($request->all(), [
