@@ -289,6 +289,7 @@ class AuthController extends Controller
             'confirm_password' => 'required|same:password',
 
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -299,6 +300,7 @@ class AuthController extends Controller
                 400
             );
         }
+
         try {
             $dealer = Dealers::where('token', $req->token)->first();
             if ($dealer) {
@@ -354,7 +356,6 @@ class AuthController extends Controller
 
     public function login(Request $req)
     {
-       
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email' => 'required|email',
@@ -363,6 +364,7 @@ class AuthController extends Controller
             'ip_address' => 'required'
 
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -373,91 +375,91 @@ class AuthController extends Controller
                 400
             );
         }
-            try {
-                $service = new Services();
-                $email = $req->email;
-                $password = $req->password;
-                $dealer  = Dealers::where('email', $email)
-                    ->take(1)->first();
+        
+        try {
+            $service = new Services();
+            $email = $req->email;
+            $password = $req->password;
+            $dealer  = Dealers::where('email', $email)
+                ->take(1)->first();
 
-                if ($dealer) {
-                    // return $dealer->password;exit;
-                    // if ($dealer->is_email_verified == 'verified') {
-                    if (Hash::check($password,$dealer->password)) {
+            if ($dealer) {
+                // return $dealer->password;exit;
+                // if ($dealer->is_email_verified == 'verified') {
+                if (Hash::check($password,$dealer->password)) {
 
 
-                        if ($dealer->status == 'active') {
-                            $claims = array(
-                                'exp'   => Carbon::now()->addDays(1)->timestamp,
-                                'uuid'  => $dealer->id
-                            );
-                            // return $claims;exit;
-                            $dealer->token = $service->getSignedAccessTokenForUser($dealer, $claims);
-                            $currentDate = Carbon::now()->format('Y-m-d');
-                            $currentTime = Carbon::now()->format('H:i:s');
-                            // return ($dealer->token);exit;
-                            $dealer_id  = DB::table('dealers')->where('email', $email)->where('password', $dealer->password)->take(1)->first();
-                            // return $dealer_id;exit;
+                    if ($dealer->status == 'active') {
+                        $claims = array(
+                            'exp'   => Carbon::now()->addDays(1)->timestamp,
+                            'uuid'  => $dealer->id
+                        );
+                        // return $claims;exit;
+                        $dealer->token = $service->getSignedAccessTokenForUser($dealer, $claims);
+                        $currentDate = Carbon::now()->format('Y-m-d');
+                        $currentTime = Carbon::now()->format('H:i:s');
+                        // return ($dealer->token);exit;
+                        $dealer_id  = DB::table('dealers')->where('email', $email)->where('password', $dealer->password)->take(1)->first();
+                        // return $dealer_id;exit;
 
-                            $dealerLog = ['id' => Str::uuid('36'), 'user_id' => $dealer_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime,
-                             'user_type' => 'dealer','device_id' => $req->device_id,'ip_address' => $req->ip_address,'created_at' => Carbon::now()];
-                            $logintime =  DB::table('login_activities')->insert($dealerLog);
-                            $dealer_id->dealer_login_activity_id = $dealerLog['id'];
-                            $dealer_id->JWT_token = $dealer->token;
-                            return response()->json(
-                                [
-                                    'status'    => 'success',
-                                    'data' => $dealer_id,
-                                    'message'   =>   __('msg.user.validation.login'),
-                                ],
-                                200
-                            );
-                        } else {
-                            return response()->json(
-                                [
-                                    'status'    => 'failed',
-                                    'message'   =>  __('msg.user.validation.inactive'),
-                                ],
-                                400
-                            );
-                        }
-                    }else {
+                        $dealerLog = ['id' => Str::uuid('36'), 'user_id' => $dealer_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime,
+                            'user_type' => 'dealer','device_id' => $req->device_id,'ip_address' => $req->ip_address,'created_at' => Carbon::now()];
+                        $logintime =  DB::table('login_activities')->insert($dealerLog);
+                        $dealer_id->dealer_login_activity_id = $dealerLog['id'];
+                        $dealer_id->JWT_token = $dealer->token;
+                        return response()->json(
+                            [
+                                'status'    => 'success',
+                                'data' => $dealer_id,
+                                'message'   =>   __('msg.user.validation.login'),
+                            ],
+                            200
+                        );
+                    } else {
                         return response()->json(
                             [
                                 'status'    => 'failed',
-                                'message'   =>  __('msg.user.validation.incpass'),
+                                'message'   =>  __('msg.user.validation.inactive'),
                             ],
                             400
                         );
                     }
-                } else {
+                }else {
                     return response()->json(
                         [
                             'status'    => 'failed',
-                            'message'   => __('msg.user.forgetpass.notreg'),
+                            'message'   =>  __('msg.user.validation.incpass'),
                         ],
                         400
                     );
                 }
-            } catch (\Throwable $e) {
-                return response()->json([
-                    'status'  => 'failed',
-                    'message' =>  __('msg.user.error'),
-                    'error'   => $e->getMessage()
-                ], 500);
+            } else {
+                return response()->json(
+                    [
+                        'status'    => 'failed',
+                        'message'   => __('msg.user.forgetpass.notreg'),
+                    ],
+                    400
+                );
             }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
+            ], 500);
+        }
         
     }
 
     public function logout(Request $req)
     {
-
-
         $validator = Validator::make($req->all(), [
             'language'  =>   'required',
             'login_activity_id' => 'required',
 
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -468,6 +470,7 @@ class AuthController extends Controller
                 400
             );
         }
+
         try {
             $login_time = DB::table('login_activities')->where('id',$req->login_activity_id)->first();
             $currentloginTime = $login_time->login_time;
@@ -477,7 +480,7 @@ class AuthController extends Controller
 
             // Calculate the duration
             $duration = $logoutTime->diffInMinutes($loginTime);
-            // return $duration;exit;
+
             $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime, 'duration' => $duration.' Minutes','updated_at' => Carbon::now()]);
             if ($logoutime) {
                 JWTAuth::parseToken()->invalidate();
