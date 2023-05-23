@@ -174,6 +174,11 @@ return [
             'failure' => 'Unable to Update Featured Car Price',
             'invalid' => 'Featured Car Price Not Found',
         ],
+
+        'featured-get-car' => [
+            'success' => 'Featured Car List',
+            'failed' => 'Not Featured Car'
+        ],
     ],
 
 
