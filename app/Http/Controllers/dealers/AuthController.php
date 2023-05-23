@@ -29,9 +29,9 @@ class AuthController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language'          =>   'required',
-            'name'   => 'required|regex:/^[\pL\s]+$/u|min:3',
+            'name'   => 'required|min:3',
             'password'   => 'required|max:20||min:8',
-            'email' => 'required|unique:dealers',
+            'email' => 'required|email|unique:dealers',
             'mobile' => 'required|numeric|unique:dealers',
         ]);
 
@@ -68,7 +68,7 @@ class AuthController extends Controller
                 Mail::send('Dealer_Mail.mail', $data, function ($message) use ($email) {
                     $message->to($email['to'])->subject('Email Verification');
                 });
-                // $user = $register->save();
+
                 if ($saveDealer) {
                     return response()->json(
                         [
