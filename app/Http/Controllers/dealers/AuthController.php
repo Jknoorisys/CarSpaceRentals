@@ -43,6 +43,7 @@ class AuthController extends Controller
             ], 400);
         }
         try {
+
             $result = DB::table('dealers')
                 ->where('email', $req->input('email'))
                 ->get();
@@ -50,10 +51,12 @@ class AuthController extends Controller
             if (!empty($result)) {
                 $otp = rand(100000, 999999);
                 $data = $req->input();
+
                 $dealer = [
                     'id' => Str::uuid(), 'name' => $data['name'], 'password' => Hash::make($data['password']),
                     'email' => $data['email'], 'mobile' => $data['mobile'], 'email_otp' => $otp, 'created_at' => Carbon::now()
                 ];
+
                 $saveDealer = DB::table('dealers')->insert($dealer);
                 
                 $email = ['to' => $data['email']];
@@ -61,10 +64,12 @@ class AuthController extends Controller
                     'subject' => 'Testing Application OTP',
                     'body' => 'Your OTP is : ' . $otp
                 ];
+
                 $data = array(
                     'name' => $data['name'],
                     'otp' => $otp
                 );
+                
                 Mail::send('Dealer_Mail.mail', $data, function ($message) use ($email) {
                     $message->to($email['to'])->subject('Email Verification');
                 });
@@ -99,13 +104,13 @@ class AuthController extends Controller
 
     public function verifyOTP(Request $req)
     {
-
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email_otp'   => 'required',
             'id' => ['required','alpha_dash', Rule::notIn('undefined')]
 
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -120,7 +125,7 @@ class AuthController extends Controller
         try {
             $otp = $req->email_otp;
             $id = $req->id;
-            #Validation Logic
+
             $verificationCode   =  DB::table('dealers')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
             if ($verificationCode == true) {
                 return response()->json(
@@ -166,7 +171,9 @@ class AuthController extends Controller
                 400
             );
         }
+
         try {
+
             $email = $req->email;
             $dealer = Dealers::where('email', $email)->take(1)->first();
 
@@ -480,7 +487,7 @@ class AuthController extends Controller
 
             // Calculate the duration
             $timeDifference = $logoutTime->diff($loginTime);
-            // return $duration;exit;
+
             $hours = $timeDifference->h;
             $minutes = $timeDifference->i;
             $seconds = $timeDifference->s;
@@ -497,7 +504,9 @@ class AuthController extends Controller
             if ($seconds > 0 && $hours === 0 && $minutes === 0) {
                 $duration .= ($duration !== '' ? ' ' : '') . $seconds . ($seconds === 1 ? ' second' : ' seconds');
             }
+
             $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime, 'duration' => $duration.' Minutes','updated_at' => Carbon::now()]);
+            
             if ($logoutime) {
                 JWTAuth::parseToken()->invalidate();
 
@@ -508,9 +517,7 @@ class AuthController extends Controller
                     ],
                     200
                 );
-            }
-            else
-            {
+            } else {
                 return response()->json(
                     [
                         'status'    => 'failed',
