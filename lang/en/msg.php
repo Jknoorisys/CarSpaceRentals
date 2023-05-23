@@ -172,7 +172,7 @@ return [
         // Manage Admins
         'get-admins' => [
             'success' => 'Admins List Fetched Successfully',
-            'failure' => 'No Dealer Found',
+            'failure' => 'No Admin Found',
         ],
 
         'admin-status' => [
