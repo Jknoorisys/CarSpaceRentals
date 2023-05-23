@@ -214,7 +214,7 @@ class AuthController extends Controller
             'language' => 'required',
             'email' => 'required',
             'password'   => 'required',
-            'device_id' => 'required',
+            // 'device_id' => 'required',
             'ip_address' => 'required',
 
         ]);
@@ -235,48 +235,60 @@ class AuthController extends Controller
             $user  = user::where('email', $email)
                 ->take(1)->first();
 
-            if ($user) {
-                // if ($user->is_email_verified == 'verified') {
+            if($user) 
+            {
+                
                 if (Hash::check($password,$user->password)) {
 
-                    if ($user->status == 'active') {
-                        $claims = array(
-                            'exp'   => Carbon::now()->addDays(1)->timestamp,
-                            'uuid'  => $user->id
-                        );
 
-                        $user->token = $service->getSignedAccessTokenForUser($user, $claims);
-                        $currentDate = Carbon::now()->format('Y-m-d');
-                        $currentTime = Carbon::now()->format('H:i:s');
+                        if ($user->status == 'active') {
+                            $claims = array(
+                                'exp'   => Carbon::now()->addDays(1)->timestamp,
+                                'uuid'  => $user->id
+                            );
+                            // return $claims;exit;
+                            $user->token = $service->getSignedAccessTokenForUser($user, $claims);
+                            $currentDate = Carbon::now()->format('Y-m-d');
+                            $currentTime = Carbon::now()->format('H:i:s');
+                            // return ($currentTime);exit;
+                            $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
+                            // return $user_id->id;exit;
 
-                        $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
-                        
-                        $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 
-                        'device_id' => $req->device_id,'ip_address' => $req->ip_address,'login_time' => $currentTime, 
-                        'user_type' => 'user','device_id' => $req->device_id,'ip_address' => $req->ip_address,'created_at' => Carbon::now()];
-                        
-                        $logintime =  DB::table('login_activities')->insert($userLog);
-
-                        $user_id->user_login_activity_id=$userLog['id'];
-                        $user_id->JWT_token = $user->token;
-                        return response()->json([
-                                'status'    => 'success',
-                                'data' => $user_id,
-                                'message'   =>   __('msg.user.validation.login'),
-                            ], 200);
-                    } else {
-                        return response()->json([
-                                'status'    => 'failed',
-                                'message'   =>  __('msg.user.validation.inactive'),
-                        ], 400);
-                    }
-                }else {
+                            
+                            $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 
+                            'device_id' => $req->device_id,'ip_address' => $req->ip_address,'login_time' => $currentTime, 
+                            'user_type' => 'user','ip_address' => $req->ip_address,'created_at' => Carbon::now()];
+                            $logintime =  DB::table('login_activities')->insert($userLog);
+                            $user_id->user_login_activity_id=$userLog['id'];
+                            $user_id->JWT_token = $user->token;
+                            return response()->json(
+                                [
+                                    'status'    => 'success',
+                                    'data' => $user_id,
+                                    'message'   =>   __('msg.user.validation.login'),
+                                ],
+                                200
+                            );
+                        } else {
+                            return response()->json(
+                                [
+                                    'status'    => 'failed',
+                                    'message'   =>  __('msg.user.validation.inactive'),
+                                ],
+                                400
+                            );
+                        }
+                }
+                else 
+                {
                     return response()->json([
                             'status'    => 'failed',
                             'message'   =>  __('msg.user.validation.incpass'),
                     ], 400);
                 }
-            } else {
+            } 
+            else 
+            {
                 return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.validation.incmail'),
