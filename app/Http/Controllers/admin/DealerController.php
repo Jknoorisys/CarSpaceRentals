@@ -41,7 +41,7 @@ class DealerController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('dealers')->where('is_admin', '=', 'no');
+            $db = DB::table('dealers')->where('is_admin', '=', 'no')->where('is_verified', '=', 'yes');
 
             $search = $request->search ? $request->search : '';
             if (!empty($search)) {

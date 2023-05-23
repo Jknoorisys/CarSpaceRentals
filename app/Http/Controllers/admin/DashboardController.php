@@ -39,12 +39,12 @@ class DashboardController extends Controller
 
         try {
 
-            $data['tota_customers'] = DB::table('users')->count();
-            $data['tota_dealers']   = DB::table('dealers')->count();
+            $data['tota_customers'] = DB::table('users')->where('is_verified', '=', 'yes')->count();
+            $data['tota_dealers']   = DB::table('dealers')->where('is_verified', '=', 'yes')->count();
             $data['tota_locations'] = DB::table('locations')->count();
             $data['tota_plots']     = DB::table('plots')->count();
 
-            $data['latest_dealers'] =  DB::table('dealers')->orderBy('created_at','desc')->take('10')->get();
+            $data['latest_dealers'] =  DB::table('dealers')->where('is_verified', '=', 'yes')->orderBy('created_at','desc')->take('10')->get();
 
             if (!empty($data)) {
                 return response()->json([
