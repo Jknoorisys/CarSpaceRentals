@@ -41,6 +41,7 @@ class AuthController extends Controller
                 'errors'    => $validator->errors()
             ], 400);
         }
+
         try {
             $result = DB::table('users')
                 ->where('email', $req->input('email'))
@@ -73,22 +74,16 @@ class AuthController extends Controller
                 });
 
                 if ($saveUser) {
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'success',
                             'data' => $user,
                             'message'   => __('msg.user.register.success'),
-                        ],
-                        200
-                    );
+                        ], 200);
                 } else {
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'failed',
                             'message'   => __('msg.user.register.fail'),
-                        ],
-                        400
-                    );
+                        ], 400);
                 }
             }
         } catch (\Throwable $e) {
@@ -110,14 +105,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
+            return response()->json([
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
                     'message'   => __('msg.user.validation.fail'),
-                ],
-                400
-            );
+                ], 400);
         }
 
         try {
@@ -127,21 +119,15 @@ class AuthController extends Controller
             #Validation Logic
             $verificationCode   =  DB::table('users')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
             if ($verificationCode == true) {
-                return response()->json(
-                    [
+                return response()->json([
                         'status'    => 'success',
                         'message'   =>  __('msg.user.otp.otpver'),
-                    ],
-                    200
-                );
+                    ], 200);
             } else {
-                return response()->json(
-                    [
+                return response()->json([
                         'status'    => 'failed',
                         'message'   =>   __('msg.user.otp.otpnotver'),
-                    ],
-                    400
-                );
+                    ], 400);
             }
         } catch (\Throwable $e) {
             return response()->json([
@@ -162,14 +148,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
+            return response()->json([
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
                     'message'   =>  __('msg.user.validation.fail'),
-                ],
-                400
-            );
+            ], 400);
         }
 
         try {
@@ -224,6 +207,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
     public function login(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -236,13 +220,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
+            return response()->json([
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
                     'message'   =>  __('msg.user.validation.fail'),
-                ],
-                400
+                ], 400
             );
         } 
 
@@ -254,65 +236,51 @@ class AuthController extends Controller
                 ->take(1)->first();
 
             if ($user) {
-                // return $user->password;exit;
                 // if ($user->is_email_verified == 'verified') {
                 if (Hash::check($password,$user->password)) {
-
 
                     if ($user->status == 'active') {
                         $claims = array(
                             'exp'   => Carbon::now()->addDays(1)->timestamp,
                             'uuid'  => $user->id
                         );
-                        // return $claims;exit;
+
                         $user->token = $service->getSignedAccessTokenForUser($user, $claims);
                         $currentDate = Carbon::now()->format('Y-m-d');
                         $currentTime = Carbon::now()->format('H:i:s');
-                        // return ($currentTime);exit;
-                        $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
-                        // return $user_id->id;exit;
 
+                        $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
                         
                         $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 
                         'device_id' => $req->device_id,'ip_address' => $req->ip_address,'login_time' => $currentTime, 
                         'user_type' => 'user','device_id' => $req->device_id,'ip_address' => $req->ip_address,'created_at' => Carbon::now()];
+                        
                         $logintime =  DB::table('login_activities')->insert($userLog);
+
                         $user_id->user_login_activity_id=$userLog['id'];
                         $user_id->JWT_token = $user->token;
-                        return response()->json(
-                            [
+                        return response()->json([
                                 'status'    => 'success',
                                 'data' => $user_id,
                                 'message'   =>   __('msg.user.validation.login'),
-                            ],
-                            200
-                        );
+                            ], 200);
                     } else {
-                        return response()->json(
-                            [
+                        return response()->json([
                                 'status'    => 'failed',
                                 'message'   =>  __('msg.user.validation.inactive'),
-                            ],
-                            400
-                        );
+                        ], 400);
                     }
                 }else {
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'failed',
                             'message'   =>  __('msg.user.validation.incpass'),
-                        ],
-                        400
-                    );
+                    ], 400);
                 }
             } else {
-                return response()->json(
-                    [
+                return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.validation.incmail'),
-                    ],
-                    400
-                );
+                ], 400);
             }
         } catch (\Throwable $e) {
             return response()->json([
@@ -332,14 +300,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
+            return response()->json([
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
                     'message'   =>  __('msg.user.validation.fail'),
-                ],
-                400
-            );
+                ], 400 );
         }
 
         try {
@@ -355,36 +320,28 @@ class AuthController extends Controller
 
                 $mailsent = Mail::to($req->email)->send(new ForgetPassword($user->name, $token));
                 if ($mailsent == true) {
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'success',
                             'data' => $user,
                             'message'   =>  __('msg.user.forgetpass.emailsent'),
-                        ],
-                        200
-                    );
+                        ], 200);
                 } else {
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'failed',
                             'message'   =>  __('msg.user.forgetpass.emailnotsent'),
-                        ],
-                        400
-                    );
+                        ], 400 );
                 }
             } else {
-                return response()->json(
-                    [
+                return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.forgetpass.notreg'),
-                    ],
-                    400
-                );
+                    ], 400 );
             }
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
@@ -396,18 +353,14 @@ class AuthController extends Controller
             'token' => 'required',
             'password'   => 'required|max:20||min:8',
             'confirm_password' => 'required|same:password',
-
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
+            return response()->json([
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
                     'message'   =>  __('msg.user.validation.fail'),
-                ],
-                400
-            );
+                ], 400 );
         }
 
         try {
@@ -420,39 +373,28 @@ class AuthController extends Controller
                     $user->token = '';
                     $info = $user->save();
                     if ($info) {
-                        return response()->json(
-                            [
+                        return response()->json([
                                 'status'    => 'success',
                                 'message'   =>  __('msg.user.forgetpass.reset'),
-                            ],
-                            200
-                        );
+                            ], 200);
                     } else {
-                        return response()->json(
-                            [
+                        return response()->json([
                                 'status'    => 'failed',
                                 'message'   =>  __('msg.user.forgetpass.notreset'),
-                            ],
-                            400
+                            ],400
                         );
                     }
                 } else {
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'failed',
                             'message'   =>  __('msg.user.forgetpass.passnotmatch'),
-                        ],
-                        400
-                    );
+                        ], 400);
                 }
             } else {
-                return response()->json(
-                    [
+                return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.forgetpass.tokennotmatch'),
-                    ],
-                    400
-                );
+                    ], 400);
             }
         } catch (\Throwable $e) {
             return response()->json([
@@ -472,14 +414,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
-                    'status'    => 'failed',
-                    'errors'    =>  $validator->errors(),
-                    'message'   =>  __('msg.user.validation.fail'),
-                ],
-                400
-            );
+            return response()->json([
+                'status'    => 'failed',
+                'errors'    =>  $validator->errors(),
+                'message'   =>  __('msg.user.validation.fail'),
+            ], 400);
         }
 
         try {
@@ -513,23 +452,17 @@ class AuthController extends Controller
             if ($logoutime) {
                 JWTAuth::parseToken()->invalidate();
 
-                return response()->json(
-                    [
+                return response()->json([
                         'status'    => 'success',
                         'message'   =>  __('msg.user.logout.success'),
-                    ],
-                    200
-                );
+                    ], 200);
             }
             else
             {
-                return response()->json(
-                    [
+                return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.logout.fail'),
-                    ],
-                    400
-                );
+                    ], 400 );
             }
         } catch (\Throwable $e) {
             return response()->json([
