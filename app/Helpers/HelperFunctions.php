@@ -27,3 +27,13 @@
     {
         return DB::table('locations')->where('id', '=', $location_id)->first();
     }
+
+    function validateLine($line_id)
+    {
+        return DB::table('plot_lines')->where('id', '=', $line_id)->first();
+    }
+
+    function validatePlot($plot_id)
+    {
+        return DB::table('plots')->where('id', '=', $plot_id)->first();
+    }
