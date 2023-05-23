@@ -373,13 +373,10 @@ class AuthController extends Controller
                             'login_date' => $currentDate, 
                             'login_time' => $currentTime,
                             'user_type' => 'dealer',
-                            'device_id' => $req->device_id,
                             'ip_address' => $req->ip_address,
                             'created_at' => Carbon::now()
                         ];
-
-                        $dealerLog = ['id' => Str::uuid('36'), 'user_id' => $dealer_id->id,  'login_date' => $currentDate, 'login_time' => $currentTime,
-                            'user_type' => 'dealer','ip_address' => $req->ip_address,'created_at' => Carbon::now()];
+                        
                         $logintime =  DB::table('login_activities')->insert($dealerLog);
                         $dealer_id->dealer_login_activity_id = $dealerLog['id'];
                         $dealer_id->JWT_token = $dealer->token;
