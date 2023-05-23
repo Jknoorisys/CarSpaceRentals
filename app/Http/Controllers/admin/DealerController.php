@@ -417,7 +417,7 @@ class DealerController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('bookings as sc')->where([['sc.dealer_id', '=', $dealer_id],['sc.status', '=', 'active']])
+            $db = DB::table('bookings as sc')->where([['sc.dealer_id', '=', $dealer_id]])
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
                         ->leftJoin('cars', 'cars.id', '=', 'sc.car_id')
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id');
