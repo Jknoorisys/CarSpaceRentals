@@ -444,7 +444,6 @@ class AuthController extends Controller
     public function logout(Request $req)
     {
 
-
         $validator = Validator::make($req->all(), [
             'language'  =>   'required',
             'login_activity_id' => 'required',
@@ -468,9 +467,27 @@ class AuthController extends Controller
             $logoutTime = Carbon::parse($currentloginTime);
 
             // Calculate the duration
-            $duration = $logoutTime->diffInMinutes($loginTime);
-            // return $duration;exit;
-            $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime, 'duration' => $duration.' Minutes','updated_at' => Carbon::now()]);
+            $timeDifference = $logoutTime->diff($loginTime);
+            // return $timeDifference;exit;
+            $hours = $timeDifference->h;
+            $minutes = $timeDifference->i;
+            $seconds = $timeDifference->s;
+
+            $duration = "";
+            if ($hours > 0) {
+                $duration .= $hours . ($hours === 1 ? ' hour' : ' hours');
+            }
+            
+            if ($minutes > 0) {
+                $duration .= ($duration !== '' ? ' ' : '') . $minutes . ($minutes === 1 ? ' minute' : ' minutes');
+            }
+            
+            if ($seconds > 0 && $hours === 0 && $minutes === 0) {
+                $duration .= ($duration !== '' ? ' ' : '') . $seconds . ($seconds === 1 ? ' second' : ' seconds');
+            }
+            
+            // return $duration;
+            $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime, 'duration' => $duration,'updated_at' => Carbon::now()]);
             if ($logoutime) {
                 JWTAuth::parseToken()->invalidate();
 

@@ -479,8 +479,24 @@ class AuthController extends Controller
             $logoutTime = Carbon::parse($currentloginTime);
 
             // Calculate the duration
-            $duration = $logoutTime->diffInMinutes($loginTime);
+            $timeDifference = $logoutTime->diff($loginTime);
+            // return $duration;exit;
+            $hours = $timeDifference->h;
+            $minutes = $timeDifference->i;
+            $seconds = $timeDifference->s;
 
+            $duration = "";
+            if ($hours > 0) {
+                $duration .= $hours . ($hours === 1 ? ' hour' : ' hours');
+            }
+            
+            if ($minutes > 0) {
+                $duration .= ($duration !== '' ? ' ' : '') . $minutes . ($minutes === 1 ? ' minute' : ' minutes');
+            }
+            
+            if ($seconds > 0 && $hours === 0 && $minutes === 0) {
+                $duration .= ($duration !== '' ? ' ' : '') . $seconds . ($seconds === 1 ? ' second' : ' seconds');
+            }
             $logoutime =  DB::table('login_activities')->where('id', $req->login_activity_id)->update(['logout_time' => $currentlogoutTime, 'duration' => $duration.' Minutes','updated_at' => Carbon::now()]);
             if ($logoutime) {
                 JWTAuth::parseToken()->invalidate();
