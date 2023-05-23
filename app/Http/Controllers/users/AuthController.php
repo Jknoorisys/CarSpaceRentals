@@ -46,7 +46,7 @@ class AuthController extends Controller
                 ->get();
 
             if (!empty($result)) {
-                $otp = rand(1000, 9999);
+                $otp = rand(100000, 999999);
                 $data = $req->input();
                 $user = [
                     'id' => Str::uuid(), 'name' => $data['name'], 'password' => Hash::make($data['password']),
@@ -170,7 +170,7 @@ class AuthController extends Controller
             if (!empty($user)) {
                 if ($user->is_verified == 'no') {
                     // echo 'Hiiiii';exit();
-                    $email_otp = rand(1000, 9999);
+                    $email_otp = rand(100000, 999999);
                     $resend =  User::where('email', '=', $email)->update(['email_otp' => $email_otp, 'is_verified' => 'yes', 'updated_at' => date('Y-m-d H:i:s')]);
                     if ($resend == true) {
                         $user = User::where('email', '=', $email)->first();
