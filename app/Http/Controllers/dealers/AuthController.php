@@ -48,7 +48,7 @@ class AuthController extends Controller
                 ->get();
 
             if (!empty($result)) {
-                $otp = rand(1000, 9999);
+                $otp = rand(100000, 999999);
                 $data = $req->input();
                 $dealer = [
                     'id' => Str::uuid(), 'name' => $data['name'], 'password' => Hash::make($data['password']),
@@ -173,7 +173,7 @@ class AuthController extends Controller
             if (!empty($dealer)) {
 
                 if ($dealer->is_verified == 'no') {
-                    $email_otp = rand(1000, 9999);
+                    $email_otp = rand(100000, 999999);
                     $resend =  Dealers::where('email', '=', $email)->update(['email_otp' => $email_otp, 'is_verified' => 'yes', 'updated_at' => date('Y-m-d H:i:s')]);
                     if ($resend == true) {
                         $dealer = Dealers::where('email', '=', $email)->first();
