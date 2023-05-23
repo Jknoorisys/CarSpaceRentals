@@ -232,7 +232,7 @@ class CarController extends Controller
                     ->leftJoin('cars','cars.id','=','bookings.car_id')
                     ->where('bookings.car_id',$req->car_id)
                     ->where('bookings.dealer_id',$req->dealer_id)
-                    ->select('bookings.*','locations.name as location_name','plots.plot_number as plot_number','cars.name as car_name',
+                    ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
                     'dealers.name as dealer_name','dealers.email as dealer_email',
                     'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')->orderBy('id','asc')
                     ->get();
