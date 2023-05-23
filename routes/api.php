@@ -110,6 +110,7 @@ Route::prefix('admin')->group(function () {
 
         //Manage Featured Car
         Route::post('getFeaturedCar' , [FeaturedCarController::class, 'getFeaturedCar']);
+        Route::post('GetDetailsFeaturedCar' , [FeaturedCarController::class, 'GetDetailsFeaturedCar']);
 
     });
 });
