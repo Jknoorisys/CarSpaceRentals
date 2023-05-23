@@ -432,7 +432,7 @@ class DealerController extends Controller
             $plots = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
                                     ->orderBy('locations.name')
-                                    ->get(['sc.*','plots.plot_number','cars.name as car_name','locations.name as location_name']);
+                                    ->get(['sc.*','plots.plot_name','cars.name as car_name','locations.name as location_name']);
 
             if (!($plots->isEmpty())) {
                 return response()->json([
