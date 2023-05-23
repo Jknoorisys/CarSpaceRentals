@@ -191,6 +191,9 @@ class LocationController extends Controller
             $locationDetails = DB::table('locations')->where('id', '=', $location_id)->first();
 
             if (!empty($locationDetails)) {
+
+                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_name')->get();
+                
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-location-details.success'),

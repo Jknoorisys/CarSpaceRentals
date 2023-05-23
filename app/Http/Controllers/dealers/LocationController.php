@@ -153,7 +153,7 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $db = DB::table('dealer_plots as sc')
+            $db = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
@@ -294,7 +294,7 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $locations = DB::table('dealer_plots as sc')
+            $locations = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
@@ -408,7 +408,7 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $db = DB::table('dealer_plots as sc')
+            $db = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id');
 

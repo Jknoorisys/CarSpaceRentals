@@ -33,11 +33,11 @@ class CarController extends Controller
             $per_page = 4;
             $page_number = $req->input(key:'page_number', default:1);
 
-            $db = DB::table('dealer_plots')->join('plots','plots.id','=','dealer_plots.plot_id')
-                        ->join('locations','locations.id','=','dealer_plots.location_id')
-                        ->join('dealers','dealers.id','=','dealer_plots.dealer_id')
-                        ->join('cars','cars.id','=','dealer_plots.car_id')
-                        ->select('dealer_plots.*','cars.name as car_name','cars.brand as car_brand','cars.condition as car_condition',
+            $db = DB::table('bookings')->join('plots','plots.id','=','bookings.plot_id')
+                        ->join('locations','locations.id','=','bookings.location_id')
+                        ->join('dealers','dealers.id','=','bookings.dealer_id')
+                        ->join('cars','cars.id','=','bookings.car_id')
+                        ->select('bookings.*','cars.name as car_name','cars.brand as car_brand','cars.condition as car_condition',
                         'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
                         'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name');
                         // return $db;exit;
@@ -98,11 +98,11 @@ class CarController extends Controller
             $per_page = 10;
             $page_number = $req->input(key:'page_number', default:1);
 
-            $db = DB::table('dealer_plots')->join('plots','plots.id','=','dealer_plots.plot_id')
-            ->join('locations','locations.id','=','dealer_plots.location_id')
-            ->join('dealers','dealers.id','=','dealer_plots.dealer_id')
-            ->join('cars','cars.id','=','dealer_plots.car_id')
-            ->select('dealer_plots.*','cars.name as car_name','cars.brand as car_brand','cars.condition as car_condition',
+            $db = DB::table('bookings')->join('plots','plots.id','=','bookings.plot_id')
+            ->join('locations','locations.id','=','bookings.location_id')
+            ->join('dealers','dealers.id','=','bookings.dealer_id')
+            ->join('cars','cars.id','=','bookings.car_id')
+            ->select('bookings.*','cars.name as car_name','cars.brand as car_brand','cars.condition as car_condition',
             'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
             'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name');
 
@@ -170,12 +170,12 @@ class CarController extends Controller
 
             // if(!empty($condition))
             // {
-                $db = DB::table('dealer_plots')->join('plots','plots.id','=','dealer_plots.plot_id')
-                            ->join('locations','locations.id','=','dealer_plots.location_id')
-                            ->join('dealers','dealers.id','=','dealer_plots.dealer_id')
-                            ->join('cars','cars.id','=','dealer_plots.car_id')
+                $db = DB::table('bookings')->join('plots','plots.id','=','bookings.plot_id')
+                            ->join('locations','locations.id','=','bookings.location_id')
+                            ->join('dealers','dealers.id','=','bookings.dealer_id')
+                            ->join('cars','cars.id','=','bookings.car_id')
                             ->join('brands','brands.id','=','cars.brand')
-                            ->select('dealer_plots.*','cars.name as car_name','cars.condition as car_condition',
+                            ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                             'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
                             'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
                             'brands.name as car_brand_name');
@@ -260,15 +260,15 @@ class CarController extends Controller
             $page_number = $req->input(key:'page_number', default:1);
             // $db = DB::table('featured_cars')->join('cars','cars.id','=','featured_cars.car_id')
             //             // ->join('dealers','dealers.id','=','featured_cars.dealer_id')
-            //             ->join('dealers','dealers.id','=','dealer_plots.dealer_id')
-            //             ->join('locations','locations.id','=','dealer_plots.location_id')
+            //             ->join('dealers','dealers.id','=','bookings.dealer_id')
+            //             ->join('locations','locations.id','=','bookings.location_id')
             //             ->select('featured_cars.*','cars.name as car_name','cars.condition as car_condition',
             //             'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type','locations.name as location_name',
             //             'cars.fuel_type as car_fuel_type','cars.price as car_price')
             //             ->get();
             $db = DB::table('cars')->leftjoin('dealers','dealers.id','=','cars.dealer_id')
-                        ->leftjoin('dealer_plots','dealer_plots.car_id','=','cars.id')
-                        ->leftjoin('locations','locations.id','=','dealer_plots.location_id')
+                        ->leftjoin('bookings','bookings.car_id','=','cars.id')
+                        ->leftjoin('locations','locations.id','=','bookings.location_id')
                         ->leftjoin('brands','brands.id','=','cars.brand')
                         ->where('cars.is_featured','=','yes')
                         ->select('cars.*','locations.name as location_name','brands.name as brand_name');
