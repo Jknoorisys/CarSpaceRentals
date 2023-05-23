@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('user_id');
             $table->enum('user_type',['user','dealer','admin']);
-            $table->string('device_id');
+            // $table->string('device_id');
             $table->string('ip_address');
             $table->string('login_date');
             $table->string('login_time');

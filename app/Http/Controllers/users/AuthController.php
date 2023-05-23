@@ -218,7 +218,7 @@ class AuthController extends Controller
             'language' => 'required',
             'email' => 'required',
             'password'   => 'required',
-            'device_id' => 'required',
+            // 'device_id' => 'required',
             'ip_address' => 'required',
 
         ]);
@@ -261,7 +261,7 @@ class AuthController extends Controller
                             
                             $userLog = ['id' => Str::uuid('36'), 'user_id' => $user_id->id,  'login_date' => $currentDate, 
                             'device_id' => $req->device_id,'ip_address' => $req->ip_address,'login_time' => $currentTime, 
-                            'user_type' => 'user','device_id' => $req->device_id,'ip_address' => $req->ip_address,'created_at' => Carbon::now()];
+                            'user_type' => 'user','ip_address' => $req->ip_address,'created_at' => Carbon::now()];
                             $logintime =  DB::table('login_activities')->insert($userLog);
                             $user_id->user_login_activity_id=$userLog['id'];
                             $user_id->JWT_token = $user->token;
