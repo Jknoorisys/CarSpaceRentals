@@ -235,8 +235,9 @@ class AuthController extends Controller
             $user  = user::where('email', $email)
                 ->take(1)->first();
 
-            if ($user) {
-                // if ($user->is_email_verified == 'verified') {
+            if($user) 
+            {
+                
                 if (Hash::check($password,$user->password)) {
 
 
@@ -277,20 +278,17 @@ class AuthController extends Controller
                                 400
                             );
                         }
-                    }else {
-                        return response()->json(
-                            [
-                                'status'    => 'failed',
-                                'message'   =>  __('msg.user.validation.inactive'),
-                        ], 400);
-                    }
-                }else {
+                }
+                else 
+                {
                     return response()->json([
                             'status'    => 'failed',
                             'message'   =>  __('msg.user.validation.incpass'),
                     ], 400);
                 }
-            } else {
+            } 
+            else 
+            {
                 return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.validation.incmail'),
