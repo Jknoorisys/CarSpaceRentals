@@ -469,4 +469,5 @@ class LocationLineController extends Controller
             ],500);
         }
     }
+    
 }
