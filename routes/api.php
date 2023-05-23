@@ -94,9 +94,11 @@ Route::prefix('admin')->group(function () {
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
 
         // Manage Location Lines
-        Route::post('add-line' , [LocationLineController::class, 'addLocationLine']); 
-        Route::post('get-all-locations' , [AdminLocationController::class, 'getLocations']); 
-        Route::post('get-location-details' , [AdminLocationController::class, 'getLocationDetails']); 
+        Route::post('add-lane' , [LocationLineController::class, 'addLocationLine']); 
+        Route::post('change-lane-status' , [LocationLineController::class, 'changeLaneStatus']);
+        Route::post('get-all-lanes' , [LocationLineController::class, 'getAllLines']); 
+        Route::post('get-lane-details' , [LocationLineController::class, 'getLineDetails']); 
+        Route::post('edit-plot' , [LocationLineController::class, 'editPlotDetails']); 
 
         // Manage Admins
         Route::post('get-all-admins' , [AdminController::class, 'getAllAdmins']);

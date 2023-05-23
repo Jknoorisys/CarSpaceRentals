@@ -140,6 +140,35 @@ return [
             'invalid'  => 'Location Not Found',
         ],
 
+        // Manage Location Lines
+        'add-line' => [
+            'success' => 'Lane Details Added Successfully',
+            'failure' => 'Unable to Add Lane Details',
+        ],
+
+        'lane-status' => [
+            'active'   => 'Lane Activated Successfully',
+            'inactive' => 'Lane Inactivated Successfully',
+            'failure'  => 'Unable to Change Lane Status',
+            'invalid'  => 'Lane Not Found',
+        ],
+
+        'get-lines' => [
+            'success' => 'Lane List Fetched Successfully',
+            'failure' => 'Lane Not Found',
+        ],
+
+        'get-line-details' => [
+            'success' => 'Line Details Fetched Successfully',
+            'failure' => 'Line Not Found',
+        ],
+
+        'edit-plot' => [
+            'success' => 'Plot Details Updated Successfully',
+            'failure' => 'Unable to Update Plot Details',
+            'invalid' => 'Plot Not Found',
+        ],
+
         // Manage Admins
         'get-admins' => [
             'success' => 'Admins List Fetched Successfully',
@@ -303,5 +332,7 @@ return [
         'invalid-customer' => 'Customer Not Found',
         'invalid-dealer'   => 'Dealer Not Found',
         'invalid-location' => 'Location Not Found',
+        'invalid-line'     => 'Lane Not Found',
+        'invalid-plot'     => 'Plot Not Found',
     ],
 ];

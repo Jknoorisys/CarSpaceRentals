@@ -391,6 +391,8 @@ class LocationController extends Controller
             if (!empty($location)) {
                 $statusChange = DB::table('locations')->where('id', '=', $location_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
                 if ($statusChange) {
+                    DB::table('plot_lines')->where('location_id', '=', $location_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
+                    DB::table('plots')->where('location_id', '=', $location_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
 
                     $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';
                     $adminData = [
@@ -430,6 +432,5 @@ class LocationController extends Controller
             ],500);
         }
     }
-
     
 }
