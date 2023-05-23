@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('dealer_plots', function (Blueprint $table) {
+        Schema::create('bookings', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('plot_id');
             $table->string('location_id');
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dealer_plots');
+        Schema::dropIfExists('bookings');
     }
 };

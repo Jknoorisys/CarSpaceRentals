@@ -417,7 +417,7 @@ class DealerController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('dealer_plots as sc')->where([['sc.dealer_id', '=', $dealer_id],['sc.status', '=', 'active']])
+            $db = DB::table('bookings as sc')->where([['sc.dealer_id', '=', $dealer_id],['sc.status', '=', 'active']])
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
                         ->leftJoin('cars', 'cars.id', '=', 'sc.car_id')
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id');
@@ -432,7 +432,7 @@ class DealerController extends Controller
             $plots = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
                                     ->orderBy('locations.name')
-                                    ->get(['sc.*','plots.plot_number','cars.name as car_name','locations.name as location_name']);
+                                    ->get(['sc.*','plots.plot_name','cars.name as car_name','locations.name as location_name']);
 
             if (!($plots->isEmpty())) {
                 return response()->json([

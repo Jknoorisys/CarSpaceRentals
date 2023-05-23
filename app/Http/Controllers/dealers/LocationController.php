@@ -99,7 +99,7 @@ class LocationController extends Controller
 
             if (!empty($locationDetails)) {
                 $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
-                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_number')->get();
+                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_name')->get();
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.dealer.get-location-details.success'),
@@ -153,7 +153,7 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $db = DB::table('dealer_plots as sc')
+            $db = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
@@ -172,7 +172,7 @@ class LocationController extends Controller
             $plots = $db->orderBy('park_in_date')
                         ->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
-                        ->get(['locations.name as location_name', 'plots.plot_number as plot_number', 'cars.name as car_name', 'sc.*']);
+                        ->get(['locations.name as location_name', 'plots.plot_name as plot_name', 'cars.name as car_name', 'sc.*']);
 
             if (!($plots->isEmpty())) {
                 return response()->json([
@@ -294,7 +294,7 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $locations = DB::table('dealer_plots as sc')
+            $locations = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
@@ -353,7 +353,7 @@ class LocationController extends Controller
 
             $plots = DB::table('plots as sc')
                         ->where('sc.location_id', '=', $location_id)
-                        ->orderBy('sc.plot_number')
+                        ->orderBy('sc.plot_name')
                         ->get();
 
             if (!($plots->isEmpty())) {
@@ -408,7 +408,7 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $db = DB::table('dealer_plots as sc')
+            $db = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id');
 
