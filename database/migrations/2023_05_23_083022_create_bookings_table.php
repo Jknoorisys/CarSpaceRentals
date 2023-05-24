@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('plot_id');
+            $table->string('line_id');
             $table->string('location_id');
             $table->string('dealer_id');
             $table->string('car_id');
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->enum('duration_type',['day','week','month','year']);
             $table->string('duration');
             $table->string('rent');
-            $table->enum('status',['active','expired'])->default('active');
+            $table->enum('status',['active','expired','upcoming'])->default('upcoming');
             $table->timestamps();
         });
     }

@@ -13,6 +13,10 @@ class Dealers extends Model implements JWTSubject
 {
     use HasFactory;
     use Notifiable;
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
+    
     public function getJWTIdentifier()
     {
         return $this->getKey();

@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AdminActivity extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
 }

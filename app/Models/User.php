@@ -12,6 +12,9 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable  implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.

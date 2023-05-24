@@ -278,6 +278,7 @@ return [
 
     // Dealer
     'dealer' => [
+
         // Location Module By Javeriya Kauser
         'get-locations' => [
             'success' => 'Locations List Fetched Successfully',
@@ -287,6 +288,11 @@ return [
         'get-location-details' => [
             'success' => 'Locations Details Fetched Successfully',
             'failure' => 'Location Not Found',
+        ],
+
+        'get-lines' => [
+            'success' => 'Lane List Based On Selected Location Fetched Successfully',
+            'failure' => 'Lane Not Found',
         ],
 
         // Dealer Car Module By Javeriya

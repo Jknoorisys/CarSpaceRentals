@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class FeaturedCars extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
 }
