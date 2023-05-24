@@ -98,13 +98,243 @@ class LocationController extends Controller
             $locationDetails = DB::table('locations')->where([['id', '=', $location_id],['status', '=', 'active']])->first();
 
             if (!empty($locationDetails)) {
-                $locationDetails->total_plots = DB::table('plots')->where('location_id', '=', $location_id)->count();
-                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_name')->get();
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.dealer.get-location-details.success'),
                     'data'      => $locationDetails
                 ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-location-details.failure'),
+                ],400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+    
+    public function getLocationList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+           
+            $locations = DB::table('locations')
+                        ->where('status', '=', 'active')
+                        ->orderBy('name')
+                        ->get();
+
+            if (!($locations->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-locations.success'),
+                    'data'      => $locations
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-locations.failure'),
+                    'data'      => [],
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getLinesBasedOnLocations(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+            $location_id = $request->location_id;
+
+            $location = validateLocation($location_id);
+            if (empty($location) || $location->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-location'),
+                ],400);
+            }
+
+            $lines = DB::table('plot_lines')
+                        ->where([['location_id', '=', $location_id],['status', '=', 'active']])
+                        ->orderBy('line_name')
+                        ->get();
+
+            if (!($lines->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-lines.success'),
+                    'data'      => $lines
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-lines.failure'),
+                    'data'      => [],
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getAvailablePlotsByDate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'      => 'required',
+            'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
+            'line_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
+            'start_date'    => 'required|date',
+            'duration_type' => ['required', Rule::in(['day', 'week', 'month', 'year'])],
+            'duration'      => 'required|numeric'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+
+            $location_id = $request->location_id;
+            $line_id     = $request->line_id;
+
+            $location = validateLocation($location_id);
+            if (empty($location) || $location->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-location'),
+                ],400);
+            }
+
+            $line = validateLine($line_id);
+            if (empty($line) || $line->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-line'),
+                ],400);
+            }
+
+            $duration_type = $request->duration_type;
+            $duration = $request->duration;
+            $start_date = Carbon::createFromFormat('Y-m-d', $request->start_date);
+            $end_date = $start_date->copy(); 
+
+            if (!empty($duration_type) && $duration_type == 'day') {
+                $end_date->addDays($duration);
+            } elseif (!empty($duration_type) && $duration_type == 'week') {
+                $end_date->addWeeks($duration);
+            } elseif (!empty($duration_type) && $duration_type == 'month') {
+                $end_date->addMonths($duration);
+            } elseif (!empty($duration_type) && $duration_type == 'year') {
+                $end_date->addYears($duration);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => trans('msg.dealer.get-available-plots.invalid-duration-type'),
+                ], 400);
+            }
+
+            if (!empty($end_date)) {
+                $start_date_formatted = $start_date->format('Y-m-d'); // Format start date
+                $end_date_formatted = $end_date->format('Y-m-d');
+                
+                $locationPlots = DB::table('plots as sc')->where([['sc.location_id', '=' , $location_id],['sc.line_id', '=', $line_id]])->orderBy('sc.plot_name')->get();
+                $availablePlots = [];
+                foreach ($locationPlots as $plot) {
+                    $bookedPlots = DB::table('bookings as sc')
+                                        ->where('sc.plot_id', '=' , $plot->id)
+                                        ->where('sc.location_id', '=' , $location_id)
+                                        ->where('sc.line_id', '=' , $line_id)
+                                        ->whereIn('sc.status', ['active', 'upcoming'])
+                                        ->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                            $query->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                                $query->where('sc.park_in_date', '>=', $start_date_formatted)
+                                                    ->where('sc.park_in_date', '<=', $end_date_formatted);
+                                            })->orWhere(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                                $query->where('sc.park_out_date', '>=', $start_date_formatted)
+                                                    ->where('sc.park_out_date', '<=', $end_date_formatted);
+                                            })->orWhere(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                                $query->where('sc.park_in_date', '<=', $start_date_formatted)
+                                                    ->where('sc.park_out_date', '>=', $end_date_formatted);
+                                            });
+                                        })
+                                        ->first(['sc.*', DB::raw("'booked' as status")]);
+                        if (empty($bookedPlots)) {
+                            $plot->status = 'available';
+                            $availablePlots[] = $plot;
+                        } else {
+                            $availablePlots[] = $bookedPlots;
+                        }
+                }
+                return $availablePlots;
+                exit;
+                $availablePlots = DB::table('bookings as sc')
+                                    // ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
+                                    ->leftJoin('plot_lines as lines', 'lines.id', '=', 'sc.line_id')
+                                    ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
+                                    // ->leftJoin('dealers', 'dealers.id', '=', 'sc.dealer_id')
+                                    ->where('sc.location_id', '=' , $location_id)
+                                    ->whereIn('sc.status', ['active', 'upcoming'])
+                                    ->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                        $query->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                            $query->where('sc.park_in_date', '>=', $start_date_formatted)
+                                                ->where('sc.park_in_date', '<=', $end_date_formatted);
+                                        })->orWhere(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                            $query->where('sc.park_out_date', '>=', $start_date_formatted)
+                                                ->where('sc.park_out_date', '<=', $end_date_formatted);
+                                        })->orWhere(function ($query) use ($start_date_formatted, $end_date_formatted) {
+                                            $query->where('sc.park_in_date', '<=', $start_date_formatted)
+                                                ->where('sc.park_out_date', '>=', $end_date_formatted);
+                                        });
+                                    })
+                                    ->orderBy('sc.park_in_date')
+                                    ->get(['lines.line_name', 'plots.plot_name','sc.*', DB::raw("'booked' as slot_status")]);
+
+                                        return $availablePlots;
+            }
+                
+            if (!empty($location)) {
+
             } else {
                 return response()->json([
                     'status'    => 'failed',
@@ -441,83 +671,4 @@ class LocationController extends Controller
         }
     }
 
-    public function getAvailablePlotsByDate(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'language'      => 'required',
-            'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
-            'start_date'    => 'required|date',
-            'duration_type' => ['required', Rule::in(['day', 'week', 'month', 'year'])],
-            'duration'      => 'required|numeric'
-        ]);
-
-        if($validator->fails()){
-            return response()->json([
-                'status'    => 'failed',
-                'message'   => trans('msg.Validation Failed!'),
-                'errors'    => $validator->errors()
-            ],400);
-        }
-
-        try {
-
-            $location_id = $request->location_id;
-
-            $location = validateLocation($location_id);
-            if (empty($location) || $location->status != 'active') {
-                return response()->json([
-                    'status'    => 'failed',
-                    'message'   => trans('msg.helper.invalid-location'),
-                ],400);
-            }
-
-            if (!empty($location)) {
-
-                $duration_type = $request->duration_type;
-                $duration = $request->duration;
-                $start_date = Carbon::createFromFormat('Y-m-d', $request->start_date);
-                
-                if (!empty($duration_type) && $duration_type == 'day') {
-                    $end_date = $start_date->addDays($duration);
-                } elseif(!empty($duration_type) && $duration_type == 'week') {
-                    $end_date = $start_date->addWeeks($duration);
-                } elseif(!empty($duration_type) && $duration_type == 'month') {
-                    $end_date = $start_date->addMonths($duration);
-                } elseif(!empty($duration_type) && $duration_type == 'year') {
-                    $end_date = $start_date->addYears($duration);
-                } else{
-                    return response()->json([
-                        'status'    => 'failed',
-                        'message'   => trans('msg.dealer.get-available-plots.invalid-duration-type'),
-                    ],400);
-                }
-                
-                if (!empty($end_date)) {
-                    $db = DB::table('bookings as sc');
-                    
-                    $availablePlots = $db->where([['location_id', '=' , $location_id], ['status', '=', 'active']])
-                                         
-                                        ->where(function ($query) use ($start_date, $end_date) {
-                                            $query->whereDate('sc.park_in_date', '>=', $start_date)
-                                                ->whereDate('sc.park_in_date', '<=', $end_date);
-                                        })
-                                         ->orderBy('park_in_date')
-                                         ->get();
-
-                                         return $availablePlots;
-                }
-            } else {
-                return response()->json([
-                    'status'    => 'failed',
-                    'message'   => trans('msg.dealer.get-location-details.failure'),
-                ],400);
-            }
-        } catch (\Throwable $e) {
-            return response()->json([
-                'status'    => 'failed',
-                'message'   => trans('msg.error'),
-                'error'     => $e->getMessage()
-            ],500);
-        }
-    }
 }
