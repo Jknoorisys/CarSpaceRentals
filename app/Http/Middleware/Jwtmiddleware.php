@@ -8,7 +8,7 @@ use Exception;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
-class JWTmiddleware
+class Jwtmiddleware
 {
     /**
      * Handle an incoming request.
