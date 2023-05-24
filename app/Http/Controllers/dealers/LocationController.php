@@ -11,10 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=utf8");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control");
-
 class LocationController extends Controller
 {
     public function __construct() {
@@ -219,7 +215,7 @@ class LocationController extends Controller
         $validator = Validator::make($request->all(), [
             'language'      => 'required',
             'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
-            'line_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
+            'lane_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
             'start_date'    => 'required|date',
             'duration_type' => ['required', Rule::in(['day', 'week', 'month', 'year'])],
             'duration'      => 'required|numeric'
@@ -236,7 +232,7 @@ class LocationController extends Controller
         try {
 
             $location_id = $request->location_id;
-            $line_id     = $request->line_id;
+            $line_id     = $request->lane_id ? $request->lane_id : '';
 
             $location = validateLocation($location_id);
             if (empty($location) || $location->status != 'active') {
@@ -275,16 +271,32 @@ class LocationController extends Controller
             }
 
             if (!empty($end_date)) {
-                $start_date_formatted = $start_date->format('Y-m-d'); // Format start date
+                $start_date_formatted = $start_date->format('Y-m-d');
                 $end_date_formatted = $end_date->format('Y-m-d');
                 
-                $locationPlots = DB::table('plots as sc')->where([['sc.location_id', '=' , $location_id],['sc.line_id', '=', $line_id]])->orderBy('sc.plot_name')->get();
+                $db = DB::table('plots as sc')->where('sc.location_id', '=' , $location_id);
+
+                if (!empty($line_id)) {
+                    $db->where('sc.line_id', '=' , $line_id);
+                }
+
+                $selected_duration = [
+                    'park_in_date'  => $start_date_formatted,
+                    'park_out_date' => $end_date_formatted,
+                    'duration_type' => $duration_type,
+                    'duration'      => $duration
+                ];
+
+                $total = $db->count();
+                $locationPlots = $db->orderBy('sc.plot_name')->get();
                 $availablePlots = [];
+                $availablePlots['selected_duration'] = $selected_duration; 
                 foreach ($locationPlots as $plot) {
                     $bookedPlots = DB::table('bookings as sc')
                                         ->where('sc.plot_id', '=' , $plot->id)
                                         ->where('sc.location_id', '=' , $location_id)
                                         ->where('sc.line_id', '=' , $line_id)
+                                        ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
                                         ->whereIn('sc.status', ['active', 'upcoming'])
                                         ->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
                                             $query->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
@@ -298,47 +310,29 @@ class LocationController extends Controller
                                                     ->where('sc.park_out_date', '>=', $end_date_formatted);
                                             });
                                         })
-                                        ->first(['sc.*', DB::raw("'booked' as status")]);
-                        if (empty($bookedPlots)) {
-                            $plot->status = 'available';
-                            $availablePlots[] = $plot;
-                        } else {
-                            $availablePlots[] = $bookedPlots;
-                        }
-                }
-                return $availablePlots;
-                exit;
-                $availablePlots = DB::table('bookings as sc')
-                                    // ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
-                                    ->leftJoin('plot_lines as lines', 'lines.id', '=', 'sc.line_id')
-                                    ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
-                                    // ->leftJoin('dealers', 'dealers.id', '=', 'sc.dealer_id')
-                                    ->where('sc.location_id', '=' , $location_id)
-                                    ->whereIn('sc.status', ['active', 'upcoming'])
-                                    ->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
-                                        $query->where(function ($query) use ($start_date_formatted, $end_date_formatted) {
-                                            $query->where('sc.park_in_date', '>=', $start_date_formatted)
-                                                ->where('sc.park_in_date', '<=', $end_date_formatted);
-                                        })->orWhere(function ($query) use ($start_date_formatted, $end_date_formatted) {
-                                            $query->where('sc.park_out_date', '>=', $start_date_formatted)
-                                                ->where('sc.park_out_date', '<=', $end_date_formatted);
-                                        })->orWhere(function ($query) use ($start_date_formatted, $end_date_formatted) {
-                                            $query->where('sc.park_in_date', '<=', $start_date_formatted)
-                                                ->where('sc.park_out_date', '>=', $end_date_formatted);
-                                        });
-                                    })
-                                    ->orderBy('sc.park_in_date')
-                                    ->get(['lines.line_name', 'plots.plot_name','sc.*', DB::raw("'booked' as slot_status")]);
+                                        ->first(['plots.*', DB::raw("'booked' as status")]);
 
-                                        return $availablePlots;
+                    if (empty($bookedPlots)) {
+                        $plot->status = 'available';
+                        $availablePlots[] = $plot;
+                    } else {
+                        $availablePlots[] = $bookedPlots;
+                    }
+                }
             }
                 
-            if (!empty($location)) {
-
+            if (!empty($availablePlots)) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-available-plots.success'),
+                    'total'     => $total,
+                    'data'      => $availablePlots
+                ],200);
             } else {
                 return response()->json([
                     'status'    => 'failed',
-                    'message'   => trans('msg.dealer.get-location-details.failure'),
+                    'message'   => trans('msg.dealer.get-available-plots.failure'),
+                    'data'      => []
                 ],400);
             }
         } catch (\Throwable $e) {

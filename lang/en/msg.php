@@ -300,6 +300,11 @@ return [
             'failure' => 'Lane Not Found',
         ],
 
+        'get-available-plots' => [
+            'success' => 'Plots Based On Selected Date, Location and Lane Fetched Successfully',
+            'failure' => 'Plots Not Found',
+        ],
+
         // Dealer Car Module By Javeriya
         'get-dealer-cars' => [
             'success' => 'Dealer Car List Fetched Successfully',
