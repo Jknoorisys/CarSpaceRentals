@@ -272,6 +272,11 @@ return [
             'featured' => 'Featured Car List',
             'notfeature' => 'No Featured Car List'
         ],
+
+        'car_details' => [
+            'success' => 'Car Details',
+            'failure' => 'Car Details Not Found',
+        ],
       
     ],
 

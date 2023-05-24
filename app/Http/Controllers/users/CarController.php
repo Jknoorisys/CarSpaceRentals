@@ -308,7 +308,6 @@ class CarController extends Controller
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
-            ''
             
         ]);
         if ($validator->fails()) {
@@ -326,11 +325,43 @@ class CarController extends Controller
             $car = DB::table('cars')->where('id',$req->car_id)->first();
             if(!empty($car))
             {
-                return "car";
+                $car_details = DB::table('bookings')->leftJoin('cars','cars.id','=','bookings.car_id')
+                                    ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                    ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                    ->where('cars.id','=',$req->car_id)
+                                    ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
+                                    'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
+                                    'cars.fuel_type as car_fuel_type','locations.name as location_name',
+                                    'locations.location as car_location','plots.plot_name as car_plot_name',
+                                    'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
+                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
+                                    'cars.description as car_description')
+                                    ->get();
+                                    // return $car_details->dealer_id;
+                                    if(!empty($car_details))
+                                    {
+                                        return response()->json([
+                                            'status'    => 'Success',
+                                            'message'   => trans('msg.user.car_details.success'),
+                                            'data' => $car_details,
+                                        ],200);
+                                    }
+                                    else
+                                    {
+                                        return response()->json([
+                                            'status'    => 'Failed',
+                                            'message'   => trans('msg.user.car_details.failure'),
+                                        ],400);
+                                    }
+                                    
             }
             else
             {
-                return "not found";
+                return response()->json([
+                    'status'    => 'Failed',
+                    'message'   => trans('msg.user.get-car.failure'),
+                ],400);
             }
 
         } catch (\Throwable $e) {
@@ -341,4 +372,73 @@ class CarController extends Controller
         }
     }
 
+    public function Car_detalils_and_featured_car(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'language' => 'required',
+            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try 
+        {
+            $car = DB::table('cars')->where('id',$req->car_id)->first();
+            if(!empty($car))
+            {
+                $car_details = DB::table('bookings')->leftJoin('cars','cars.id','=','bookings.car_id')
+                                    ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                    ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                    ->where('cars.id','=',$req->car_id)
+                                    ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
+                                    'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
+                                    'cars.fuel_type as car_fuel_type','locations.name as location_name',
+                                    'locations.location as car_location','plots.plot_name as car_plot_name',
+                                    'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
+                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
+                                    'dealers.id as dealer_id','cars.description as car_description')
+                                    ->get();
+                                    // return $car_details;
+                                    if(!empty($car_details))
+                                    {
+                                        
+                                        return response()->json([
+                                            'status'    => 'Success',
+                                            'message'   => trans('msg.user.car_details.success'),
+                                            'data' => $car_details,
+                                        ],200);
+                                    }
+                                    else
+                                    {
+                                        return response()->json([
+                                            'status'    => 'Failed',
+                                            'message'   => trans('msg.user.car_details.failure'),
+                                        ],400);
+                                    }
+                                    
+            }
+            else
+            {
+                return response()->json([
+                    'status'    => 'Failed',
+                    'message'   => trans('msg.user.get-car.failure'),
+                ],400);
+            }
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+            ], 500);
+        }
+    }
 }
