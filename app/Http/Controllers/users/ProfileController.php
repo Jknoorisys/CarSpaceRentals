@@ -6,10 +6,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
+    public function __construct()
+    {
+        $lang = (isset($_POST['language']) && !empty($_POST['language'])) ? $_POST['language'] : 'en';
+        App::setlocale($lang);
+    }
+
     public function getProfile(Request $req)
     {
         $validator = Validator::make($req->all(), [

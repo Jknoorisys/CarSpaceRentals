@@ -8,8 +8,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\Dealers;
+use Illuminate\Support\Facades\App;
+
 class CarController extends Controller
 {
+    public function __construct()
+    {
+        $lang = (isset($_POST['language']) && !empty($_POST['language'])) ? $_POST['language'] : 'en';
+        App::setlocale($lang);
+    }
 
     public function CarList(Request $req)
     {

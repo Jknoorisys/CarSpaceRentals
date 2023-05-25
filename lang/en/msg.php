@@ -362,5 +362,6 @@ return [
         'invalid-location' => 'Location Not Found',
         'invalid-line'     => 'Lane Not Found',
         'invalid-plot'     => 'Plot Not Found',
+        'invalid-car'      => 'Car Not Found',
     ],
 ];
