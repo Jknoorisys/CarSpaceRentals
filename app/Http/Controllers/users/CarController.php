@@ -37,9 +37,10 @@ class CarController extends Controller
                         ->join('locations','locations.id','=','bookings.location_id')
                         ->join('dealers','dealers.id','=','bookings.dealer_id')
                         ->join('cars','cars.id','=','bookings.car_id')
+                        ->join('car_photos','car_photos.car_id','=','cars.id')
                         ->select('bookings.*','cars.name as car_name','cars.brand as car_brand','cars.condition as car_condition',
                         'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
-                        'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name');
+                        'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name','car_photos.photo1 as car_image');
                         // return $db;exit;
 
             // $search = $req->search ? $req->search : '';
@@ -49,16 +50,16 @@ class CarController extends Controller
             
             $total = $db->count();
 
-            $brands = $db->offset(($page_number - 1) * $per_page)
+            $cars = $db->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
                         ->get();
 
-            if (!($brands->isEmpty())) {
+            if (!($cars->isEmpty())) {
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.user.get-car.success'),
                     'total'     => $total,
-                    'data'      => $brands
+                    'data'      => $cars
                 ],200);
             } else {
                 return response()->json([
@@ -102,12 +103,14 @@ class CarController extends Controller
             ->join('locations','locations.id','=','bookings.location_id')
             ->join('dealers','dealers.id','=','bookings.dealer_id')
             ->join('cars','cars.id','=','bookings.car_id')
+            ->join('car_photos','car_photos.car_id','=','cars.id')
             ->select('bookings.*','cars.name as car_name','cars.brand as car_brand','cars.condition as car_condition',
             'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
-            'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name');
+            'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name','car_photos.photo1 as car_image');
 
             $search = $req->search ? $req->search : '';
             if (!empty($search)) {
+
                 $db->where('cars.name', 'LIKE', "%$search%");
             }
             
@@ -175,10 +178,11 @@ class CarController extends Controller
                             ->join('dealers','dealers.id','=','bookings.dealer_id')
                             ->join('cars','cars.id','=','bookings.car_id')
                             ->join('brands','brands.id','=','cars.brand')
+                            ->join('car_photos','car_photos.car_id','=','cars.id')
                             ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                             'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
                             'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
-                            'brands.name as car_brand_name');
+                            'brands.name as car_brand_name','car_photos.photo1 as car_image');
 
                             
                             if (!empty($condition)) 
@@ -270,8 +274,9 @@ class CarController extends Controller
                         ->leftjoin('bookings','bookings.car_id','=','cars.id')
                         ->leftjoin('locations','locations.id','=','bookings.location_id')
                         ->leftjoin('brands','brands.id','=','cars.brand')
+                        ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                         ->where('cars.is_featured','=','yes')
-                        ->select('cars.*','locations.name as location_name','brands.name as brand_name');
+                        ->select('cars.*','locations.name as location_name','brands.name as brand_name','car_photos.photo1 as car_image');
                         
             
             $total = $db->count();
@@ -329,6 +334,7 @@ class CarController extends Controller
                                     ->leftJoin('locations','locations.id','=','bookings.location_id')
                                     ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
                                     ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                    ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                     ->where('cars.id','=',$req->car_id)
                                     ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                                     'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
@@ -339,7 +345,10 @@ class CarController extends Controller
                                     'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
                                     'locations.location as car_location','plots.plot_name as car_plot_name',
                                     'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
-                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no'
+                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
+                                    'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
+                                    'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5'
+
                                     )
                                     ->first();
                                     // return $car_details;
@@ -402,6 +411,7 @@ class CarController extends Controller
                                     ->leftJoin('locations','locations.id','=','bookings.location_id')
                                     ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
                                     ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                    ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                     ->where('cars.id','=',$req->car_id)
                                     ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                                     'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
@@ -412,7 +422,10 @@ class CarController extends Controller
                                     'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
                                     'locations.location as car_location','plots.plot_name as car_plot_name',
                                     'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
-                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no')
+                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
+                                    'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
+                                    'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5'
+)
                                     ->first();
                                     // return $car_details;
                                     if(!empty($car_details))
@@ -422,9 +435,12 @@ class CarController extends Controller
                                                             ->leftjoin('bookings','bookings.car_id','=','cars.id')
                                                             ->leftjoin('locations','locations.id','=','bookings.location_id')
                                                             // ->leftjoin('brands','brands.id','=','cars.brand')
+                                                            ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                                             ->where('cars.is_featured','=','yes')
                                                             ->where('cars.dealer_id','=',$car_details->dealer_id)
-                                                            ->select('cars.*','locations.name as location_name')
+                                                            ->select('cars.*','locations.name as location_name',
+                                                            'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
+                                                            'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5')
                                                             ->get();
                                                             // return $featured_car;
                                         $car_details->list_of_featured_car = $featured_car;
@@ -485,6 +501,7 @@ class CarController extends Controller
                             ->leftJoin('cars','cars.id','=','bookings.car_id')
                             ->leftJoin('locations','locations.id','=','bookings.location_id')
                             ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                            ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                             ->where('bookings.dealer_id','=',$req->dealer_id)
                             ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                             'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
@@ -495,7 +512,9 @@ class CarController extends Controller
                             'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
                             'locations.location as car_location','plots.plot_name as car_plot_name',
                             'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
-                            'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no')
+                            'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
+                            'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
+                            'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5')
                             ->get();
                             
                 if(!empty($car))
@@ -522,4 +541,6 @@ class CarController extends Controller
             ], 500);
         }
     }
+
+
 }
