@@ -453,6 +453,7 @@ class LocationController extends Controller
 
             $db = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
+                        ->whereIn('sc.status', ['active', 'upcoming'])
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
                         ->leftJoin('cars', 'cars.id', '=', 'sc.car_id');
@@ -594,11 +595,10 @@ class LocationController extends Controller
 
             $locations = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
+                        ->whereIn('sc.status', ['active', 'upcoming'])
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
-                        ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
-                        ->leftJoin('cars', 'cars.id', '=', 'sc.car_id')
                         ->distinct()
-                        ->orderBy('park_in_date')
+                        ->orderBy('locations.name')
                         ->get(['locations.*']);
 
             if (!($locations->isEmpty())) {
@@ -649,10 +649,14 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $plots = DB::table('plots as sc')
-                        ->where('sc.location_id', '=', $location_id)
-                        ->orderBy('sc.plot_name')
-                        ->get();
+            $plots = DB::table('bookings as sc')
+                            ->where('sc.location_id', '=', $location_id)
+                            ->whereIn('sc.status', ['active', 'upcoming'])
+                            ->where('sc.car_id', '=', '')
+                            ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
+                            ->distinct()
+                            ->orderBy('plots.plot_name')
+                            ->get(['plots.*','sc.id as booking_id']);
 
             if (!($plots->isEmpty())) {
                 return response()->json([
@@ -676,6 +680,7 @@ class LocationController extends Controller
         }
     }
 
+    // Not Required
     public function getDealerAllPlotsList(Request $request)
     {
         $validator = Validator::make($request->all(), [

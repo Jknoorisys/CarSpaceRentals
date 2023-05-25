@@ -5,7 +5,6 @@ namespace App\Http\Controllers\dealers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Dealers;
 use App\Models\Cars;
 use App\Models\CarPhotos;
 use Illuminate\Support\Facades\Validator;
@@ -16,6 +15,12 @@ use Illuminate\Validation\Rule;
 
 class CarController extends Controller
 {
+    public function __construct()
+    {
+        $lang = (isset($_POST['language']) && !empty($_POST['language'])) ? $_POST['language'] : 'en';
+        App::setlocale($lang);
+    }
+
     public function addCar(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -55,21 +60,18 @@ class CarController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json(
-                [
+            return response()->json([
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
                     'message'   =>  __('msg.user.validation.fail'),
-                ],
-                400
-            );
+                ],400);
         }
+
         try 
         {
             $dealer = DB::table('dealers')->where('id',$req->dealer_id)->first();
 
-            if(!empty($dealer))
-            {
+            if(!empty($dealer)){
                 $car = [
                     'id' => Str::uuid(),
                     'dealer_id' => $req->dealer_id, 
@@ -153,44 +155,33 @@ class CarController extends Controller
                 $saveCar = DB::table('cars')->insert($car);   
                 $saveCarimage = DB::table('car_photos')->insert($carImage);
 
-                if($saveCar && $saveCarimage)
-                {
+                if($saveCar && $saveCarimage){
                     $SavedCar = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$car['id'])->select('cars.*','brands.name as brand_name')->first();
                     $SavedCar->Images = DB::table('car_photos')->where('id',$carImage['id'])->first();
 
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'success',
                             'message'   => __('msg.dealer.car.success'),
                             'data' => $SavedCar,
-                        ],
-                        200
-                    );
+                        ],200);
                 } else {
-                    return response()->json(
-                        [
+                    return response()->json([
                             'status'    => 'failed',
                             'message'   => __('msg.dealer.car.fail'),
-                        ],
-                        400
-                    );
+                        ],400);
                 }
-            }
-            else 
-            {
-                return response()->json(
-                    [
+            } else {
+                return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.dealer.profile.dealernotfound'),
-                    ],
-                    400
-                );
+                    ],400);
             }
         }
         catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
@@ -214,78 +205,59 @@ class CarController extends Controller
         try 
         {
             $dealer = DB::table('dealers')->where('id',$req->dealer_id)->first();
-            if(!empty($dealer))
-            {
+            if(!empty($dealer)){
                 $dealer_car = DB::table('cars')->where('id',$req->car_id)->first();
-                if(!empty($dealer_car))
-                {
+                if(!empty($dealer_car)){
                     $car = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
-                    ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
-                    ->select('cars.*','brands.name as brand_name')
-                    ->first();
+                                            ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
+                                            ->select('cars.*','brands.name as brand_name')
+                                            ->first();
+
                     $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
-                    ->where('car_photos.id',$req->car_id)->get(); 
+                                                        ->where('car_photos.id',$req->car_id)->get();
+
                     $carDetails = DB::table('bookings')
-                    ->leftJoin('locations','locations.id','=','bookings.location_id')
-                    ->leftJoin('plots','plots.id','=','bookings.plot_id')
-                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
-                    ->leftJoin('cars','cars.id','=','bookings.car_id')
-                    ->where('bookings.car_id',$req->car_id)
-                    ->where('bookings.dealer_id',$req->dealer_id)
-                    ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
-                    'dealers.name as dealer_name','dealers.email as dealer_email',
-                    'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')->orderBy('id','asc')
-                    ->get();
+                                    ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                    ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                    ->leftJoin('cars','cars.id','=','bookings.car_id')
+                                    ->where('bookings.car_id',$req->car_id)
+                                    ->where('bookings.dealer_id',$req->dealer_id)
+                                    ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
+                                    'dealers.name as dealer_name','dealers.email as dealer_email',
+                                    'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')->orderBy('id','asc')
+                                    ->get();
+
                     $car_detail = $carDetails;
                     $car_images = $carImages;
                     $car->Details = $car_detail;
                     $car->Images = $car_images;
-                    if(!empty($car))
-                    {
-                        return response()->json(
-                            [
-                                'status'    => 'success',
-                                'message'   => __('msg.dealer.car.cardetail'),
-                                'data' => $car,
-                            ],
-                            200
-                        );
-                    }
-                    else
-                    {
-                        return response()->json(
-                            [
-                                'status'    => 'failed',
-                                'message'   => __('msg.dealer.car.fail'),
-                                'data' => $car,
-                            ],
-                            200
-                        );
-                    }
-                }
-                else
-                {
-                    return response()->json(
-                        [
+
+                    if(!empty($car)){
+                        return response()->json([
+                            'status'    => 'success',
+                            'message'   => __('msg.dealer.car.cardetail'),
+                            'data' => $car,
+                        ],200);
+                    } else {
+                        return response()->json([
                             'status'    => 'failed',
-                            'message'   =>  __('msg.dealer.car.carnotfound'),
-                        ],
-                        400
-                    );
-                }
-                
-            }
-            else
-            {
-                return response()->json(
-                    [
+                            'message'   => __('msg.dealer.car.fail'),
+                            'data' => $car,
+                        ],200);
+                    }
+                } else {
+                    return response()->json([
                         'status'    => 'failed',
-                        'message'   =>  __('msg.dealer.profile.dealernotfound'),
-                    ],
-                    400
-                );
+                        'message'   =>  __('msg.dealer.car.carnotfound'),
+                    ],400);
+                }
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   =>  __('msg.dealer.profile.dealernotfound'),
+                ],400);
             }
-            
         } catch (\Throwable $e) {
             return response()->json([
                 'status'    => 'failed',
@@ -317,9 +289,7 @@ class CarController extends Controller
             $carImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
 
             if(!empty($car))
-            {
-                $dealer_id = $req->dealer_id;
-                
+            {                
                 $image1 = $req->image1;
                 $image2 = $req->image2;
                 $image3 = $req->image3;
@@ -331,21 +301,25 @@ class CarController extends Controller
                     $image1name = time() . '.' . $image1;
                     $req->file('image1')->move('dealer_car_photos', $image1name);
                 }
+
                 if ($image2) {
                     $image2 = optional($req->file('image2'))->getClientOriginalName();
                     $image2name = time() . '.' . $image2;
                     $req->file('image1')->move('dealer_car_photos', $image2name);
                 }
+
                 if ($image3) {
                     $image3 = optional($req->file('image3'))->getClientOriginalName();
                     $image3name = time() . '.' . $image3;
                     $req->file('image1')->move('dealer_car_photos', $image3name);
                 }
+
                 if ($image4) {
                     $image4 = optional($req->file('image4'))->getClientOriginalName();
                     $image4name = time() . '.' . $image4;
                     $req->file('image4')->move('dealer_car_photos', $image4name);
                 }
+
                 if ($image5) {
                     $image5 = optional($req->file('image5'))->getClientOriginalName();
                     $image5name = time() . '.' . $image5;
@@ -382,42 +356,28 @@ class CarController extends Controller
                     'photo5' => isset($req->image5) ? ('dealer_car_photos/'.$image5name) : $carImage->photo5,
                     'updated_at' => Carbon::now()
                 ];
+
                 $updateImage = CarPhotos::where('car_id',$req->car_id)->update($images);
-                if($update && $updateImage)
-                {
+                if($update && $updateImage){
                     $carDetail = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')->where('cars.id',$req->car_id)->select('cars.*','brands.name as brand_name')->first();
                     $carUpdatedImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
                     $carDetail->Images = $carUpdatedImage;
-                    return response()->json(
-                        [
-                            'status'    => 'success',
-                            'data' => $carDetail,
-                            'message'   =>  __('msg.dealer.car.carupdated'),
-                        ],
-                        200
-                    );
-                }
-                else
-                {
-                    return response()->json(
-                        [
-                            'status'    => 'failed',
-                            'message'   =>  __('msg.dealer.car.carnotupdate'),
-                        ],
-                        400
-                    );
-                }
-
-            }
-            else
-            {
-                return response()->json(
-                    [
+                    return response()->json([
+                        'status'    => 'success',
+                        'data' => $carDetail,
+                        'message'   =>  __('msg.dealer.car.carupdated'),
+                    ],200);
+                } else {
+                    return response()->json([
                         'status'    => 'failed',
-                        'message'   =>  __('msg.dealer.car.carnotfound'),
-                    ],
-                    400
-                );
+                        'message'   =>  __('msg.dealer.car.carnotupdate'),
+                    ],400);
+                }
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   =>  __('msg.dealer.car.carnotfound'),
+                ],400);
             }
         } catch (\Throwable $e) {
             return response()->json([
@@ -428,5 +388,114 @@ class CarController extends Controller
         }
     }
     
-    
+    // By Javeriya Kauser
+    public function assignCarToPlot(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'   => 'required',
+            'car_id'     => ['required','alpha_dash', Rule::notIn('undefined')],
+            'booking_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'plot_id'    => ['required','alpha_dash', Rule::notIn('undefined')]
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+            $booking_id = $request->booking_id;
+            $plot_id = $request->plot_id;
+            $car_id = $request->car_id;
+
+            $car = validateCar($car_id);
+            if (empty($car) || $car->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-car'),
+                ],400);
+            }
+
+            $plot = validatePlot($plot_id);
+            if (empty($plot) || $plot->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-plot'),
+                ],400);
+            }
+
+            $dealerPlot = DB::table('bookings as sc')
+                                ->where('sc.id', '=', $booking_id)
+                                ->whereIn('sc.status', ['active', 'upcoming'])
+                                ->where('sc.car_id', '=', '')
+                                ->first(['sc.*']);
+
+                                return $dealerPlot;
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function unassignCarFromPlot(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'   => 'required',
+            'car_id'     => ['required','alpha_dash', Rule::notIn('undefined')],
+            'booking_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'plot_id'    => ['required','alpha_dash', Rule::notIn('undefined')]
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+            $booking_id = $request->booking_id;
+            $plot_id = $request->plot_id;
+            $car_id = $request->car_id;
+
+            $car = validateCar($car_id);
+            if (empty($car) || $car->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-car'),
+                ],400);
+            }
+
+            $plot = validatePlot($plot_id);
+            if (empty($plot) || $plot->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-plot'),
+                ],400);
+            }
+
+            $dealerPlot = DB::table('bookings as sc')
+                                ->where('sc.id', '=', $booking_id)
+                                ->whereIn('sc.status', ['active', 'upcoming'])
+                                ->where('sc.car_id', '=', '')
+                                ->first(['sc.*']);
+
+                                return $dealerPlot;
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
 }

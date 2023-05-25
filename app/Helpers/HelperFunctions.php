@@ -37,3 +37,8 @@
     {
         return DB::table('plots')->where('id', '=', $plot_id)->first();
     }
+
+    function validateCar($car_id)
+    {
+        return DB::table('cars')->where('id', '=', $car_id)->first();
+    }

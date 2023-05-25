@@ -119,7 +119,7 @@ Route::prefix('admin')->group(function () {
         Route::post('get-featured-car-price' , [FeaturedcarPriceController::class, 'getFeaturedcarPrice']);
         Route::post('edit-featured-car-price' , [FeaturedcarPriceController::class, 'editFeaturedcarPrice']);
 
-        //Manage Featured Car
+        //Manage Featured Car By Aaisha Shaikh
         Route::post('getFeaturedCar' , [FeaturedCarController::class, 'getFeaturedCar']);
         Route::post('GetDetailsFeaturedCar' , [FeaturedCarController::class, 'GetDetailsFeaturedCar']);
 
@@ -139,33 +139,34 @@ Route::prefix('dealer')->group( function () {
 
     Route::group(['middleware' => 'jwt.verify'], function () {
 
-    //Profile
-    Route::post('getProfile',[ProfileController::class,'getProfile']);
-    Route::post('UpdateProfile',[ProfileController::class,'UpdateProfile']);
-    Route::post('UpdateProfileDetail',[ProfileController::class,'UpdateProfileDetail']);
+        //Profile By Aaisha Shaikh
+        Route::post('getProfile',[ProfileController::class,'getProfile']);
+        Route::post('UpdateProfile',[ProfileController::class,'UpdateProfile']);
+        Route::post('UpdateProfileDetail',[ProfileController::class,'UpdateProfileDetail']);
 
-    //Cars
-    Route::post('addCar',[CarController::class,'addCar']);
-    Route::post('getCarbyID',[CarController::class,'getCarbyID']);
-    Route::post('editCar',[CarController::class,'editCar']);
-    Route::post('logout',[AuthController::class,'logout']);
+        //Cars By Aaisha Shaikh
+        Route::post('addCar',[CarController::class,'addCar']);
+        Route::post('getCarbyID',[CarController::class,'getCarbyID']);
+        Route::post('editCar',[CarController::class,'editCar']);
+        Route::post('logout',[AuthController::class,'logout']);
     
+        // Dealer Locations Module By Javeriya Kauser
+        Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
+        Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
+    
+        Route::post('get-locations-list' , [LocationController::class, 'getLocationList']); 
+        Route::post('get-lanes-based-on-location' , [LocationController::class, 'getLinesBasedOnLocations']); 
+        Route::post('get-available-plots' , [LocationController::class, 'getAvailablePlotsByDate']); 
+        Route::post('get-selected-plots' , [LocationController::class, 'getSelectedPlots']); 
+    
+        Route::post('get-dealer-cars' , [LocationController::class, 'getDealerCars']); 
+        Route::post('get-dealer-plots' , [LocationController::class, 'getDealerPlots']); 
+        Route::post('get-dealer-locations' , [LocationController::class, 'getDealerLocations']); 
+        Route::post('get-plots-based-on-location' , [LocationController::class, 'getPlotsBasedOnLocation']); 
+        Route::post('get-dealer-all-plots-list' , [LocationController::class, 'getDealerAllPlotsList']); 
+
+        Route::post('assign-car' , [CarController::class, 'assignCarToPlot']);
+        Route::post('unassign-car' , [CarController::class, 'unassignCarFromPlot']);
+
     });
-
-
-    // Dealer Locations Module By Javeriya Kauser
-    Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
-    Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
-
-    Route::post('get-locations-list' , [LocationController::class, 'getLocationList']); 
-    Route::post('get-lanes-based-on-location' , [LocationController::class, 'getLinesBasedOnLocations']); 
-    Route::post('get-available-plots' , [LocationController::class, 'getAvailablePlotsByDate']); 
-    Route::post('get-selected-plots' , [LocationController::class, 'getSelectedPlots']); 
-
-    Route::post('get-dealer-cars' , [LocationController::class, 'getDealerCars']); 
-    Route::post('get-dealer-plots' , [LocationController::class, 'getDealerPlots']); 
-    Route::post('get-dealer-locations' , [LocationController::class, 'getDealerLocations']); 
-    Route::post('get-plots-based-on-location' , [LocationController::class, 'getPlotsBasedOnLocation']); 
-    Route::post('get-dealer-all-plots-list' , [LocationController::class, 'getDealerAllPlotsList']); 
-
 });
