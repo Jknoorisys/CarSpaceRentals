@@ -425,7 +425,7 @@ class CarController extends Controller
                                     'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
                                     'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
                                     'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5'
-)
+                                    )
                                     ->first();
                                     // return $car_details;
                                     if(!empty($car_details))
