@@ -108,7 +108,7 @@ class LocationController extends Controller
             ],500);
         }
     }
-    //get detail with filter
+
     public function getLocations(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -164,7 +164,7 @@ class LocationController extends Controller
             ],500);
         }
     }
-    //get detail without filter
+
     public function getLocationDetails(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -187,11 +187,56 @@ class LocationController extends Controller
 
             if (!empty($locationDetails)) {
 
-                $locationDetails->plots = DB::table('plots')->where('location_id', '=', $location_id)->orderBy('plot_name')->get();
+                $start_date = Carbon::today()->format('Y-m-d');
+                $end_date = Carbon::today()->format('Y-m-d');
+                $locationLines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('line_name')->get();
+                $total_lines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('line_name')->count();
+                $availableLines = [];
+
+                foreach ($locationLines as $line) {
+                    $availableLines[] = $line->line_name;
+                    $availablePlots = [];
+
+                    $locationPlots = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_name')->where('line_id', '=' , $line->id)->get();
+                    $total_plots   = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_name')->count();
+
+                    foreach ($locationPlots as $plot) {
+                        $bookedPlots = DB::table('bookings as sc')
+                                            ->where('sc.plot_id', '=' , $plot->id)
+                                            ->where('sc.location_id', '=' , $location_id)
+                                            ->where('sc.line_id', '=' , $line->id)
+                                            ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
+                                            ->whereIn('sc.status', ['active', 'upcoming'])
+                                            ->where(function ($query) use ($start_date, $end_date) {
+                                                $query->where(function ($query) use ($start_date, $end_date) {
+                                                    $query->where('sc.park_in_date', '>=', $start_date)
+                                                        ->where('sc.park_in_date', '<=', $end_date);
+                                                })->orWhere(function ($query) use ($start_date, $end_date) {
+                                                    $query->where('sc.park_out_date', '>=', $start_date)
+                                                        ->where('sc.park_out_date', '<=', $end_date);
+                                                })->orWhere(function ($query) use ($start_date, $end_date) {
+                                                    $query->where('sc.park_in_date', '<=', $start_date)
+                                                        ->where('sc.park_out_date', '>=', $end_date);
+                                                });
+                                            })
+                                            ->first(['plots.*', DB::raw("'booked' as status")]);
+    
+                        if (empty($bookedPlots)) {
+                            $plot->status = 'available';
+                            $availablePlots[] = $plot;
+                        } else {
+                            $availablePlots[] = $bookedPlots;
+                        }
+                    }
+                    $availableLines[] = $availablePlots;
+                }                
                 
+                $locationDetails->plots = $availableLines;
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-location-details.success'),
+                    'total_lines' => $locationDetails->plots ? $total_lines : 0,
+                    'total_plots' => $locationDetails->plots ? $total_plots : 0,
                     'data'      => $locationDetails
                 ],200);
             } else {
