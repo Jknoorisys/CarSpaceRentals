@@ -46,6 +46,7 @@ Route::prefix('user')->group( function () {
     Route::post('carFilter',[UserCarController::class,'carFilter']);
     Route::post('featuredCarList',[UserCarController::class,'featuredCarList']);
     Route::post('CarDetails',[UserCarController::class,'CarDetails']);
+    Route::post('Car_details_and_featured_car',[UserCarController::class,'Car_details_and_featured_car']);
 
     Route::group(['middleware' => 'jwt.verify'], function () {
     
