@@ -20,7 +20,7 @@
                                         </p>
 
                                         <p>
-                                            <a href="{{'http://localhost:8000/dealer-forgot-password/'.$dealer['token']}}" class="btn"> Reset your password</a>
+                                            <a href="{{'http://localhost:4200/reset-password?user_type=dealer&token='.$dealer['token']}}" class="btn"> Reset your password</a>
                                         </p>
 
 
