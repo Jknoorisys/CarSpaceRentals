@@ -23,7 +23,7 @@ class SuperAdminSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('Admin@123'),
-            'is_verified' => 'verified',
+            'is_verified' => 'yes',
             'is_admin' => 'super_admin',
             'status' => 'active',
             'created_at' => Carbon::now(),

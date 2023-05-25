@@ -355,6 +355,8 @@ return [
 
     // Helpers
     'helper' => [
+        'invalid-admin'    => 'Admin Not Found',
+        'invalid-super-admin' => 'Not a Super Admin',
         'invalid-customer' => 'Customer Not Found',
         'invalid-dealer'   => 'Dealer Not Found',
         'invalid-location' => 'Location Not Found',
