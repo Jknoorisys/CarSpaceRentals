@@ -305,6 +305,11 @@ return [
             'failure' => 'Plots Not Found',
         ],
 
+        'get-selected-plots' => [
+            'success' => 'Selected Plot Details Fetched Successfully',
+            'failure' => 'No Plot Selected',
+        ],
+
         // Dealer Car Module By Javeriya
         'get-dealer-cars' => [
             'success' => 'Dealer Car List Fetched Successfully',

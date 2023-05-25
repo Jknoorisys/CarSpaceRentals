@@ -274,11 +274,7 @@ class LocationController extends Controller
                 $start_date_formatted = $start_date->format('Y-m-d');
                 $end_date_formatted = $end_date->format('Y-m-d');
                 
-                $db = DB::table('plots as sc')->where('sc.location_id', '=' , $location_id);
-
-                if (!empty($line_id)) {
-                    $db->where('sc.line_id', '=' , $line_id);
-                }
+                $db = DB::table('plots as sc')->where('sc.location_id', '=' , $location_id)->where('sc.line_id', '=' , $line_id);
 
                 $selected_duration = [
                     'park_in_date'  => $start_date_formatted,
@@ -290,7 +286,6 @@ class LocationController extends Controller
                 $total = $db->count();
                 $locationPlots = $db->orderBy('sc.plot_name')->get();
                 $availablePlots = [];
-                $availablePlots['selected_duration'] = $selected_duration; 
                 foreach ($locationPlots as $plot) {
                     $bookedPlots = DB::table('bookings as sc')
                                         ->where('sc.plot_id', '=' , $plot->id)
@@ -326,13 +321,92 @@ class LocationController extends Controller
                     'status'    => 'success',
                     'message'   => trans('msg.dealer.get-available-plots.success'),
                     'total'     => $total,
-                    'data'      => $availablePlots
+                    'data'      => ['selected_duration' => $selected_duration, 'plots' => $availablePlots]
                 ],200);
             } else {
                 return response()->json([
                     'status'    => 'failed',
                     'message'   => trans('msg.dealer.get-available-plots.failure'),
                     'data'      => []
+                ],400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getSelectedPlots(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'      => 'required',
+            'plot_ids'      => ['required', Rule::notIn('undefined')],
+            'duration_type' => ['required', Rule::in(['day', 'week', 'month', 'year'])],
+            'duration'      => 'required|numeric'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+            $duration_type = $request->duration_type;
+            $duration = $request->duration;
+
+            $plot_ids =  explode(',',$request->plot_ids);
+            if (!empty($plot_ids)) {
+                $total_selected_plots = count($plot_ids);
+                $total_amount = 0;
+
+                foreach ($plot_ids as $plot_id) {
+                    $plot = DB::table('plots')->where('id', '=', $plot_id)->first();
+                    $selected_plots[] = $plot ? $plot->plot_name : '';
+
+                    if ($total_selected_plots < 5) {
+                        if ($duration_type == 'day') {
+                            $total_amount = $total_amount + ($plot ? $plot->single_daily : 0) ;
+                        } elseif($duration_type == 'week') {
+                            $total_amount = $total_amount + ($plot ? $plot->single_weekly : 0) ;
+                        } else {
+                            $total_amount = $total_amount + ($plot ? $plot->single_monthly : 0) ;
+                        }
+                    } elseif($total_selected_plots >= 5 && $total_selected_plots < 10) {
+                        if ($duration_type == 'day') {
+                            $total_amount = $total_amount + ($plot ? $plot->five_daily : 0) ;
+                        } elseif($duration_type == 'week') {
+                            $total_amount = $total_amount + ($plot ? $plot->five_weekly : 0) ;
+                        } else {
+                            $total_amount = $total_amount + ($plot ? $plot->five_monthly : 0) ;
+                        }
+                    } else{
+                        if ($duration_type == 'day') {
+                            $total_amount = $total_amount + ($plot ? $plot->ten_daily : 0) ;
+                        } elseif($duration_type == 'week') {
+                            $total_amount = $total_amount + ($plot ? $plot->ten_weekly : 0) ;
+                        } else {
+                            $total_amount = $total_amount + ($plot ? $plot->ten_monthly : 0) ;
+                        }
+                    }
+                }
+
+                $total_price = $total_amount * $duration;
+
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-selected-plots.success'),
+                    'data'      => ['selected_plots' => $selected_plots, 'duration' => $duration.' ' . $duration_type.'s', 'total_price' => $total_price]
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-selected-plots.failure'),
                 ],400);
             }
         } catch (\Throwable $e) {
