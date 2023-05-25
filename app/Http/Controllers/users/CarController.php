@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-
+use App\Models\Dealers;
 class CarController extends Controller
 {
 
@@ -339,7 +339,7 @@ class CarController extends Controller
                                     'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
                                     'locations.location as car_location','plots.plot_name as car_plot_name',
                                     'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
-                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
+                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no'
                                     )
                                     ->first();
                                     // return $car_details;
@@ -418,11 +418,13 @@ class CarController extends Controller
                                     if(!empty($car_details))
                                     {
                                         // return $car_details->dealer_id;
-                                        $featured_car = DB::table('cars')
-                                                            ->leftJoin('dealers','dealers.id','=','cars.dealer_id')  
-                                                            ->where('cars.dealer_id','=',$car_details->dealer_id)
+                                        $featured_car = DB::table('cars')->leftjoin('dealers','dealers.id','=','cars.dealer_id')
+                                                            ->leftjoin('bookings','bookings.car_id','=','cars.id')
+                                                            ->leftjoin('locations','locations.id','=','bookings.location_id')
+                                                            // ->leftjoin('brands','brands.id','=','cars.brand')
                                                             ->where('cars.is_featured','=','yes')
-                                                            ->select('cars.*','dealers.name as dealer_name')
+                                                            ->where('cars.dealer_id','=',$car_details->dealer_id)
+                                                            ->select('cars.*','locations.name as location_name')
                                                             ->get();
                                                             // return $featured_car;
                                         $car_details->list_of_featured_car = $featured_car;
@@ -449,6 +451,70 @@ class CarController extends Controller
                 ],400);
             }
 
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' =>  __('msg.user.error'),
+            ], 500);
+        }
+    }
+
+    public function other_car_from_same_dealer(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'language' => 'required',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            
+        ]);
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'status'    => 'failed',
+                    'errors'    =>  $validator->errors(),
+                    'message'   =>  __('msg.user.validation.fail'),
+                ],
+                400
+            );
+        }
+        try 
+        {
+            $dealer = DB::table('dealers')->where('id',$req->dealer_id)->first();
+            if(!empty($dealer))
+            {
+                $car = DB::table('bookings')->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                            ->leftJoin('cars','cars.id','=','bookings.car_id')
+                            ->leftJoin('locations','locations.id','=','bookings.location_id')
+                            ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                            ->where('bookings.dealer_id','=',$req->dealer_id)
+                            ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
+                            'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
+                            'cars.fuel_type as car_fuel_type','cars.year_of_registration as car_year_of_registration',
+                            'cars.kms_driven as car_kms_driven','cars.ownership as car_ownership',
+                            'cars.insurance_validity as car_insurance_validity','cars.no_of_seats as car_seats',
+                            'cars.milage as car_milage','cars.engin as car_engin','cars.description as car_description',
+                            'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
+                            'locations.location as car_location','plots.plot_name as car_plot_name',
+                            'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
+                            'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no')
+                            ->get();
+                            
+                if(!empty($car))
+                {
+                    return response()->json([
+                        'status'    => 'Success',
+                        'message'   => trans('msg.user.car_details.success'),
+                        'data' => $car,
+                    ],200);
+                }
+                else
+                {
+                    return response()->json([
+                        'status'    => 'Failed',
+                        'message'   => trans('msg.user.car_details.failure'),
+                    ],400);
+                }   
+                
+            }
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',

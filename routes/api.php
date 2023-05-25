@@ -35,24 +35,31 @@ use App\Http\Controllers\users\CarController as UserCarController;
 
 // User Panel By Aaisha Shaikh
 Route::prefix('user')->group( function () {
+
+    //Authentication
     Route::post('register',[AuthController::class,'register']);
     Route::post('verifyOTP',[AuthController::class,'verifyOTP']);
     Route::post('resendregOTP',[AuthController::class,'resendregOTP']);
     Route::post('forgetpassword',[AuthController::class,'forgetpassword']);
     Route::post('forgotPasswordValidate',[AuthController::class,'forgotPasswordValidate']);
     Route::post('login',[AuthController::class,'login']);
+
+    //Cars
     Route::post('getCarListByname',[UserCarController::class,'getCarListByname']);
     Route::post('CarList',[UserCarController::class,'CarList']);
     Route::post('carFilter',[UserCarController::class,'carFilter']);
     Route::post('featuredCarList',[UserCarController::class,'featuredCarList']);
     Route::post('CarDetails',[UserCarController::class,'CarDetails']);
     Route::post('Car_details_and_featured_car',[UserCarController::class,'Car_details_and_featured_car']);
+    Route::post('other_car_from_same_dealer',[UserCarController::class,'other_car_from_same_dealer']);
 
     Route::group(['middleware' => 'jwt.verify'], function () {
     
+    //Profile
     Route::post('getProfile',[UserProfileController::class,'getProfile']);
     Route::post('UpdateProfile',[UserProfileController::class,'UpdateProfile']);
     Route::post('UpdateProfileDetail',[UserProfileController::class,'UpdateProfileDetail']);
+
     Route::post('logout',[AuthController::class,'logout']);
    
 });
@@ -122,7 +129,7 @@ Route::prefix('admin')->group(function () {
 // Dealer Panel
 Route::prefix('dealer')->group( function () {
 
-    // By Aaisha Shaikh
+    // Authentication By Aaisha Shaikh
     Route::post('register',[DealersAuthController::class,'register']);
     Route::post('verifyOTP',[DealersAuthController::class,'verifyOTP']);
     Route::post('resendregOTP',[DealersAuthController::class,'resendregOTP']);
@@ -132,9 +139,12 @@ Route::prefix('dealer')->group( function () {
 
     Route::group(['middleware' => 'jwt.verify'], function () {
 
+    //Profile
     Route::post('getProfile',[ProfileController::class,'getProfile']);
     Route::post('UpdateProfile',[ProfileController::class,'UpdateProfile']);
     Route::post('UpdateProfileDetail',[ProfileController::class,'UpdateProfileDetail']);
+
+    //Cars
     Route::post('addCar',[CarController::class,'addCar']);
     Route::post('getCarbyID',[CarController::class,'getCarbyID']);
     Route::post('editCar',[CarController::class,'editCar']);
@@ -143,7 +153,7 @@ Route::prefix('dealer')->group( function () {
     });
 
 
-    // Delaer Locations Module By Javeriya Kauser
+    // Dealer Locations Module By Javeriya Kauser
     Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
     Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
 
