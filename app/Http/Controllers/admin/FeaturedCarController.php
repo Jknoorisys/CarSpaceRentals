@@ -40,9 +40,12 @@ class FeaturedCarController extends Controller
 
             $db = DB::table('featured_cars')->join('dealers','dealers.id','=','featured_cars.dealer_id')
                         ->join('cars','cars.id','=','featured_cars.car_id')
+                        ->join('car_photos','car_photos.car_id','=','cars.id')
                         ->select('featured_cars.*','cars.name as car_name','cars.condition as car_condition',
                         'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
-                        'cars.fuel_type as car_fuel_type','cars.price as car_price','dealers.name as dealer_name');
+                        'cars.fuel_type as car_fuel_type','cars.price as car_price','dealers.name as dealer_name',
+                        'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
+                        'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5');
             $total = $db->count();
             $search = $req->search ? $req->search : ''; 
             if (!empty($search)) {
@@ -96,8 +99,12 @@ class FeaturedCarController extends Controller
         try 
         {
             $car = DB::table('featured_cars')->join('dealers','dealers.id','=','featured_cars.dealer_id')
-                        ->join('cars','cars.id','=','featured_cars.car_id')->where('featured_cars.car_id',$req->car_id)
-                        ->select('featured_cars.*','cars.name as car_name','dealers.name as dealer_name')->first();
+                        ->join('cars','cars.id','=','featured_cars.car_id')
+                        ->join('car_photos','car_photos.car_id','=','cars.id')
+                        ->where('featured_cars.car_id',$req->car_id)
+                        ->select('featured_cars.*','cars.name as car_name','dealers.name as dealer_name',
+                        'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
+                        'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5')->first();
             if(!empty($car))
             {
                 return response()->json([
