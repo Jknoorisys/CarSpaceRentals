@@ -542,6 +542,7 @@ class LocationController extends Controller
             if (!($cars->isEmpty())) {
 
                 foreach ($cars as $car) {
+                    $car->location = DB::table('bookings')->where('car_id', '=', $car->id)->leftJoin('locations','locations.id','=','bookings.location_id')->first(['locations.*']);
                     $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
                 }
 
