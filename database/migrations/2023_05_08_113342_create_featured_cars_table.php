@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('start_date');
             $table->string('end_date');
             $table->string('featured_days');
-            $table->enum('status',['unfeatured','featured'])->default('unfeatured');
+            $table->enum('status',['upcoming','unfeatured','featured'])->default('upcoming');
             $table->timestamps();
         });
     }
