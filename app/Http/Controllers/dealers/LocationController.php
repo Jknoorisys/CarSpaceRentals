@@ -321,7 +321,7 @@ class LocationController extends Controller
                     'status'    => 'success',
                     'message'   => trans('msg.dealer.get-available-plots.success'),
                     'total'     => $total,
-                    'data'      => ['selected_duration' => $selected_duration, 'plots' => $availablePlots]
+                    'data'      => ['selected_duration' => $selected_duration, 'lane_details' => $line, 'plots' => $availablePlots]
                 ],200);
             } else {
                 return response()->json([
