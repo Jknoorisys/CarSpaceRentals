@@ -286,9 +286,10 @@ class DealerController extends Controller
             $dealer = DB::table('dealers')->where('id','=', $dealer_id)->first();
 
             if (!empty($dealer)) {
-                $dealer->cars = DB::table('cars')->where('dealer_id', '=', $dealer_id)->get();
+                $dealer->cars = DB::table('cars')->where('dealer_id', '=', $dealer_id)->take(4)->get();
 
                 foreach ($dealer->cars as $car) {
+                    $car->location = DB::table('bookings')->where('car_id', '=', $car->id)->leftJoin('locations','locations.id','=','bookings.location_id')->first(['locations.*']);
                     $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
                 }
 
@@ -358,6 +359,7 @@ class DealerController extends Controller
             if (!($cars->isEmpty())) {
 
                 foreach ($cars as $car) {
+                    $car->location = DB::table('bookings')->where('car_id', '=', $car->id)->leftJoin('locations','locations.id','=','bookings.location_id')->first(['locations.*']);
                     $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
                 }
 
