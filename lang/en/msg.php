@@ -232,11 +232,11 @@ return [
         ],
     
         'otp' => [
-            'otpver' => 'OTP Matched!! Registration Successfull',
-            'otpnotver' => 'OTP not match!',
-            'resendotp' => 'OTP resent successfuly',
-            'alreadyverify' => 'Your mail is already verified',
-            'registerfirst' => 'You have to register first',
+            'otpver' => 'Registration Successfull!',
+            'otpnotver' => 'OTP does not match!',
+            'resendotp' => 'OTP Resent successfuly',
+            'alreadyverify' => 'Your email is already verified',
+            'registerfirst' => 'Please Register First...',
         ],
         
         'forgetpass' => [
@@ -248,7 +248,7 @@ return [
             'notreset' => 'Password not set',
             'passnotmatch' => 'Password not match',
             'swr' => 'Something Went Wrong',
-            'tokennotmatch' => 'Token not match!'
+            'tokennotmatch' => 'Token does not match!'
         ],
 
         'logout' => [
