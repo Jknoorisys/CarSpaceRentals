@@ -165,7 +165,7 @@
             }
 
             .r13-i {
-                background-color: #000000 !important;
+                background-color: #0a1717 !important;
                 padding-bottom: 20px !important;
                 padding-left: 15px !important;
                 padding-right: 15px !important;
@@ -266,7 +266,7 @@
             }
 
             .r28-i {
-                background-color: #000000 !important;
+                background-color: #0a1717 !important;
                 padding-bottom: 42px !important;
                 padding-left: 15px !important;
                 padding-right: 15px !important;
@@ -511,55 +511,7 @@
 
 <body bgcolor="#ffffff" text="#392F65" link="#ffffff" yahoo="fix" style="background-color: #ffffff;">
     <table cellspacing="0" cellpadding="0" border="0" role="presentation" class="nl2go-body-table" width="100%" style="background-color: #ffffff; width: 100%;">
-        <tr>
-            <td align="" class="r0-c">
-                <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r1-o" style="table-layout: fixed; width: 100%;"><!-- -->
-                    <tr>
-                        <td valign="top" class="r2-i" style="background-color: transparent;">
-                            <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                <tr>
-                                    <td class="r3-c" align="center">
-                                        <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="600" class="r4-o" style="table-layout: fixed;"><!-- -->
-                                            <tr>
-                                                <td class="r5-i" style="padding-bottom: 5px; padding-top: 5px;">
-                                                    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                                        <tr>
-                                                            <th width="100%" valign="top" class="r6-c" style="font-weight: normal;">
-                                                                <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r1-o" style="table-layout: fixed; width: 100%;"><!-- -->
-                                                                    <tr>
-                                                                        <td valign="top" class="r7-i" style="padding-left: 10px; padding-right: 10px;">
-                                                                            <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                                                                <tr>
-                                                                                    <td class="r8-c" align="center">
-                                                                                        <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r9-o" style="table-layout: fixed; width: 100%;">
-                                                                                            <tr>
-                                                                                                <td align="center" class="r10-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-left: 30px; padding-right: 30px; padding-top: 20px; text-align: center;">
-                                                                                                    <div>
-                                                                                                        <p style="margin: 0;"><a href="" style="color: #fff; text-decoration: none;"><span style="color: #392f65;">View in browser</span></a></p>
-                                                                                                    </div>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </table>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </th>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+        
         <tr>
             <td align="center" class="r3-c">
                 <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="600" class="r4-o" style="table-layout: fixed; width: 600px;">
@@ -570,7 +522,7 @@
                                     <td class="r12-c" align="center">
                                         <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r9-o" style="table-layout: fixed; width: 100%;"><!-- -->
                                             <tr>
-                                                <td class="r13-i" style="background-color: #000000; padding-bottom: 20px; padding-top: 20px;">
+                                                <td class="r13-i" style="background-color: #0a1717; padding-bottom: 20px; padding-top: 20px;">
                                                     <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                                         <tr>
                                                             <th width="100%" valign="top" class="r6-c" style="font-weight: normal;">
@@ -617,7 +569,7 @@
                                                                                             <tr>
                                                                                                 <td align="center" valign="top" class="r20-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; word-break: break-word; line-height: 1.1; text-align: center;">
                                                                                                     <div>
-                                                                                                        <h1 class="default-heading1" style="margin: 0; color: #392f65; font-family: Vollkorn,Georgia,Times,Times New Roman,serif,Arial; font-size: 48px; word-break: break-word;"><span style="color: #000000; font-size: 32px;">Welcome on board</span></h1>
+                                                                                                        <h1 class="default-heading1" style="margin: 0; color: #392f65; font-family: Vollkorn,Georgia,Times,Times New Roman,serif,Arial; font-size: 48px; word-break: break-word;"><span style="color: #0a1717; font-size: 32px;">Welcome on board</span></h1>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
@@ -630,7 +582,7 @@
                                                                                             <tr>
                                                                                                 <td align="left" valign="top" class="r23-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-top: 25px; text-align: left;">
                                                                                                     <div>
-                                                                                                        <h2 class="default-heading2" style="margin: 0; color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 24px; word-break: break-word;"><span style="color: #000000; font-size: 20px;">Dear {{$name}},</span></h2>
+                                                                                                        <h2 class="default-heading2" style="margin: 0; color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 24px; word-break: break-word;"><span style="color: #0a1717; font-size: 20px;">Dear {{$name}},</span></h2>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
@@ -643,12 +595,12 @@
                                                                                             <tr>
                                                                                                 <td align="left" valign="top" class="r24-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-top: 5px; text-align: left;">
                                                                                                     <div>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">We hope this email finds you well.</span></p>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">We understand that you are in need of a new One-Time Password (OTP) to proceed with your account verification or authentication process. We apologize for any inconvenience caused, and we are here to assist you.</span></p>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">Here is your new One Time Passcode - (OTP)<strong>{{$otp}}</strong>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">The OTP is valid for next 15 minutes.</span></p>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717;">We hope this email finds you well.</span></p>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717;">We understand that you are in need of a new One-Time Password (OTP) to proceed with your account verification or authentication process. We apologize for any inconvenience caused, and we are here to assist you.</span></p>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717;">Here is your new One Time Passcode - (OTP)<strong style="font-size: 35px; line-height: 55px; letter-spacing: 15px; display: inline-block; ">{{$otp}}</strong>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717;">The OTP is valid for next 15 minutes.</span></p>
                                                                                                         <p style="margin: 0;"> </p>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">Please do not share the OTP with anyone.</span></p>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717;">Please do not share the OTP with anyone.</span></p>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
@@ -683,7 +635,7 @@
                                     <td class="r12-c" align="center">
                                         <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r9-o" style="table-layout: fixed; width: 100%;"><!-- -->
                                             <tr>
-                                                <td class="r28-i" style="background-color: #000000; padding-bottom: 42px; padding-left: 59px; padding-right: 58px; padding-top: 37px;">
+                                                <td class="r28-i" style="background-color: #0a1717; padding-bottom: 42px; padding-left: 59px; padding-right: 58px; padding-top: 37px;">
                                                     <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                                         <tr>
                                                             <th width="66.67%" valign="top" class="r6-c" style="font-weight: normal;">
