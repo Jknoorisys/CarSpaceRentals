@@ -120,14 +120,17 @@ class AuthController extends Controller
         try {
             $otp = $req->email_otp;
             $id = $req->id;
-
-            $verificationCode   =  DB::table('dealers')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
-            if ($verificationCode == true) {
-                return response()->json([
-                        'status'    => 'success',
-                        'message'   =>  __('msg.user.otp.otpver'),
-                    ], 200);
-            } else {
+            $match_otp = DB::table('dealers')->where('id',$id)->where('email_otp',$otp)->take(1)->first();
+            // return $match_otp;
+            if(!empty($match_otp))
+            {
+                $verificationCode   =  DB::table('dealers')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
+                if ($verificationCode == true) {
+                    return response()->json([
+                            'status'    => 'success',
+                            'message'   =>  __('msg.user.otp.otpver'),
+                        ], 200);
+                }
                 return response()->json([
                         'status'    => 'failed',
                         'message'   =>   __('msg.user.otp.otpnotver'),
@@ -167,7 +170,7 @@ class AuthController extends Controller
 
                 if ($dealer->is_verified == 'no') {
                     $email_otp = rand(100000, 999999);
-                    $resend =  Dealers::where('email', '=', $email)->update(['email_otp' => $email_otp, 'is_verified' => 'yes', 'updated_at' => date('Y-m-d H:i:s')]);
+                    $resend =  Dealers::where('email', '=', $email)->update(['email_otp' => $email_otp,'updated_at' => date('Y-m-d H:i:s')]);
                     if ($resend == true) {
                         $dealer = Dealers::where('email', '=', $email)->first();
                         $email = ['to' => $req->email];

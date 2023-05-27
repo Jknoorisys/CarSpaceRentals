@@ -17,7 +17,7 @@ use App\Http\Controllers\dealers\AuthController as DealersAuthController;
 use App\Http\Controllers\dealers\LocationController;
 use App\Http\Controllers\dealers\ProfileController;
 use App\Http\Controllers\dealers\CarController;
-
+use App\Http\Controllers\dealers\PaymentPlotController;
 // Users
 use App\Http\Controllers\users\AuthController;
 use App\Http\Controllers\users\ProfileController as UserProfileController;
@@ -167,6 +167,8 @@ Route::prefix('dealer')->group( function () {
 
         Route::post('assign-car' , [CarController::class, 'assignCarToPlot']);
         Route::post('unassign-car' , [CarController::class, 'unassignCarFromPlot']);
+
+        Route::post('orange_payment_for_plot_booking',[PaymentPlotController::class,'orange_payment_for_plot_booking']);
 
     });
 });

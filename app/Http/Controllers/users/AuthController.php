@@ -115,21 +115,29 @@ class AuthController extends Controller
         try {
             $otp = $req->email_otp;
             $id = $req->id;
+            $match_otp = DB::table('users')->where('id',$id)->where('email_otp',$otp)->take(1)->first();
+            if(!empty($match_otp))
+            {
+                #Validation Logic
 
-            #Validation Logic
-            $verificationCode   =  DB::table('users')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
-            if ($verificationCode == true) {
+                $verificationCode   =  DB::table('users')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
+                if ($verificationCode == true) {
                 return response()->json([
                         'status'    => 'success',
                         'message'   =>  __('msg.user.otp.otpver'),
                     ], 200);
-            } else {
-                return response()->json([
-                        'status'    => 'failed',
-                        'message'   =>   __('msg.user.otp.otpnotver'),
-                    ], 400);
+                }
+                else {
+                    return response()->json([
+                            'status'    => 'failed',
+                            'message'   =>   __('msg.user.otp.otpnotver'),
+                        ], 400);
+                }
             }
-        } catch (\Throwable $e) {
+             
+            
+        } 
+        catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
@@ -163,7 +171,7 @@ class AuthController extends Controller
                 if ($user->is_verified == 'no') {
 
                     $email_otp = rand(100000, 999999);
-                    $resend =  User::where('email', '=', $email)->update(['email_otp' => $email_otp, 'is_verified' => 'yes', 'updated_at' => date('Y-m-d H:i:s')]);
+                    $resend =  User::where('email', '=', $email)->update(['email_otp' => $email_otp, 'updated_at' => date('Y-m-d H:i:s')]);
                     if ($resend == true) {
                         $user = User::where('email', '=', $email)->first();
                         $email = ['to' => $req->email];
