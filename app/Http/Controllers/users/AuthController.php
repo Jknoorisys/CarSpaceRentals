@@ -130,12 +130,15 @@ class AuthController extends Controller
                 else {
                     return response()->json([
                             'status'    => 'failed',
-                            'message'   =>   __('msg.user.otp.otpnotver'),
+                            'message'   =>   __('msg.user.otp.failure'),
                         ], 400);
                 }
+            }else{
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   =>   __('msg.user.otp.otpnotver'),
+                ], 400);
             }
-             
-            
         } 
         catch (\Throwable $e) {
             return response()->json([

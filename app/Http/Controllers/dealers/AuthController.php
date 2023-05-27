@@ -125,16 +125,22 @@ class AuthController extends Controller
             if(!empty($match_otp))
             {
                 $verificationCode   =  DB::table('dealers')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
-                if ($verificationCode == true) {
+                if ($verificationCode) {
                     return response()->json([
                             'status'    => 'success',
                             'message'   =>  __('msg.user.otp.otpver'),
                         ], 200);
-                }
-                return response()->json([
+                }else{
+                    return response()->json([
                         'status'    => 'failed',
-                        'message'   =>   __('msg.user.otp.otpnotver'),
+                        'message'   =>   __('msg.user.otp.failure'),
                     ], 400);
+                }
+            }else{
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   =>   __('msg.user.otp.otpnotver'),
+                ], 400);
             }
         } catch (\Throwable $e) {
             return response()->json([

@@ -237,6 +237,7 @@ return [
             'resendotp' => 'OTP Resent successfuly',
             'alreadyverify' => 'Your email is already verified',
             'registerfirst' => 'Please Register First...',
+            'failure' => 'Unable to Verify OTP, Please Try Again'
         ],
         
         'forgetpass' => [
