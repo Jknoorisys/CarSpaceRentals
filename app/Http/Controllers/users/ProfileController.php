@@ -71,7 +71,7 @@ class ProfileController extends Controller
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'user_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
-            'profile' => 'required|image|mimetypes:jpg,jpeg,svg,png',
+            'profile' => 'required|image|mimes:jpg,jpeg,svg,png',
 
         ]);
 
@@ -139,7 +139,7 @@ class ProfileController extends Controller
             'name' => 'required|string',
             'mobile' => 'required|numeric',
             'email' => 'required|email|unique:users',
-            'profile_image' => 'image|mimetypes:jpg,jpeg,svg,png'
+            'profile_image' => 'image|mimes:jpg,jpeg,svg,png'
         ]);
 
         if ($validator->fails()) {
