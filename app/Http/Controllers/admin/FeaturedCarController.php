@@ -64,14 +64,14 @@ class FeaturedCarController extends Controller
             if (!($brands->isEmpty())) {
                 return response()->json([
                     'status'    => 'success',
-                    'message'   => trans('msg.user.featured-get-car.success'),
+                    'message'   => trans('msg.user.get-featured-car.success'),
                     'total'     => $total,
                     'data'      => $brands
                 ],200);
             } else {
                 return response()->json([
                     'status'    => 'success',
-                    'message'   => trans('msg.user.featured-get-car.failure'),
+                    'message'   => trans('msg.user.get-featured-car.failure'),
                     'data'      => [],
                 ],200);
             }
@@ -117,13 +117,13 @@ class FeaturedCarController extends Controller
             {
                 return response()->json([
                     'status'    => 'success',
-                    'message'   => trans('msg.admin.featured-get-car.success'),
+                    'message'   => trans('msg.admin.get-featured-car-details.success'),
                     'data'      => $car
                 ],200);
             }else{
                 return response()->json([
                     'status'    => 'success',
-                    'message'   => trans('msg.admin.featured-get-car.failed'),
+                    'message'   => trans('msg.admin.get-featured-car-details.failed'),
                     'data'      => []
                 ],200);
             }
