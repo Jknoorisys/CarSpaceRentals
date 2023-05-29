@@ -225,8 +225,8 @@ return [
         ],
 
         'register' => [
-            'success' => 'OTP sent to your entered email address',
-            'fail' => 'Failed to send OTP',
+            'success' => 'OTP Sent on Registered Email',
+            'fail' => 'Failed to Send OTP, Please try again...',
             'incmail' => 'Incorrect Email',
             'incpass' => 'Incorrect Password'
         ],
@@ -365,4 +365,25 @@ return [
         'invalid-plot'     => 'Plot Not Found',
         'invalid-car'      => 'Car Not Found',
     ],
+
+    // email
+    'email' => [
+        'Email Verification' => 'Email Verification',
+        'Forget Password'    => 'Forget Password',
+        'Reset Your Password' => 'Reset Your Password',
+        'Welcome on Board'   => 'Welcome on Board',
+        'Visit Our Platform' => 'Visit Our Platform',
+        'Find us'            => 'Find us',
+        'Terms & Conditions' => 'Terms & Conditions',
+        'Privacy Policy'     => 'Privacy Policy',
+        'FAQs'               => 'FAQs',
+        'Dear'               => 'Dear',
+        'Let’s get you Registered with us!' => 'Let’s get you Registered with us!',
+        'Your One time Password to Complete your Registrations is' => 'Your One time Password to Complete your Registrations is',
+        'Need to reset your password?'  => 'Need to reset your password?',
+        'No problem! Just click on the button below and you’ll be on yor way.' => 'No problem! Just click on the button below and you’ll be on yor way.',
+    ],
+
+    'No problem! Just click on the button below and you’ll be on your way.' => 'No problem! Just click on the button below and you’ll be on your way.',
+
 ];
