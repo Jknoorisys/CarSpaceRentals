@@ -50,11 +50,11 @@ class CarController extends Controller
             'kms_driven' => 'required',
             'price' => 'required|numeric',
             'description' => 'required',
-            'image1' => 'required|image|mimetypes:jpg,jpeg,svg,png',
-            'image2' => 'required|image|mimetypes:jpg,jpeg,svg,png',
-            'image3' => 'required|image|mimetypes:jpg,jpeg,svg,png',
-            'image4' => 'required|image|mimetypes:jpg,jpeg,svg,png',
-            'image5' => 'required|image|mimetypes:jpg,jpeg,svg,png',
+            'image1' => 'required|image|mimes:jpeg,png,jpg,svg',
+            'image2' => 'required|image|mimes:jpeg,png,jpg,svg',
+            'image3' => 'required|image|mimes:jpeg,png,jpg,svg',
+            'image4' => 'required|image|mimes:jpeg,png,jpg,svg',
+            'image5' => 'required|image|mimes:jpeg,png,jpg,svg',
             'color' => 'required',
             'top_speed' => 'required'
         ]);
