@@ -17,12 +17,14 @@ class FeaturedCarController extends Controller
         App::setlocale($lang);
     }
 
+    // By Aaisha Shaikh
     public function getFeaturedCar(Request $req)
     {
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'page_number'   => 'required||numeric',
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -33,6 +35,7 @@ class FeaturedCarController extends Controller
                 400
             );
         }
+
         try 
         {
             $per_page = 4;
@@ -46,13 +49,14 @@ class FeaturedCarController extends Controller
                         'cars.fuel_type as car_fuel_type','cars.price as car_price','dealers.name as dealer_name',
                         'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
                         'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5');
-            $total = $db->count();
+
             $search = $req->search ? $req->search : ''; 
             if (!empty($search)) {
                 $db->where('cars.name', 'LIKE', "%$search%");
                 $db->orWhere('dealers.name', 'LIKE', "%$search%");
             }
 
+            $total = $db->count();
             $brands = $db->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
                         ->get();
@@ -76,6 +80,7 @@ class FeaturedCarController extends Controller
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
+                'error'     => $e->getMessage()
             ], 500);
         }
     }
@@ -86,6 +91,7 @@ class FeaturedCarController extends Controller
             'language' => 'required',
             'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -96,6 +102,7 @@ class FeaturedCarController extends Controller
                 400
             );
         }
+
         try 
         {
             $car = DB::table('featured_cars')->join('dealers','dealers.id','=','featured_cars.dealer_id')
@@ -105,6 +112,7 @@ class FeaturedCarController extends Controller
                         ->select('featured_cars.*','cars.name as car_name','dealers.name as dealer_name',
                         'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
                         'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5')->first();
+
             if(!empty($car))
             {
                 return response()->json([
@@ -112,9 +120,7 @@ class FeaturedCarController extends Controller
                     'message'   => trans('msg.admin.featured-get-car.success'),
                     'data'      => $car
                 ],200);
-            }
-            else
-            {
+            }else{
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.featured-get-car.failed'),
@@ -126,6 +132,7 @@ class FeaturedCarController extends Controller
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
+                'error'     => $e->getMessage()
             ], 500);
         }
     }

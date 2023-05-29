@@ -102,7 +102,6 @@ class AuthController extends Controller
             'language' => 'required',
             'email_otp'   => 'required',
             'id' => ['required','alpha_dash', Rule::notIn('undefined')]
-
         ]);
 
         if ($validator->fails()) {
@@ -120,7 +119,7 @@ class AuthController extends Controller
             $otp = $req->email_otp;
             $id = $req->id;
             $match_otp = DB::table('dealers')->where('id',$id)->where('email_otp',$otp)->take(1)->first();
-            // return $match_otp;
+
             if(!empty($match_otp))
             {
                 $verificationCode   =  DB::table('dealers')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
@@ -223,7 +222,6 @@ class AuthController extends Controller
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'email'   => 'required|email',
-
         ]);
 
         if ($validator->fails()) {
@@ -345,7 +343,6 @@ class AuthController extends Controller
             'password'   => 'required',
             // 'device_id' => 'required',
             'ip_address' => 'required'
-
         ]);
 
         if ($validator->fails()) {
@@ -364,10 +361,7 @@ class AuthController extends Controller
                 ->take(1)->first();
 
             if ($dealer) {
-                // if ($dealer->is_email_verified == 'verified') {
                 if (Hash::check($password,$dealer->password)) {
-
-
                     if ($dealer->status == 'active') {
                         $claims = array(
                             'exp'   => Carbon::now()->addDays(1)->timestamp,
