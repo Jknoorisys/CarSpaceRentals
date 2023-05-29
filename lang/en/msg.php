@@ -204,9 +204,15 @@ return [
             'invalid' => 'Featured Car Price Not Found',
         ],
 
-        'featured-get-car' => [
-            'success' => 'Featured Car List',
-            'failed' => 'Not Featured Car'
+        // Manage Featured Cars By Aaisha Shaikh
+        'get-featured-car' => [
+            'success' => 'Featured Car List Fetched Successfully',
+            'failed' => 'Not Featured Car Found'
+        ],
+
+        'get-featured-car-details' => [
+            'success' => 'Featured Car Details Fetched Successfully',
+            'failed'   => 'Featured Car Not Found'
         ],
     ],
 
