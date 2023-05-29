@@ -42,7 +42,7 @@ class CarController extends Controller
                 'required',
                 Rule::in(['Diesel','Petrol','Gas']),
             ],
-            'no_seats' => 'required',
+            'no_seats' => 'required|numeric',
             'year_manufacture' => 'required',
             'ownership' => 'required',
             'insurance_validity' => 'required',
@@ -50,21 +50,21 @@ class CarController extends Controller
             'kms_driven' => 'required',
             'price' => 'required|numeric',
             'description' => 'required',
-            'image1' => 'required',
-            'image2' => 'required',
-            'image3' => 'required',
-            'image4' => 'required',
-            'image5' => 'required',
+            'image1' => 'required|image|mimetypes:jpg,jpeg,svg,png',
+            'image2' => 'required|image|mimetypes:jpg,jpeg,svg,png',
+            'image3' => 'required|image|mimetypes:jpg,jpeg,svg,png',
+            'image4' => 'required|image|mimetypes:jpg,jpeg,svg,png',
+            'image5' => 'required|image|mimetypes:jpg,jpeg,svg,png',
             'color' => 'required',
             'top_speed' => 'required'
         ]);
         
         if ($validator->fails()) {
             return response()->json([
-                    'status'    => 'failed',
-                    'errors'    =>  $validator->errors(),
-                    'message'   =>  __('msg.user.validation.fail'),
-                ],400);
+                'status'    => 'failed',
+                'errors'    =>  $validator->errors(),
+                'message'   =>  __('msg.user.validation.fail'),
+            ],400);
         }
 
         try 
@@ -213,27 +213,27 @@ class CarController extends Controller
                                             ->select('cars.*','brands.name as brand_name')
                                             ->first();
 
-                    $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
+                    if(!empty($car)){
+                        $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
                                                         ->where('car_photos.id',$req->car_id)->get();
 
-                    $carDetails = DB::table('bookings')
-                                    ->leftJoin('locations','locations.id','=','bookings.location_id')
-                                    ->leftJoin('plots','plots.id','=','bookings.plot_id')
-                                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
-                                    ->leftJoin('cars','cars.id','=','bookings.car_id')
-                                    ->where('bookings.car_id',$req->car_id)
-                                    ->where('bookings.dealer_id',$req->dealer_id)
-                                    ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
-                                    'dealers.name as dealer_name','dealers.email as dealer_email',
-                                    'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')->orderBy('id','asc')
-                                    ->get();
+                        $carDetails = DB::table('bookings')
+                                        ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                        ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                        ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                        ->leftJoin('cars','cars.id','=','bookings.car_id')
+                                        ->where('bookings.car_id',$req->car_id)
+                                        ->where('bookings.dealer_id',$req->dealer_id)
+                                        ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
+                                        'dealers.name as dealer_name','dealers.email as dealer_email',
+                                        'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')->orderBy('id','asc')
+                                        ->get();
 
-                    $car_detail = $carDetails;
-                    $car_images = $carImages;
-                    $car->Details = $car_detail;
-                    $car->Images = $car_images;
+                        $car_detail = $carDetails;
+                        $car_images = $carImages;
+                        $car->Details = $car_detail;
+                        $car->Images = $car_images;
 
-                    if(!empty($car)){
                         return response()->json([
                             'status'    => 'success',
                             'message'   => __('msg.dealer.car.cardetail'),
@@ -388,7 +388,7 @@ class CarController extends Controller
         }
     }
     
-    // By Javeriya Kauser
+    // By Javeriya Kauser (not developed)
     public function assignCarToPlot(Request $request)
     {
         $validator = Validator::make($request->all(), [

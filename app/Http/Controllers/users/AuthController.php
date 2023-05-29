@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\App;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -28,7 +29,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language' =>   'required',
-            'name'     => 'required|min:3',
+            'name'     => 'required|min:3|string',
             'password' => 'required|max:20||min:8',
             'email'    => 'required|email|unique:users',
             'mobile'   => 'required|numeric|unique:users',
@@ -43,9 +44,7 @@ class AuthController extends Controller
         }
 
         try {
-            $result = DB::table('users')
-                ->where('email', $req->input('email'))
-                ->get();
+            $result = DB::table('users')->where('email', $req->input('email'))->get();
 
             if (!empty($result)) {
                 $otp = rand(100000, 999999);
@@ -102,9 +101,9 @@ class AuthController extends Controller
     public function verifyOTP(Request $req)
     {
         $validator = Validator::make($req->all(), [
-            'language' => 'required',
+            'language'    => 'required',
             'email_otp'   => 'required',
-            'id' => 'required||string'
+            'id'          => ['required','alpha_dash', Rule::notIn('undefined')]
 
         ]);
 
@@ -119,19 +118,16 @@ class AuthController extends Controller
         try {
             $otp = $req->email_otp;
             $id = $req->id;
-            $match_otp = DB::table('users')->where('id',$id)->where('email_otp',$otp)->take(1)->first();
+            $match_otp = DB::table('users')->where('id', '=', $id)->where('email_otp', '=', $otp)->first();
             if(!empty($match_otp))
             {
-                #Validation Logic
-
-                $verificationCode   =  DB::table('users')->where('email_otp', $otp)->where('id', $id)->update(['is_verified' => 'yes']);
-                if ($verificationCode == true) {
-                return response()->json([
-                        'status'    => 'success',
-                        'message'   =>  __('msg.user.otp.otpver'),
-                    ], 200);
-                }
-                else {
+                $verificationCode   =  DB::table('users')->where('email_otp', '=', $otp)->where('id', '=', $id)->update(['is_verified' => 'yes', 'updated_at' => Carbon::now()]);
+                if ($verificationCode) {
+                    return response()->json([
+                            'status'    => 'success',
+                            'message'   =>  __('msg.user.otp.otpver'),
+                        ], 200);
+                } else {
                     return response()->json([
                             'status'    => 'failed',
                             'message'   =>   __('msg.user.otp.failure'),
@@ -143,8 +139,7 @@ class AuthController extends Controller
                     'message'   =>   __('msg.user.otp.otpnotver'),
                 ], 400);
             }
-        } 
-        catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
@@ -172,7 +167,7 @@ class AuthController extends Controller
 
         try {
             $email = $req->email;
-            $user = User::where('email', $email)->take(1)->first();
+            $user = User::where('email', '=', $email)->first();
 
             if (!empty($user)) {
                 if ($user->is_verified == 'no') {
@@ -225,7 +220,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'email' => 'required',
+            'email' => 'required|email',
             'password'   => 'required',
             // 'device_id' => 'required',
             'ip_address' => 'required',
@@ -245,69 +240,61 @@ class AuthController extends Controller
             $service = new Services();
             $email = $req->email;
             $password = $req->password;
-            $user  = user::where('email', $email)
-                ->take(1)->first();
+            $user  = user::where('email', '=', $email)->first();
 
-            if($user) 
+            if(!empty($user)) 
             {
-                
                 if (Hash::check($password,$user->password)) {
+                    if ($user->status == 'active') {
+                        $claims = array(
+                            'exp'   => Carbon::now()->addDays(1)->timestamp,
+                            'uuid'  => $user->id
+                        );
 
+                        $user->token = $service->getSignedAccessTokenForUser($user, $claims);
+                        $currentDate = Carbon::now()->format('Y-m-d');
+                        $currentTime = Carbon::now()->format('H:i:s');
 
-                        if ($user->status == 'active') {
-                            $claims = array(
-                                'exp'   => Carbon::now()->addDays(1)->timestamp,
-                                'uuid'  => $user->id
-                            );
-                            // return $claims;exit;
-                            $user->token = $service->getSignedAccessTokenForUser($user, $claims);
-                            $currentDate = Carbon::now()->format('Y-m-d');
-                            $currentTime = Carbon::now()->format('H:i:s');
-
-                            $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
-                            
-                            $userLog = [
-                                'id' => Str::uuid('36'), 
-                                'user_id' => $user_id->id,  
-                                'login_date' => $currentDate, 
-                                'ip_address' => $req->ip_address,
-                                'login_time' => $currentTime, 
-                                'user_type' => 'user',
-                                'ip_address' => $req->ip_address,
-                                'created_at' => Carbon::now()
-                            ];
-                            
-                            $logintime =  DB::table('login_activities')->insert($userLog);
-                            $user_id->user_login_activity_id=$userLog['id'];
-                            $user_id->JWT_token = $user->token;
-                            return response()->json(
-                                [
-                                    'status'    => 'success',
-                                    'data' => $user_id,
-                                    'message'   =>   __('msg.user.validation.login'),
-                                ],
-                                200
-                            );
-                        } else {
-                            return response()->json(
-                                [
-                                    'status'    => 'failed',
-                                    'message'   =>  __('msg.user.validation.inactive'),
-                                ],
-                                400
-                            );
-                        }
-                }
-                else 
-                {
+                        $user_id  = DB::table('users')->where('email', $email)->where('password', $user->password)->take(1)->first();
+                        
+                        $userLog = [
+                            'id' => Str::uuid('36'), 
+                            'user_id' => $user_id->id,  
+                            'login_date' => $currentDate, 
+                            'ip_address' => $req->ip_address,
+                            'login_time' => $currentTime, 
+                            'user_type' => 'user',
+                            'ip_address' => $req->ip_address,
+                            'created_at' => Carbon::now()
+                        ];
+                        
+                        $logintime =  DB::table('login_activities')->insert($userLog);
+                        $user_id->user_login_activity_id=$userLog['id'];
+                        $user_id->JWT_token = $user->token;
+                        return response()->json(
+                            [
+                                'status'    => 'success',
+                                'data' => $user_id,
+                                'message'   =>   __('msg.user.validation.login'),
+                            ],
+                            200
+                        );
+                    } else {
+                        return response()->json(
+                            [
+                                'status'    => 'failed',
+                                'message'   =>  __('msg.user.validation.inactive'),
+                            ],
+                            400
+                        );
+                    }
+                }else {
                     return response()->json([
                             'status'    => 'failed',
                             'message'   =>  __('msg.user.validation.incpass'),
                     ], 400);
                 }
-            } 
-            else 
-            {
+            } else {
                 return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.validation.incmail'),
@@ -326,27 +313,25 @@ class AuthController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'email'   => 'required',
-
+            'email'   => 'required|email',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                    'status'    => 'failed',
-                    'errors'    =>  $validator->errors(),
-                    'message'   =>  __('msg.user.validation.fail'),
-                ], 400 );
+                'status'    => 'failed',
+                'errors'    =>  $validator->errors(),
+                'message'   =>  __('msg.user.validation.fail'),
+            ], 400 );
         }
 
         try {
 
             $email = $req->email;
-            $user = User::where('email', $email)->first();
+            $user = User::where('email', '=', $email)->first();
 
             if (!empty($user)) {
                 $token = Str::random(60);
                 $user['token'] = $token;
-                // $user['is_verified'] = 'yes';
                 $userPass = $user->save();
 
                 $data = ['salutation' => trans('msg.email.Dear'), 'name'=> $user->name,'url'=> 'http://localhost:4200/reset-password?user_type=user&token='.$token, 'msg'=> trans('msg.email.Need to reset your password?'), 'url_msg'=> trans('msg.No problem! Just click on the button below and you’ll be on your way.')];
@@ -394,14 +379,14 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                    'status'    => 'failed',
-                    'errors'    =>  $validator->errors(),
-                    'message'   =>  __('msg.user.validation.fail'),
-                ], 400 );
+                'status'    => 'failed',
+                'errors'    =>  $validator->errors(),
+                'message'   =>  __('msg.user.validation.fail'),
+            ], 400 );
         }
 
         try {
-            $user = User::where('token', $req->token)->first();
+            $user = User::where('token', '=', $req->token)->first();
             if ($user) {
 
                 $password = $req->password;
@@ -446,8 +431,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language'  =>   'required',
-            'login_activity_id' => 'required',
-
+            'login_activity_id' => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
         if ($validator->fails()) {
@@ -459,7 +443,7 @@ class AuthController extends Controller
         }
 
         try {
-            $login_time = DB::table('login_activities')->where('id',$req->login_activity_id)->first();
+            $login_time = DB::table('login_activities')->where('id', '=', $req->login_activity_id)->first();
             $currentloginTime = $login_time->login_time;
             $currentlogoutTime = Carbon::now()->format('H:i:s');
             $loginTime = Carbon::parse($currentlogoutTime);
@@ -493,9 +477,7 @@ class AuthController extends Controller
                         'status'    => 'success',
                         'message'   =>  __('msg.user.logout.success'),
                     ], 200);
-            }
-            else
-            {
+            } else {
                 return response()->json([
                         'status'    => 'failed',
                         'message'   =>  __('msg.user.logout.fail'),
