@@ -272,7 +272,12 @@ class CarController extends Controller
         
         $validator = Validator::make($req->all(), [
             'language'  => 'required',
-            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')]
+            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'image1' => 'image|mimes:jpeg,png,jpg,svg',
+            'image2' => 'image|mimes:jpeg,png,jpg,svg',
+            'image3' => 'image|mimes:jpeg,png,jpg,svg',
+            'image4' => 'image|mimes:jpeg,png,jpg,svg',
+            'image5' => 'image|mimes:jpeg,png,jpg,svg'
         ]);
 
         if($validator->fails()){
@@ -498,4 +503,6 @@ class CarController extends Controller
             ],500);
         }
     }
+
+    
 }
