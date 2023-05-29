@@ -352,6 +352,11 @@ return [
             'cardetail' => 'Car Details'
         ],
 
+        'payment' => [
+            'redirect_success' => 'Payment Redirect Successful',
+            'redirect_fail' => 'Unable To Redirect To Payment'
+        ],
+
     ],
 
     // Helpers
