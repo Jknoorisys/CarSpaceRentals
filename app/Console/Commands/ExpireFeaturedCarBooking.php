@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Cars;
 use App\Models\FeaturedCars;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -39,7 +40,11 @@ class ExpireFeaturedCarBooking extends Command
            // Expire the featured car booking
            $booking->status = 'unfeatured';
            $booking->updated_at = Carbon::now();
-           $booking->save();
+           $booked = $booking->save();
+
+            if ($booked) {
+                Cars::where('id', '=', $booking->car_id)->update(['is_featued' => 'no', 'updated_at' => Carbon::now()]);
+            }
        }
 
        $this->info('Featured Car bookings expired successfully.');
