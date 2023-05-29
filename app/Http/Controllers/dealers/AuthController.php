@@ -60,19 +60,18 @@ class AuthController extends Controller
 
                 $saveDealer = DB::table('dealers')->insert($dealer);
                 
-                $email = ['to' => $data['email']];
-                $mail_details = [
-                    'subject' => 'Testing Application OTP',
-                    'body' => 'Your OTP is : ' . $otp
+                $data = [
+                    'salutation' => trans('msg.email.Dear'),
+                    'name'=> $req->name,
+                    'otp'=> $otp, 
+                    'msg'=> trans('msg.email.Let’s get you Registered with us!'), 
+                    'otp_msg'=> trans('msg.email.Your One time Password to Complete your Registrations is')
                 ];
 
-                $data = array(
-                    'name' => $data['name'],
-                    'otp' => $otp
-                );
-
-                Mail::send('Dealer_Mail.mail', $data, function ($message) use ($email) {
-                    $message->to($email['to'])->subject('Email Verification');
+                $email =  ['to'=> $req->email];
+                Mail::send('email_template', $data, function ($message) use ($email) {
+                    $message->to($email['to']);
+                    $message->subject(__('msg.email.Email Verification'));
                 });
 
                 if ($saveDealer) {
@@ -179,19 +178,18 @@ class AuthController extends Controller
                     $resend =  Dealers::where('email', '=', $email)->update(['email_otp' => $email_otp,'updated_at' => date('Y-m-d H:i:s')]);
                     if ($resend == true) {
                         $dealer = Dealers::where('email', '=', $email)->first();
-                        $email = ['to' => $req->email];
-                        $mail_details = [
-                            'subject' => 'Testing Application OTP',
-                            'body' => 'Your OTP is : ' . $email_otp
+                        $data = [
+                            'salutation' => trans('msg.email.Dear'),
+                            'name'=> $req->name,
+                            'otp'=> $email_otp, 
+                            'msg'=> trans('msg.email.Let’s get you Registered with us!'), 
+                            'otp_msg'=> trans('msg.email.Your One time Password to Complete your Registrations is')
                         ];
-
-                        $data = array(
-                            'name' => $dealer->name,
-                            'otp' => $email_otp
-                        );
-
-                        Mail::send('Dealer_Mail.resenOTPmail', $data, function ($message) use ($email) {
-                            $message->to($email['to'])->subject('Resend Email Verification');
+        
+                        $email =  ['to'=> $req->email];
+                        Mail::send('email_template', $data, function ($message) use ($email) {
+                            $message->to($email['to']);
+                            $message->subject(__('msg.email.Email Verification'));
                         });
 
                         return response()->json([
@@ -243,11 +241,17 @@ class AuthController extends Controller
             if (!empty($dealer)) {
                 $token = Str::random(60);
                 $dealer['token'] = $token;
-                $dealer['is_verified'] = 'yes';
+                // $dealer['is_verified'] = 'yes';
                 $dealerPass = $dealer->save();
-                $mailsent = Mail::to($req->email)->send(new dealerforgetpass($dealer->name, $token));
+                
+                $data = ['salutation' => trans('msg.email.Dear'), 'name'=> $dealer->name,'url'=> 'http://localhost:4200/reset-password?user_type=dealer&token='.$token, 'msg'=> trans('msg.email.Need to reset your password?'), 'url_msg'=> trans('msg.No problem! Just click on the button below and you’ll be on your way.')];
+                $email =  ['to'=> $dealer->email];
+                Mail::send('reset_password_mail', $data, function ($message) use ($email) {
+                    $message->to($email['to']);
+                    $message->subject(trans('msg.email.Forget Password'));
+                });
 
-                if ($mailsent == true) {
+                if ($dealerPass) {
                     return response()->json([
                             'status'    => 'success',
                             'data' => $dealer,

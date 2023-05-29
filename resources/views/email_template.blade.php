@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotlight</title>
+    <title>Email</title>
     <style type="text/css" emogrify="no">
         #outlook a {
             padding: 0;
@@ -30,7 +30,7 @@
             mso-line-height-rule: exactly;
         }
 
-        .editable. image {
+        .editable.image {
             font-size: 0 !important;
             line-height: 0 !important;
         }
@@ -165,7 +165,7 @@
             }
 
             .r13-i {
-                background-color: #000000 !important;
+                background-color: #0a1717 !important;
                 padding-bottom: 20px !important;
                 padding-left: 15px !important;
                 padding-right: 15px !important;
@@ -266,7 +266,7 @@
             }
 
             .r28-i {
-                background-color: #000000 !important;
+                background-color: #0a1717 !important;
                 padding-bottom: 42px !important;
                 padding-left: 15px !important;
                 padding-right: 15px !important;
@@ -512,55 +512,6 @@
 <body bgcolor="#ffffff" text="#392F65" link="#ffffff" yahoo="fix" style="background-color: #ffffff;">
     <table cellspacing="0" cellpadding="0" border="0" role="presentation" class="nl2go-body-table" width="100%" style="background-color: #ffffff; width: 100%;">
         <tr>
-            <td align="" class="r0-c">
-                <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r1-o" style="table-layout: fixed; width: 100%;"><!-- -->
-                    <tr>
-                        <td valign="top" class="r2-i" style="background-color: transparent;">
-                            <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                <tr>
-                                    <td class="r3-c" align="center">
-                                        <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="600" class="r4-o" style="table-layout: fixed;"><!-- -->
-                                            <tr>
-                                                <td class="r5-i" style="padding-bottom: 5px; padding-top: 5px;">
-                                                    <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                                        <tr>
-                                                            <th width="100%" valign="top" class="r6-c" style="font-weight: normal;">
-                                                                <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r1-o" style="table-layout: fixed; width: 100%;"><!-- -->
-                                                                    <tr>
-                                                                        <td valign="top" class="r7-i" style="padding-left: 10px; padding-right: 10px;">
-                                                                            <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
-                                                                                <tr>
-                                                                                    <td class="r8-c" align="center">
-                                                                                        <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r9-o" style="table-layout: fixed; width: 100%;">
-                                                                                            <tr>
-                                                                                                <td align="center" class="r10-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-left: 30px; padding-right: 30px; padding-top: 20px; text-align: center;">
-                                                                                                    <div>
-                                                                                                        <p style="margin: 0;"><a href="" style="color: #fff; text-decoration: none;"><span style="color: #392f65;">View in browser</span></a></p>
-                                                                                                    </div>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </table>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </th>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
             <td align="center" class="r3-c">
                 <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="600" class="r4-o" style="table-layout: fixed; width: 600px;">
                     <tr>
@@ -570,7 +521,7 @@
                                     <td class="r12-c" align="center">
                                         <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r9-o" style="table-layout: fixed; width: 100%;"><!-- -->
                                             <tr>
-                                                <td class="r13-i" style="background-color: #000000; padding-bottom: 20px; padding-top: 20px;">
+                                                <td class="r13-i" style="background-color: #0a1717; padding-bottom: 20px; padding-top: 20px;">
                                                     <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                                         <tr>
                                                             <th width="100%" valign="top" class="r6-c" style="font-weight: normal;">
@@ -617,7 +568,7 @@
                                                                                             <tr>
                                                                                                 <td align="center" valign="top" class="r20-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; word-break: break-word; line-height: 1.1; text-align: center;">
                                                                                                     <div>
-                                                                                                        <h1 class="default-heading1" style="margin: 0; color: #392f65; font-family: Vollkorn,Georgia,Times,Times New Roman,serif,Arial; font-size: 48px; word-break: break-word;"><span style="color: #000000; font-size: 32px;">Welcome on board</span></h1>
+                                                                                                        <h1 class="default-heading1" style="margin: 0; color: #392f65; font-family: Vollkorn,Georgia,Times,Times New Roman,serif,Arial; font-size: 48px; word-break: break-word;"><span style="color: #0a1717; font-size: 32px;">{{ trans('msg.email.Welcome on Board') }}</span></h1>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
@@ -630,7 +581,7 @@
                                                                                             <tr>
                                                                                                 <td align="left" valign="top" class="r23-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-top: 25px; text-align: left;">
                                                                                                     <div>
-                                                                                                        <h2 class="default-heading2" style="margin: 0; color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 24px; word-break: break-word;"><span style="color: #000000; font-size: 20px;">Dear {{ $user ? $user['name'] : '' }},</span></h2>
+                                                                                                        <h2 class="default-heading2" style="margin: 0; color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 24px; word-break: break-word;"><span style="color: #0a1717; font-size: 20px;">{{$salutation}}&nbsp;{{$name}},</span></h2>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
@@ -643,12 +594,21 @@
                                                                                             <tr>
                                                                                                 <td align="left" valign="top" class="r24-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-top: 5px; text-align: left;">
                                                                                                     <div>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">I hope this email finds you well. It appears that you have </span></p>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">recently requested to reset your password for <strong>Car Space Rental</strong></span></p>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">We understand that forgetting passwords can happen to the best of us, and we are here to </span></p>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">assist you in regaining access to your account. </span></p>
-                                                                                                        <p style="margin: 0;"> </p>
-                                                                                                        <p style="margin: 0;"><span style="color: #000000;">To proceed with the password reset, please click on below link</span></p>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717;">{{ $msg }}</span></p>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td align="left" valign="top" class="r24-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-top: 5px; text-align: left;">
+                                                                                                    <div>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717;">{{ $otp_msg }}</span></p>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            <tr>
+                                                                                                <td align="left" valign="top" class="r24-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-top: 5px; text-align: left;">
+                                                                                                    <div>
+                                                                                                        <p style="margin: 0;"><span style="color: #0a1717; font-size: 35px; line-height: 55px; letter-spacing: 15px; display: inline-block; ">{{ $otp }}</span></p>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
@@ -662,7 +622,7 @@
                                                                                                 <td height="30" style="font-size: 30px; line-height: 30px;">­</td>
                                                                                             </tr>
                                                                                             <tr>
-                                                                                                <td height="18" align="center" valign="top" class="r20-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word;"> <!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="http://" style="v-text-anchor:middle; height: 49px; width: 272px;" arcsize="50%" fillcolor="#5eb8a3" strokecolor="#5eb8a3" strokeweight="1px" data-btn="1"> <w:anchorlock> </w:anchorlock> <v:textbox inset="0,0,0,0"> <div style="display:none;"> <center class="default-button"><span>Visit Our Platform</span></center> </div> </v:textbox> </v:roundrect> <![endif]--> <!--[if !mso]><!-- --> <a href="{{'http://localhost:4200/reset-password?user_type=user&token='.$user['token']}}" class="r27-r default-button" target="_blank" data-btn="1" style="font-style: normal; font-weight: normal; line-height: 1.15; text-decoration: none; word-break: break-word; border-style: solid; word-wrap: break-word; display: inline-block; -webkit-text-size-adjust: none; background-color: #5eb8a3; border-bottom-width: 0px; border-color: #5eb8a3; border-left-width: 0px; border-radius: 30px; border-right-width: 0px; border-top-width: 0px; color: #ffffff; font-family: Roboto, Arial, Helvetica, sans-serif; font-size: 16px; height: 18px; mso-hide: all; padding-bottom: 16px; padding-left: 5px; padding-right: 5px; padding-top: 16px; width: 263px;"> <span>Reset Password</span></a> <!--<![endif]--> </td>
+                                                                                                <td height="18" align="center" valign="top" class="r20-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word;"> <!--[if mso]> <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="http://" style="v-text-anchor:middle; height: 49px; width: 272px;" arcsize="50%" fillcolor="#5eb8a3" strokecolor="#5eb8a3" strokeweight="1px" data-btn="1"> <w:anchorlock> </w:anchorlock> <v:textbox inset="0,0,0,0"> <div style="display:none;"> <center class="default-button"><span>Visit Our Platform</span></center> </div> </v:textbox> </v:roundrect> <![endif]--> <!--[if !mso]><!-- --> <a href="http://" class="r27-r default-button" target="_blank" data-btn="1" style="font-style: normal; font-weight: normal; line-height: 1.15; text-decoration: none; word-break: break-word; border-style: solid; word-wrap: break-word; display: inline-block; -webkit-text-size-adjust: none; background-color: #5eb8a3; border-bottom-width: 0px; border-color: #5eb8a3; border-left-width: 0px; border-radius: 30px; border-right-width: 0px; border-top-width: 0px; color: #ffffff; font-family: Roboto, Arial, Helvetica, sans-serif; font-size: 16px; height: 18px; mso-hide: all; padding-bottom: 16px; padding-left: 5px; padding-right: 5px; padding-top: 16px; width: 263px;"> <span>{{ trans('msg.email.Visit Our Platform') }}</span></a> <!--<![endif]--> </td>
                                                                                             </tr>
                                                                                         </table>
                                                                                     </td>
@@ -683,7 +643,7 @@
                                     <td class="r12-c" align="center">
                                         <table cellspacing="0" cellpadding="0" border="0" role="presentation" width="100%" class="r9-o" style="table-layout: fixed; width: 100%;"><!-- -->
                                             <tr>
-                                                <td class="r28-i" style="background-color: #000000; padding-bottom: 42px; padding-left: 59px; padding-right: 58px; padding-top: 37px;">
+                                                <td class="r28-i" style="background-color: #0a1717; padding-bottom: 42px; padding-left: 59px; padding-right: 58px; padding-top: 37px;">
                                                     <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
                                                         <tr>
                                                             <th width="66.67%" valign="top" class="r6-c" style="font-weight: normal;">
@@ -724,7 +684,7 @@
                                                                                             <tr>
                                                                                                 <td align="left" valign="top" class="r30-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; padding-top: 7px; text-align: left;">
                                                                                                     <div>
-                                                                                                        <div class="nl2go_class_14_white_b" style="color: #fff; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 700; word-break: break-word;">Find us</div>
+                                                                                                        <div class="nl2go_class_14_white_b" style="color: #fff; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 700; word-break: break-word;">{{ trans('msg.email.Find us') }}</div>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
@@ -797,8 +757,9 @@
                                                                                             <tr>
                                                                                                 <td align="left" valign="top" class="r29-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; line-height: 1.5; word-break: break-word; text-align: left;">
                                                                                                     <div>
-                                                                                                        <div class="nl2go_class_14_white_l" style="color: #fff; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 300; word-break: break-word;"><a href="" target="_blank" style="color: #fff; text-decoration: none;"><span style="color: #ffffff;">Terms &amp; condition</span></a><br>Privacy Policy</div>
-                                                                                                        <div class="nl2go_class_14_white_l" style="color: #fff; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 300; word-break: break-word;">FAQs</div>
+                                                                                                        <div class="nl2go_class_14_white_l" style="color: #fff; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 300; word-break: break-word;"><a href="" target="_blank" style="color: #fff; text-decoration: none;"><span style="color: #ffffff;">{{ trans('msg.email.Terms & Conditions') }}</span></a></div>
+                                                                                                        <div class="nl2go_class_14_white_l" style="color: #fff; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 300; word-break: break-word;"><a href="" target="_blank" style="color: #fff; text-decoration: none;"><span style="color: #ffffff;">{{ trans('msg.email.Privacy Policy') }}</span></a></div>
+                                                                                                        <div class="nl2go_class_14_white_l" style="color: #fff; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 300; word-break: break-word;"><a href="" target="_blank" style="color: #fff; text-decoration: none;"><span style="color: #ffffff;">{{ trans('msg.email.FAQs') }}</span></a></div>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>

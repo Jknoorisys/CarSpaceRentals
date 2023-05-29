@@ -52,25 +52,29 @@ class AuthController extends Controller
                 $data = $req->input();
 
                 $user = [
-                    'id' => Str::uuid(), 'name' => $data['name'], 'password' => Hash::make($data['password']),
-                    'email' => $data['email'], 'mobile' => $data['mobile'], 'email_otp' => $otp, 'created_at' => Carbon::now()
+                    'id' => Str::uuid(), 
+                    'name' => $data['name'], 
+                    'password' => Hash::make($data['password']),
+                    'email' => $data['email'], 
+                    'mobile' => $data['mobile'], 
+                    'email_otp' => $otp, 
+                    'created_at' => Carbon::now()
                 ];
 
                 $saveUser = DB::table('users')->insert($user);
 
-                $email = ['to' => $data['email']];
-                $mail_details = [
-                    'subject' => 'Testing Application OTP',
-                    'body' => 'Your OTP is : ' . $otp
+                $data = [
+                    'salutation' => trans('msg.email.Dear'),
+                    'name'=> $req->name,
+                    'otp'=> $otp, 
+                    'msg'=> trans('msg.email.Let’s get you Registered with us!'), 
+                    'otp_msg'=> trans('msg.email.Your One time Password to Complete your Registrations is')
                 ];
 
-                $data = array(
-                    'name' => $data['name'],
-                    'otp' => $otp
-                );
-
-                Mail::send('User_Mail.mail', $data, function ($message) use ($email) {
-                    $message->to($email['to'])->subject('Email Verification');
+                $email =  ['to'=> $req->email];
+                Mail::send('email_template', $data, function ($message) use ($email) {
+                    $message->to($email['to']);
+                    $message->subject(__('msg.email.Email Verification'));
                 });
 
                 if ($saveUser) {
@@ -177,20 +181,18 @@ class AuthController extends Controller
                     $resend =  User::where('email', '=', $email)->update(['email_otp' => $email_otp, 'updated_at' => date('Y-m-d H:i:s')]);
                     if ($resend == true) {
                         $user = User::where('email', '=', $email)->first();
-                        $email = ['to' => $req->email];
-
-                        $mail_details = [
-                            'subject' => 'Testing Application OTP',
-                            'body' => 'Your OTP is : ' . $email_otp
+                        $data = [
+                            'salutation' => trans('msg.email.Dear'),
+                            'name'=> $req->name,
+                            'otp'=> $email_otp, 
+                            'msg'=> trans('msg.email.Let’s get you Registered with us!'), 
+                            'otp_msg'=> trans('msg.email.Your One time Password to Complete your Registrations is')
                         ];
-
-                        $data = array(
-                            'name' => $user->name,
-                            'otp' => $email_otp
-                        );
-
-                        Mail::send('User_Mail.resenOTPmail', $data, function ($message) use ($email) {
-                            $message->to($email['to'])->subject('Resend Email Verification');
+        
+                        $email =  ['to'=> $req->email];
+                        Mail::send('email_template', $data, function ($message) use ($email) {
+                            $message->to($email['to']);
+                            $message->subject(__('msg.email.Email Verification'));
                         });
 
                         return response()->json([
@@ -344,11 +346,17 @@ class AuthController extends Controller
             if (!empty($user)) {
                 $token = Str::random(60);
                 $user['token'] = $token;
-                $user['is_verified'] = 'yes';
+                // $user['is_verified'] = 'yes';
                 $userPass = $user->save();
 
-                $mailsent = Mail::to($req->email)->send(new ForgetPassword($user->name, $token));
-                if ($mailsent == true) {
+                $data = ['salutation' => trans('msg.email.Dear'), 'name'=> $user->name,'url'=> 'http://localhost:4200/reset-password?user_type=user&token='.$token, 'msg'=> trans('msg.email.Need to reset your password?'), 'url_msg'=> trans('msg.No problem! Just click on the button below and you’ll be on your way.')];
+                $email =  ['to'=> $user->email];
+                Mail::send('reset_password_mail', $data, function ($message) use ($email) {
+                    $message->to($email['to']);
+                    $message->subject(trans('msg.email.Forget Password'));
+                });
+
+                if ($userPass) {
                     return response()->json([
                             'status'    => 'success',
                             'data' => $user,
