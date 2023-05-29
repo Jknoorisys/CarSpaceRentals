@@ -111,7 +111,7 @@ class PaymentPlotController extends Controller
                         return response()->json(
                             [
                                 'status'    => 'success',
-                                'payment_url' => $url_details['payment_url'],
+                                'payment_url' => $url_details,
                                 'message'   => __('msg.dealer.payment.redirect_success'),
                             ],
                             200
@@ -166,11 +166,11 @@ class PaymentPlotController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
             $orange_token = curl_exec($ch);
-            // return $orange_token;
+            return $orange_token;
             curl_close($ch);
             $token_details = json_decode($orange_token, TRUE);
             $token = 'Bearer ' . $token_details['access_token'];
-            return $token;
+            
             // get payment link
             $json_post_data = json_encode(
                 array(
