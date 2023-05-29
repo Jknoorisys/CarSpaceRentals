@@ -169,6 +169,7 @@ Route::prefix('dealer')->group( function () {
         Route::post('unassign-car' , [CarController::class, 'unassignCarFromPlot']);
 
         Route::post('orange_payment_for_plot_booking',[PaymentPlotController::class,'orange_payment_for_plot_booking']);
+        Route::post('orange_payment_success',[PaymentPlotController::class,'orange_payment_success']);
 
     });
 });
