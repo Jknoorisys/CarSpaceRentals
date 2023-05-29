@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('payment_transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->longText('plot_id');
+            $table->longText('plots_id');
+            $table->longText('cars_id');
             $table->string('location_id');
             $table->string('dealer_id');
             $table->string('notif_token');
