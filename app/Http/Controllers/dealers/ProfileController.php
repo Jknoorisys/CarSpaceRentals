@@ -73,7 +73,7 @@ class ProfileController extends Controller
         $validator = Validator::make($req->all(), [
             'language' => 'required',
             'dealer_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
-            'profile_image' => 'required|image|mimetypes:jpg,jpeg,svg,png'
+            'profile_image' => 'required|image|mimes:jpg,jpeg,svg,png'
         ]);
 
         if ($validator->fails()) {
@@ -143,7 +143,7 @@ class ProfileController extends Controller
             'mobile' => 'numeric',
             'company' => 'regex:/^[\pL\s]+$/u|min:3',
             'email' => 'unique:dealers',
-            'profile_image' => 'image|mimetypes:jpg,jpeg,svg,png'
+            'profile_image' => 'image|mimes:jpg,jpeg,svg,png'
         ]);
 
         if ($validator->fails()) {
