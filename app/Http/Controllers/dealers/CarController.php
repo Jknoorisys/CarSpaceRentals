@@ -97,6 +97,7 @@ class CarController extends Controller
                 ];
 
                 $file1 = $req->file('image1');
+                return $file1;
                 if ($file1) {
                     $extension1 = $file1->getClientOriginalName();
                     $file_path1 = 'dealer_car_photos/';
@@ -301,31 +302,31 @@ class CarController extends Controller
                 $image4 = $req->image4;
                 $image5 = $req->image5;
                 
-                if ($image1) {
+                if (!empty($image1)) {
                     $image1 = optional($req->file('image1'))->getClientOriginalName();
                     $image1name = time() . '.' . $image1;
                     $req->file('image1')->move('dealer_car_photos', $image1name);
                 }
 
-                if ($image2) {
+                elseif (!empty($image2)) {
                     $image2 = optional($req->file('image2'))->getClientOriginalName();
                     $image2name = time() . '.' . $image2;
-                    $req->file('image1')->move('dealer_car_photos', $image2name);
+                    $req->file('image2')->move('dealer_car_photos', $image2name);
                 }
 
-                if ($image3) {
+                elseif (!empty($image3)) {
                     $image3 = optional($req->file('image3'))->getClientOriginalName();
                     $image3name = time() . '.' . $image3;
-                    $req->file('image1')->move('dealer_car_photos', $image3name);
+                    $req->file('image3')->move('dealer_car_photos', $image3name);
                 }
 
-                if ($image4) {
+                elseif (!empty($image4)) {
                     $image4 = optional($req->file('image4'))->getClientOriginalName();
                     $image4name = time() . '.' . $image4;
                     $req->file('image4')->move('dealer_car_photos', $image4name);
                 }
 
-                if ($image5) {
+                elseif (!empty($image5)) {
                     $image5 = optional($req->file('image5'))->getClientOriginalName();
                     $image5name = time() . '.' . $image5;
                     $req->file('image5')->move('dealer_car_photos', $image5name);

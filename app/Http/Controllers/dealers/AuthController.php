@@ -242,7 +242,10 @@ class AuthController extends Controller
                 // $dealer['is_verified'] = 'yes';
                 $dealerPass = $dealer->save();
                 
-                $data = ['salutation' => trans('msg.email.Dear'), 'name'=> $dealer->name,'url'=> 'http://localhost:4200/reset-password?user_type=dealer&token='.$token, 'msg'=> trans('msg.email.Need to reset your password?'), 'url_msg'=> trans('msg.No problem! Just click on the button below and you’ll be on your way.')];
+                $data = ['salutation' => trans('msg.email.Dear'), 
+                'name'=> $dealer->name,'url'=> 'http://tabanimasala.com/carspacerental-site/auth/reset-password?user_type=dealer&token='.$token,
+                'msg'=> trans('msg.email.Need to reset your password?'),
+                'url_msg'=> trans('msg.No problem! Just click on the button below and you’ll be on your way.')];
                 $email =  ['to'=> $dealer->email];
                 Mail::send('reset_password_mail', $data, function ($message) use ($email) {
                     $message->to($email['to']);

@@ -334,7 +334,10 @@ class AuthController extends Controller
                 $user['token'] = $token;
                 $userPass = $user->save();
 
-                $data = ['salutation' => trans('msg.email.Dear'), 'name'=> $user->name,'url'=> 'http://localhost:4200/reset-password?user_type=user&token='.$token, 'msg'=> trans('msg.email.Need to reset your password?'), 'url_msg'=> trans('msg.No problem! Just click on the button below and you’ll be on your way.')];
+                $data = ['salutation' => trans('msg.email.Dear'),
+                'name'=> $user->name,'url'=> 'http://tabanimasala.com/carspacerental-site/auth/reset-password?user_type=user&token='.$token,
+                'msg'=> trans('msg.email.Need to reset your password?'),
+                'url_msg'=> trans('msg.No problem! Just click on the button below and you’ll be on your way.')];
                 $email =  ['to'=> $user->email];
                 Mail::send('reset_password_mail', $data, function ($message) use ($email) {
                     $message->to($email['to']);

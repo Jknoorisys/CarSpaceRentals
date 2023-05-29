@@ -11,7 +11,7 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class PaymentPlotController extends Controller
+class PaymentFcarController extends Controller
 {
     public function __construct() 
     {
@@ -19,14 +19,13 @@ class PaymentPlotController extends Controller
         App::setlocale($lang);
     }
 
-    // By Aaisha Shaikh
-    public function orange_payment_for_plot_booking(Request $req)
+    public function orange_payment_for_car_booking(Request $req)
     {
         $validator = Validator::make($req->all(), [
             'language'          =>   'required',
             'dealer_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
             'location_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
-            'plots_id' => ['required'],
+            'cars_id' => ['required'],
             'amount' => 'required',
         ]);
 
@@ -59,7 +58,7 @@ class PaymentPlotController extends Controller
             // else $lang = 'en';
 
             // get payment link
-            $order_id = rand(1000000, 000000) . "_plot_booking";
+            $order_id = rand(1000000, 000000) . "_Featured_Car";
 
             $json_post_data =
                 json_encode(
@@ -74,7 +73,7 @@ class PaymentPlotController extends Controller
                         "cancel_url" => "http://google.com",
                         "notif_url" => "http://google.com",
                         "lang" => "en",
-                        "reference" => "Plot Booking"
+                        "reference" => "Featured Cars"
                     )
                 );
             // echo $order_id; die();
@@ -98,8 +97,8 @@ class PaymentPlotController extends Controller
 
                 $booking_detail = array(
                     'id' => Str::uuid(),
-                    'plots_id' => $req->plots_id,
-                    'cars_id' => '-',
+                    'cars_id' => $req->cars_id,
+                    'plots_id' => '-',
                     'location_id' => $req->location_id,
                     'dealer_id' => $req->dealer_id,
                     'notif_token' => $url_details['notif_token'],
@@ -107,7 +106,7 @@ class PaymentPlotController extends Controller
                     'payment_id' => 'orange_' . $data['order_id'],
                     'payment_method' => 'orange',
                     'amount' => $req->amount,
-                    'payment_for' => 'plot',
+                    'payment_for' => 'car',
                     'status' => 'unpaid',
                     'created_at' => Carbon::now(),
                 );
@@ -135,81 +134,6 @@ class PaymentPlotController extends Controller
                         );
                     }
                 }
-            }
-        } catch (\Throwable $e) {
-            return response()->json([
-                'status'  => 'failed',
-                'message' => __('msg.user.error'),
-                'error'   => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function orange_payment_success(Request $req)
-    {
-        $validator = Validator::make($req->all(), [
-            'language'          =>   'required',
-            'dealer_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
-            'pay_token'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
-            
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status'    => 'failed',
-                'message'   => __('msg.user.validation.fail'),
-                'errors'    => $validator->errors()
-            ], 400);
-        }
-        try {
-            $pay_token = $req->pay_token;
-            $data = DB::table('payment_transactions')->where('pay_token',$req->pay_token)->take(1)->first(); 
-            $order_payment_id =  $data->payment_id;
-            $amount = $data->amount;
-            $pay_token = $data->pay_token;
-            $ch = curl_init("https://api.orange.com/oauth/v3/token?");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Authorization: Basic REpMRWMwSVBjeGZ3VndjaGpxV004dm1PWXBqQU5FNXg6M3FNNGk4UkwzNFlHQ2RJNw=='
-            ));
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
-            $orange_token = curl_exec($ch);
-            return $orange_token;
-            curl_close($ch);
-            $token_details = json_decode($orange_token, TRUE);
-            $token = 'Bearer ' . $token_details['access_token'];
-            
-            // get payment link
-            $json_post_data = json_encode(
-                array(
-                    "order_id" => $order_payment_id,
-                    "amount" => $amount,
-                    "pay_token" => $pay_token
-                )
-            );
-            echo $json_post_data; die();
-            $ch = curl_init("https://api.orange.com/orange-money-webpay/cm/v1/transactionstatus?");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                "Content-Type: application/json",
-                "Authorization: " . $token,
-                "Accept: application/json"
-            ));
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $json_post_data);
-            $payment_res = curl_exec($ch);
-            return $payment_res;
-            curl_close($ch);
-            $payment_details = json_decode($payment_res, TRUE);
-            $transaction_id = $payment_details['txnid'];
-            echo json_encode($payment_details); die();
-
-            if ($payment_details['status'] == 'SUCCESS' && $data['status'] == 'unpaid') {
-                $success_payment = DB::table('payment_transactions')->where('pay_token',$req->paytoken)->update(['status','paid']);
-                return $success_payment;
-            } else {
-                return "false";
             }
         } catch (\Throwable $e) {
             return response()->json([
