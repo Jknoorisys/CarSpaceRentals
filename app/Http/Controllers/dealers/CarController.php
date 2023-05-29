@@ -102,7 +102,7 @@ class CarController extends Controller
                 ];
 
                 $file1 = $req->file('image1');
-                return $file1;
+                // return $file1;
                 if ($file1) {
                     $extension1 = $file1->getClientOriginalName();
                     $file_path1 = 'dealer_car_photos/';
