@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -21,9 +23,9 @@ class ProfileController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'user_id'   => 'required',
-
+            'user_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -34,8 +36,9 @@ class ProfileController extends Controller
                 400
             );
         }
+
         try {
-            $user = DB::table('users')->where('id', $req->user_id)->take(1)->first();
+            $user = DB::table('users')->where('id', '=', $req->user_id)->first();
             if (!empty($user)) {
                 return response()->json(
                     [
@@ -58,6 +61,7 @@ class ProfileController extends Controller
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
@@ -66,10 +70,11 @@ class ProfileController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language' => 'required',
-            'user_id'   => 'required',
-            'profile' => 'required',
+            'user_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
+            'profile' => 'required|image|mimetypes:jpg,jpeg,svg,png',
 
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -80,17 +85,18 @@ class ProfileController extends Controller
                 400
             );
         }
+
         try {
-            $user = DB::table('users')->where('id', $req->user_id)->take(1)->first();
-            // return $req->profile_image;exit;
+            $user = DB::table('users')->where('id', '=', $req->user_id)->first();
+
             if (!empty($user)) {
 
                 $profile = optional($req->file('profile'))->getClientOriginalName();
                 $file_name = time() . '.' . $profile;
                 $save = $req->file('profile')->move('user_profile_photo', $file_name);
-                $saveProfile = User::where('id', $req->user_id)->update(['profile' => ('user_profile_photo/' . $file_name)]);
+
+                $saveProfile = User::where('id', $req->user_id)->update(['profile' => ('user_profile_photo/' . $file_name), 'updated_at' => Carbon::now()]);
                 if ($saveProfile) {
-                    $UpdateProfile = DB::table('users')->where('id',$req->user_id)->first();
                     return response()->json(
                         [
                             'status'    => 'success',
@@ -120,6 +126,7 @@ class ProfileController extends Controller
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
             ], 500);
         }
     }
@@ -128,11 +135,13 @@ class ProfileController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'language' => 'required',
-            'user_id'   => 'required',
-            'name' => 'regex:/^[\pL\s]+$/u|min:3',
-            'mobile' => 'numeric',
-            'email' => 'unique:users'
+            'user_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
+            'name' => 'required|string',
+            'mobile' => 'required|numeric',
+            'email' => 'required|email|unique:users',
+            'profile_image' => 'image|mimetypes:jpg,jpeg,svg,png'
         ]);
+
         if ($validator->fails()) {
             return response()->json(
                 [
@@ -143,6 +152,7 @@ class ProfileController extends Controller
                 400
             );
         }
+
         try {
             $user_id  = $request->user_id;
             $name      = $request->name;
@@ -160,12 +170,13 @@ class ProfileController extends Controller
 
                     $upload = $file->move($file_path, $filename);
                 }
+
                 $update_data = array(
                     'name'       => (isset($name) && !empty($name)) ? $name : $user->name,
                     'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $user->mobile,
                     'profile'    => (isset($filename) && !empty($filename)) ? ('user_profile_photo/' . $filename) : $user->profile,
-                    'email'    => (isset($email) && !empty($email)) ? $email : $user->email,
-                    'updated_at' => date('Y-m-d H:i:s')
+                    'email'      => (isset($email) && !empty($email)) ? $email : $user->email,
+                    'updated_at' => Carbon::now()
                 );
 
                 $updateProfile = User::where('id', $user_id)->update($update_data);
@@ -196,11 +207,8 @@ class ProfileController extends Controller
             return response()->json([
                 'status'  => 'failed',
                 'message' =>  __('msg.user.error'),
+                'error'   => $e->getMessage()
             ], 500);
         }
-    }  
-
-    
-
-
+    } 
 }

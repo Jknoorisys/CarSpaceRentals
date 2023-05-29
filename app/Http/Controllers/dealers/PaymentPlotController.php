@@ -13,9 +13,15 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentPlotController extends Controller
 {
+    public function __construct() 
+    {
+        $lang = (isset($_POST['language']) && !empty($_POST['language'])) ? $_POST['language'] : 'en';
+        App::setlocale($lang);
+    }
+
+    // By Aaisha Shaikh
     public function orange_payment_for_plot_booking(Request $req)
     {
-
         $validator = Validator::make($req->all(), [
             'language'          =>   'required',
             'dealer_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
@@ -31,7 +37,9 @@ class PaymentPlotController extends Controller
                 'errors'    => $validator->errors()
             ], 400);
         }
-        try {
+        
+        try 
+        {
             // $plots_ids = explode(',',$req->plots_id);
             // return $plots_ids;
             $ch = curl_init("https://api.orange.com/oauth/v3/token?");
