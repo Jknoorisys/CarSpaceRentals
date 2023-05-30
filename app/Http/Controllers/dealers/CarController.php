@@ -101,16 +101,16 @@ class CarController extends Controller
             'kms_driven' => 'required',
             'price' => 'required|numeric',
             'description' => 'required',
-            'image1' => 'required|image|mimes:jpeg,png,jpg,svg',
-            'image2' => 'image|mimes:jpeg,png,jpg,svg',
-            'image3' => 'image|mimes:jpeg,png,jpg,svg',
-            'image4' => 'image|mimes:jpeg,png,jpg,svg',
-            'image5' => 'image|mimes:jpeg,png,jpg,svg',
-            // 'image1'     => 'required_without_all:image2,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
-            // 'image2'     => 'required_without_all:image1,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
-            // 'image3'     => 'required_without_all:image2,image1,image4,image5||image||mimes:jpeg,png,jpg,svg',
-            // 'image4'     => 'required_without_all:image2,image3,image1,image5||image||mimes:jpeg,png,jpg,svg',
-            // 'image5'     => 'required_without_all:image2,image3,image4,image1||image||mimes:jpeg,png,jpg,svg',
+            // 'image1' => 'required|image|mimes:jpeg,png,jpg,svg',
+            // 'image2' => 'image|mimes:jpeg,png,jpg,svg',
+            // 'image3' => 'image|mimes:jpeg,png,jpg,svg',
+            // 'image4' => 'image|mimes:jpeg,png,jpg,svg',
+            // 'image5' => 'image|mimes:jpeg,png,jpg,svg',
+            'image1'     => 'required_without_all:image2,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
+            'image2'     => 'required_without_all:image1,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
+            'image3'     => 'required_without_all:image2,image1,image4,image5||image||mimes:jpeg,png,jpg,svg',
+            'image4'     => 'required_without_all:image2,image3,image1,image5||image||mimes:jpeg,png,jpg,svg',
+            'image5'     => 'required_without_all:image2,image3,image4,image1||image||mimes:jpeg,png,jpg,svg',
             'color' => 'required',
             'top_speed' => 'required'
         ]);
@@ -201,11 +201,11 @@ class CarController extends Controller
                 $carImage = [
                     'id' => Str::uuid(),
                     'car_id' => $car['id'],
-                    'photo1' => $photo1 ? $photo1 : '', 
-                    'photo2' => $photo2 ? $photo2 : '',
-                    'photo3' => $photo3 ? $photo3 : '',
-                    'photo4' => $photo4 ? $photo4 : '',
-                    'photo5' => $photo5 ? $photo5 : '', 
+                    'photo1' => $req->image1 ? $photo1 : '', 
+                    'photo2' => $req->image2 ? $photo2 : '',
+                    'photo3' => $req->image3 ? $photo3 : '',
+                    'photo4' => $req->image4 ? $photo4 : '',
+                    'photo5' => $req->image5 ? $photo5 : '', 
                     'created_at' => Carbon::now()
                 ];
                 
