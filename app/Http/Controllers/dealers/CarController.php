@@ -159,7 +159,7 @@ class CarController extends Controller
                     $file_path1 = 'dealer_car_photos/';
                     $filename1 = time() . '.' . $extension1;
                     $upload1 = $file1->move($file_path1, $filename1);
-                    $image1 = 'dealer_car_photos/' . $filename1;
+                    $photo1 = 'dealer_car_photos/' . $filename1;
                 }
 
                 $file2 = $req->file('image2');
@@ -168,7 +168,7 @@ class CarController extends Controller
                     $file_path2 = 'dealer_car_photos/';
                     $filename2 = time() . '.' . $extension2;
                     $upload2 = $file2->move($file_path2, $filename2);
-                    $image2 = 'dealer_car_photos/' . $filename2;
+                    $photo2 = 'dealer_car_photos/' . $filename2;
                 }
 
                 $file3 = $req->file('image3');
@@ -177,7 +177,7 @@ class CarController extends Controller
                     $file_path3 = 'dealer_car_photos/';
                     $filename3 = time() . '.' . $extension3;
                     $upload3 = $file3->move($file_path3, $filename3);
-                    $image3 = 'dealer_car_photos/' . $filename3;
+                    $photo3 = 'dealer_car_photos/' . $filename3;
                 }
 
                 $file4 = $req->file('image4');
@@ -186,7 +186,7 @@ class CarController extends Controller
                     $file_path4 = 'dealer_car_photos/';
                     $filename4 = time() . '.' . $extension4;
                     $upload4 = $file4->move($file_path4, $filename4);
-                    $image4 = 'dealer_car_photos/' . $filename4;
+                    $photo4 = 'dealer_car_photos/' . $filename4;
                 }
 
                 $file5 = $req->file('image5');
@@ -195,17 +195,17 @@ class CarController extends Controller
                     $file_path5 = 'dealer_car_photos/';
                     $filename5 = time() . '.' . $extension5;
                     $upload5 = $file5->move($file_path5, $filename5);
-                    $image5 = 'dealer_car_photos/' . $filename5;
+                    $photo5 = 'dealer_car_photos/' . $filename5;
                 }
 
                 $carImage = [
                     'id' => Str::uuid(),
                     'car_id' => $car['id'],
-                    'photo1' => $image1, 
-                    'photo2' => $image2,
-                    'photo3' => $image3,
-                    'photo4' => $image4,
-                    'photo5' => $image5, 
+                    'photo1' => $photo1 ? $photo1 : '', 
+                    'photo2' => $photo2 ? $photo2 : '',
+                    'photo3' => $photo3 ? $photo3 : '',
+                    'photo4' => $photo4 ? $photo4 : '',
+                    'photo5' => $photo5 ? $photo5 : '', 
                     'created_at' => Carbon::now()
                 ];
                 
