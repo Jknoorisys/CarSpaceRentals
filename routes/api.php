@@ -19,6 +19,7 @@ use App\Http\Controllers\dealers\ProfileController;
 use App\Http\Controllers\dealers\CarController;
 use App\Http\Controllers\dealers\PaymentPlotController;
 use App\Http\Controllers\dealers\PaymentFcarController;
+use App\Http\Controllers\stripe\PlotBookingController;
 // Users
 use App\Http\Controllers\users\AuthController;
 use App\Http\Controllers\users\ProfileController as UserProfileController;
@@ -172,6 +173,12 @@ Route::prefix('dealer')->group( function () {
         Route::post('orange_payment_for_plot_booking',[PaymentPlotController::class,'orange_payment_for_plot_booking']);
         Route::post('orange_payment_for_car_booking',[PaymentFcarController::class,'orange_payment_for_car_booking']);
         Route::post('orange_payment_success',[PaymentPlotController::class,'orange_payment_success']);
+
+        // Stripe Payment By Javeriya
+        Route::prefix('stripe')->group( function () {
+            Route::post('plot-booking',[PlotBookingController::class,'plotPayment']);
+
+        });
 
     });
 });

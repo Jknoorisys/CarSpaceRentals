@@ -285,7 +285,7 @@ class LocationController extends Controller
                 ];
 
                 $total = $db->count();
-                $locationPlots = $db->orderBy('sc.plot_name')->get();
+                $locationPlots = $db->orderBy('sc.plot_position')->get();
                 $availablePlots = [];
                 foreach ($locationPlots as $plot) {
                     $bookedPlots = DB::table('bookings as sc')
