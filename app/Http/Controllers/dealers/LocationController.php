@@ -256,7 +256,8 @@ class LocationController extends Controller
             $end_date = $start_date->copy(); 
 
             if (!empty($duration_type) && $duration_type == 'day') {
-                $end_date->addDays($duration);
+                $dayDuration = $duration - 1;
+                $end_date->addDays($dayDuration);
             } elseif (!empty($duration_type) && $duration_type == 'week') {
                 $end_date->addWeeks($duration);
             } elseif (!empty($duration_type) && $duration_type == 'month') {
@@ -367,33 +368,45 @@ class LocationController extends Controller
 
                 foreach ($plot_ids as $plot_id) {
                     $plot = DB::table('plots')->where('id', '=', $plot_id)->first();
-                    $selected_plots[] = $plot ? $plot->plot_name : '';
+                    $selected_plot = [];
+                    $selected_plot['plot_name'] = $plot ? $plot->plot_name : '';
 
                     if ($total_selected_plots < 5) {
                         if ($duration_type == 'day') {
+                            $selected_plot['plot_price'] = $plot ? $plot->single_daily : 0;
                             $total_amount = $total_amount + ($plot ? $plot->single_daily : 0) ;
                         } elseif($duration_type == 'week') {
+                            $selected_plot['plot_price'] = $plot ? $plot->single_weekly : 0;
                             $total_amount = $total_amount + ($plot ? $plot->single_weekly : 0) ;
                         } else {
+                            $selected_plot['plot_price'] = $plot ? $plot->single_monthly : 0;
                             $total_amount = $total_amount + ($plot ? $plot->single_monthly : 0) ;
                         }
                     } elseif($total_selected_plots >= 5 && $total_selected_plots < 10) {
                         if ($duration_type == 'day') {
+                            $selected_plot['plot_price'] = $plot ? $plot->five_daily : 0;
                             $total_amount = $total_amount + ($plot ? $plot->five_daily : 0) ;
                         } elseif($duration_type == 'week') {
+                            $selected_plot['plot_price'] = $plot ? $plot->five_weekly : 0;
                             $total_amount = $total_amount + ($plot ? $plot->five_weekly : 0) ;
                         } else {
+                            $selected_plot['plot_price'] = $plot ? $plot->five_monthly : 0;
                             $total_amount = $total_amount + ($plot ? $plot->five_monthly : 0) ;
                         }
                     } else{
                         if ($duration_type == 'day') {
+                            $selected_plot['plot_price'] = $plot ? $plot->ten_daily : 0;
                             $total_amount = $total_amount + ($plot ? $plot->ten_daily : 0) ;
                         } elseif($duration_type == 'week') {
+                            $selected_plot['plot_price'] = $plot ? $plot->ten_weekly : 0;
                             $total_amount = $total_amount + ($plot ? $plot->ten_weekly : 0) ;
                         } else {
+                            $selected_plot['plot_price'] = $plot ? $plot->ten_monthly : 0;
                             $total_amount = $total_amount + ($plot ? $plot->ten_monthly : 0) ;
                         }
                     }
+
+                    $selected_plots[] = $selected_plot;
                 }
 
                 $total_price = $total_amount * $duration;
