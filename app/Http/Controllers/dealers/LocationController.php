@@ -369,6 +369,7 @@ class LocationController extends Controller
                 foreach ($plot_ids as $plot_id) {
                     $plot = DB::table('plots')->where('id', '=', $plot_id)->first();
                     $selected_plot = [];
+                    $selected_plot['plot_id'] = $plot ? $plot->id : '';
                     $selected_plot['plot_name'] = $plot ? $plot->plot_name : '';
 
                     if ($total_selected_plots < 5) {
