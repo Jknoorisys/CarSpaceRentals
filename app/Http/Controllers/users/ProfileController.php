@@ -91,11 +91,15 @@ class ProfileController extends Controller
 
             if (!empty($user)) {
 
-                $profile = optional($req->file('profile'))->getClientOriginalName();
-                $file_name = time() . '.' . $profile;
-                $save = $req->file('profile')->move('user_profile_photo', $file_name);
+                $file1 = $req->file('profile');
+                if ($file1) {
+                    $extension = $file1->getClientOriginalExtension();
+                    $filename1 = time().'.'.$extension;
+                    $file1->move('assets/uploads/user_profile_photo/', $filename1);
+                    $photo = 'assets/uploads/user_profile_photo/'.$filename1;
+                }
 
-                $saveProfile = User::where('id', $req->user_id)->update(['profile' => ('user_profile_photo/' . $file_name), 'updated_at' => Carbon::now()]);
+                $saveProfile = User::where('id', $req->user_id)->update(['profile' => $req->profile ? $photo : '', 'updated_at' => Carbon::now()]);
                 if ($saveProfile) {
                     return response()->json(
                         [
@@ -161,20 +165,18 @@ class ProfileController extends Controller
 
             $user = DB::table('users')->where('id', $user_id)->first();
             if (!empty($user)) {
-                $file = $request->file('profile_image');
-                if ($file) {
-
-                    $extension = $file->getClientOriginalName();
-                    $file_path = 'user_profile_photo/';
-                    $filename = time() . '.' . $extension;
-
-                    $upload = $file->move($file_path, $filename);
+                $file1 = $request->file('profile_image');
+                if ($file1) {
+                    $extension = $file1->getClientOriginalExtension();
+                    $filename1 = time().'.'.$extension;
+                    $file1->move('assets/uploads/user_profile_photo/', $filename1);
+                    $photo = 'assets/uploads/user_profile_photo/'.$filename1;
                 }
 
                 $update_data = array(
                     'name'       => (isset($name) && !empty($name)) ? $name : $user->name,
                     'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $user->mobile,
-                    'profile'    => (isset($filename) && !empty($filename)) ? ('user_profile_photo/' . $filename) : $user->profile,
+                    'profile'    => $request->profile_image ? $photo : $user->profile,
                     'email'      => (isset($email) && !empty($email)) ? $email : $user->email,
                     'updated_at' => Carbon::now()
                 );

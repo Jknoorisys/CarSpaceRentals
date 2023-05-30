@@ -92,11 +92,15 @@ class ProfileController extends Controller
 
             if (!empty($dealer)) {
 
-                $profile = optional($req->file('profile_image'))->getClientOriginalName();
-                $file_name = time() . '.' . $profile;
-                $save = $req->file('profile_image')->move('dealer_profile_photo', $file_name);
+                $file1 = $req->file('profile_image');
+                if ($file1) {
+                    $extension = $file1->getClientOriginalExtension();
+                    $filename1 = time().'.'.$extension;
+                    $file1->move('assets/uploads/dealer_profile_photo/', $filename1);
+                    $photo = 'assets/uploads/dealer_profile_photo/'.$filename1;
+                }
 
-                $saveProfile = dealers::where('id', $req->dealer_id)->update(['profile' => ('dealer_profile_photo/' . $file_name), 'updated_at' => Carbon::now()]);
+                $saveProfile = dealers::where('id', $req->dealer_id)->update(['profile' => $req->profile_image ? $photo : '', 'updated_at' => Carbon::now()]);
                 if ($saveProfile) {
                     $updatedProfile = DB::table('dealers')->where('id',$req->dealer_id)->first();
                     return response()->json(
@@ -166,20 +170,19 @@ class ProfileController extends Controller
 
             $dealer = DB::table('dealers')->where('id', $dealer_id)->first();
             if (!empty($dealer)) {
-                $file = $request->file('profile_image');
-                if ($file) {
 
-                    $extension = $file->getClientOriginalName();
-                    $file_path = 'dealer_profile_photo/';
-                    $filename = time() . '.' . $extension;
-
-                    $upload = $file->move($file_path, $filename);
+                $file1 = $request->file('profile_image');
+                if ($file1) {
+                    $extension = $file1->getClientOriginalExtension();
+                    $filename1 = time().'.'.$extension;
+                    $file1->move('assets/uploads/dealer_profile_photo/', $filename1);
+                    $photo = 'assets/uploads/dealer_profile_photo/'.$filename1;
                 }
 
                 $update_data = array(
                     'name'       => (isset($name) && !empty($name)) ? $name : $dealer->name,
                     'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $dealer->mobile,
-                    'profile'    => (isset($filename) && !empty($filename)) ? ('dealer_profile_photo/' . $filename) : $dealer->profile,
+                    'profile'    => $request->profile_image ? $photo : $dealer->profile,
                     'email'      => (isset($email) && !empty($email)) ? $email : $dealer->email,
                     'company'    => (isset($company_name) && !empty($company_name)) ? $company_name : $dealer->company,
                     'updated_at' => Carbon::now()
