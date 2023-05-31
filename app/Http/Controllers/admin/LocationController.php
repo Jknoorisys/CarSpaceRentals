@@ -189,15 +189,15 @@ class LocationController extends Controller
 
                 $start_date = Carbon::today()->format('Y-m-d');
                 $end_date = Carbon::today()->format('Y-m-d');
-                $locationLines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('line_name')->get();
-                $total_lines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('line_name')->count();
+                $locationLines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('created_at')->get();
+                $total_lines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->count();
                 $availableLines = [];
 
                 foreach ($locationLines as $line) {
                     $availableLines[] = $line->line_name;
                     $availablePlots = [];
 
-                    $locationPlots = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_position')->where('line_id', '=' , $line->id)->get();
+                    $locationPlots = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_direction')->orderBy('plot_position')->where('line_id', '=' , $line->id)->get();
                     $total_plots   = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_position')->count();
 
                     foreach ($locationPlots as $plot) {
