@@ -254,44 +254,53 @@ class CarController extends Controller
             if(!empty($dealer)){
                 $dealer_car = DB::table('cars')->where('id',$req->car_id)->first();
                 if(!empty($dealer_car)){
-                    $car = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
-                                            ->leftjoin('car_photos','car_photos.car_id','=','cars.id')
+                    $cars = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
+                                            // ->leftjoin('car_photos','car_photos.car_id','=','cars.id')
                                             ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
-                                            ->select('cars.*','brands.name as brand_name','car_photos.photo1 as image1',
-                                            'car_photos.photo2 as image2','car_photos.photo1 as image3','car_photos.photo4 as image4','car_photos.photo1 as image5')
+                                            ->select('cars.*','brands.name as brand_name')
                                             ->first();
-                                            // return $car;
+                                            // return $cars;
 
-                    if(!empty($car)){
+                    if(!empty($cars)){
                         // $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
                                                         // ->where('car_photos.id',$req->car_id)->get();
-                        $carDetails = DB::table('bookings')
-                                        ->leftJoin('locations','locations.id','=','bookings.location_id')
-                                        ->leftJoin('plots','plots.id','=','bookings.plot_id')
-                                        ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
-                                        ->leftJoin('cars','cars.id','=','bookings.car_id')
-                                        ->where('bookings.car_id',$req->car_id)
-                                        ->where('bookings.dealer_id',$req->dealer_id)
-                                        ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
-                                        'dealers.name as dealer_name','dealers.email as dealer_email',
-                                        'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
-                                        ->get();
-
-                        $car_detail = $carDetails;
+                        // $carDetails = DB::table('bookings')
+                        //                 ->leftJoin('locations','locations.id','=','bookings.location_id')
+                        //                 ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                        //                 ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                        //                 ->leftJoin('cars','cars.id','=','bookings.car_id')
+                        //                 ->where('bookings.car_id',$req->car_id)
+                        //                 ->where('bookings.dealer_id',$req->dealer_id)
+                        //                 ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
+                        //                 'dealers.name as dealer_name','dealers.email as dealer_email',
+                        //                 'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
+                        //                 ->get();
+                        foreach ($cars as $car) {
+                            $cars->location = DB::table('bookings')->where('car_id', '=', $req->car_id)
+                                                    ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                                    ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                                    ->leftJoin('cars','cars.id','=','bookings.car_id')
+                                                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                                    ->first(['bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
+                                            'dealers.name as dealer_name','dealers.email as dealer_email',
+                                            'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company']);
+                            $cars->photos = DB::table('car_photos')->where('car_id', '=', $req->car_id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
+                        }
+        
+                        // $car_detail = $carDetails;
                         // $car_images = $carImages;
-                        $car->Details = $car_detail;
+                        // $car->Details = $car_detail;
                         // $car->Images = $car_images;
 
                         return response()->json([
                             'status'    => 'success',
                             'message'   => __('msg.dealer.car.cardetail'),
-                            'data' => $car,
+                            'data' => $cars,
                         ],200);
                     } else {
                         return response()->json([
                             'status'    => 'failed',
                             'message'   => __('msg.dealer.car.fail'),
-                            'data' => $car,
                         ],200);
                     }
                 } else {
@@ -406,11 +415,11 @@ class CarController extends Controller
                
                 $update = Cars::where('id',$req->car_id)->update($data);
                 $images = [
-                    'photo1' => isset($req->image1) ? $photo1 : $carImage->photo1,
-                    'photo2' => isset($req->image2) ? $photo2 : $carImage->photo2,
-                    'photo3' => isset($req->image3) ? $photo3 : $carImage->photo3,
-                    'photo4' => isset($req->image4) ? $photo4 : $carImage->photo4,
-                    'photo5' => isset($req->image5) ? $photo5 : $carImage->photo5,
+                    'photo1' => isset($req->image1) ? ('dealer_car_photos/'.$image1name) : $carImage->photo1,
+                    'photo2' => isset($req->image2) ? ('dealer_car_photos/'.$image2name) : $carImage->photo2,
+                    'photo3' => isset($req->image3) ? ('dealer_car_photos/'.$image3name) : $carImage->photo3,
+                    'photo4' => isset($req->image4) ? ('dealer_car_photos/'.$image4name) : $carImage->photo4,
+                    'photo5' => isset($req->image5) ? ('dealer_car_photos/'.$image5name) : $carImage->photo5,
                     'updated_at' => Carbon::now()
                     
                 ];
