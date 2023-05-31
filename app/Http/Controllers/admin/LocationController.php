@@ -189,16 +189,16 @@ class LocationController extends Controller
 
                 $start_date = Carbon::today()->format('Y-m-d');
                 $end_date = Carbon::today()->format('Y-m-d');
-                $locationLines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('line_name')->get();
-                $total_lines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('line_name')->count();
+                $locationLines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->orderBy('created_at')->get();
+                $total_lines = DB::table('plot_lines')->where('location_id', '=' , $location_id)->count();
                 $availableLines = [];
 
                 foreach ($locationLines as $line) {
-                    $availableLines[] = $line->line_name;
+                    // $availableLines[] = $line->line_name;
                     $availablePlots = [];
 
-                    $locationPlots = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_name')->where('line_id', '=' , $line->id)->get();
-                    $total_plots   = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_name')->count();
+                    $locationPlots = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_direction')->orderBy('plot_position')->where('line_id', '=' , $line->id)->get();
+                    $total_plots   = DB::table('plots')->where('location_id', '=' , $location_id)->count();
 
                     foreach ($locationPlots as $plot) {
                         $bookedPlots = DB::table('bookings as sc')
@@ -228,15 +228,19 @@ class LocationController extends Controller
                             $availablePlots[] = $bookedPlots;
                         }
                     }
-                    $availableLines[] = $availablePlots;
+                    // $availableLines[] = $availablePlots;
+                    $availableLines[] = [
+                        'lane' => $line->line_name,
+                        'plots' => $availablePlots,
+                    ];
                 }                
                 
-                $locationDetails->plots = $availableLines;
+                $locationDetails->details = $availableLines;
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-location-details.success'),
-                    'total_lines' => $locationDetails->plots ? $total_lines : 0,
-                    'total_plots' => $locationDetails->plots ? $total_plots : 0,
+                    'total_lines' => $locationDetails->details ? $total_lines : 0,
+                    'total_plots' => $locationDetails->details ? $total_plots : 0,
                     'data'      => $locationDetails
                 ],200);
             } else {

@@ -21,6 +21,57 @@ class CarController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
+    public function getCarBrands(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+           $db = DB::table('brands');
+
+            $search = $request->search ? $request->search : '';
+            if (!empty($search)) {
+                $db->where('name', 'LIKE', "%$search%");
+            }
+            
+            $total = $db->count();
+
+            $brands = $db->orderBy('name')
+                        ->get();
+
+            if (!($brands->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.admin.get-brands.success'),
+                    'total'     => $total,
+                    'data'      => $brands
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.admin.get-brands.failure'),
+                    'data'      => [],
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
     public function addCar(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -50,11 +101,6 @@ class CarController extends Controller
             'kms_driven' => 'required',
             'price' => 'required|numeric',
             'description' => 'required',
-            // 'image1' => 'required|image|mimes:jpeg,png,jpg,svg',
-            // 'image2' => 'required|image|mimes:jpeg,png,jpg,svg',
-            // 'image3' => 'required|image|mimes:jpeg,png,jpg,svg',
-            // 'image4' => 'required|image|mimes:jpeg,png,jpg,svg',
-            // 'image5' => 'required|image|mimes:jpeg,png,jpg,svg',
             'image1'     => 'required_without_all:image2,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
             'image2'     => 'required_without_all:image1,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
             'image3'     => 'required_without_all:image2,image1,image4,image5||image||mimes:jpeg,png,jpg,svg',
@@ -102,59 +148,53 @@ class CarController extends Controller
                 ];
 
                 $file1 = $req->file('image1');
-                // return $file1;
                 if ($file1) {
-                    $extension1 = $file1->getClientOriginalName();
-                    $file_path1 = 'dealer_car_photos/';
-                    $filename1 = time() . '.' . $extension1;
-                    $upload1 = $file1->move($file_path1, $filename1);
-                    $image1 = 'dealer_car_photos/' . $filename1;
+                    $extension = $file1->getClientOriginalExtension();
+                    $filename1 = time().'1.'.$extension;
+                    $file1->move('assets/uploads/dealer_car_photos/', $filename1);
+                    $photo1 = 'assets/uploads/dealer_car_photos/'.$filename1;
                 }
-
+                
                 $file2 = $req->file('image2');
                 if ($file2) {
-                    $extension2 = $file2->getClientOriginalName();
-                    $file_path2 = 'dealer_car_photos/';
-                    $filename2 = time() . '.' . $extension2;
-                    $upload2 = $file2->move($file_path2, $filename2);
-                    $image2 = 'dealer_car_photos/' . $filename2;
+                    $extension = $file2->getClientOriginalExtension();
+                    $filename2 = time().'2.'.$extension;
+                    $file2->move('assets/uploads/dealer_car_photos/', $filename2);
+                    $photo2 = 'assets/uploads/dealer_car_photos/'.$filename2;
                 }
 
                 $file3 = $req->file('image3');
                 if ($file3) {
-                    $extension3 = $file3->getClientOriginalName();
-                    $file_path3 = 'dealer_car_photos/';
-                    $filename3 = time() . '.' . $extension3;
-                    $upload3 = $file3->move($file_path3, $filename3);
-                    $image3 = 'dealer_car_photos/' . $filename3;
+                    $extension = $file3->getClientOriginalExtension();
+                    $filename3 = time().'3.'.$extension;
+                    $file3->move('assets/uploads/dealer_car_photos/', $filename3);
+                    $photo3 = 'assets/uploads/dealer_car_photos/'.$filename3;
                 }
 
                 $file4 = $req->file('image4');
                 if ($file4) {
-                    $extension4 = $file4->getClientOriginalName();
-                    $file_path4 = 'dealer_car_photos/';
-                    $filename4 = time() . '.' . $extension4;
-                    $upload4 = $file4->move($file_path4, $filename4);
-                    $image4 = 'dealer_car_photos/' . $filename4;
+                    $extension = $file4->getClientOriginalExtension();
+                    $filename4 = time().'4.'.$extension;
+                    $file4->move('assets/uploads/dealer_car_photos/', $filename4);
+                    $photo4 = 'assets/uploads/dealer_car_photos/'.$filename4;
                 }
 
                 $file5 = $req->file('image5');
                 if ($file5) {
-                    $extension5 = $file5->getClientOriginalName();
-                    $file_path5 = 'dealer_car_photos/';
-                    $filename5 = time() . '.' . $extension5;
-                    $upload5 = $file5->move($file_path5, $filename5);
-                    $image5 = 'dealer_car_photos/' . $filename5;
+                    $extension = $file5->getClientOriginalExtension();
+                    $filename5 = time().'5.'.$extension;
+                    $file5->move('assets/uploads/dealer_car_photos/', $filename5);
+                    $photo5 = 'assets/uploads/dealer_car_photos/'.$filename5;
                 }
 
                 $carImage = [
                     'id' => Str::uuid(),
                     'car_id' => $car['id'],
-                    'photo1' => $image1, 
-                    'photo2' => $image2,
-                    'photo3' => $image3,
-                    'photo4' => $image4,
-                    'photo5' => $image5, 
+                    'photo1' => $req->image1 ? $photo1 : '', 
+                    'photo2' => $req->image2 ? $photo2 : '',
+                    'photo3' => $req->image3 ? $photo3 : '',
+                    'photo4' => $req->image4 ? $photo4 : '',
+                    'photo5' => $req->image5 ? $photo5 : '', 
                     'created_at' => Carbon::now()
                 ];
                 
@@ -303,40 +343,44 @@ class CarController extends Controller
 
             if(!empty($car))
             {                
-                $image1 = $req->image1;
-                $image2 = $req->image2;
-                $image3 = $req->image3;
-                $image4 = $req->image4;
-                $image5 = $req->image5;
+                $file1 = $req->file('image1');
+                if ($file1) {
+                    $extension = $file1->getClientOriginalExtension();
+                    $filename1 = time().'1.'.$extension;
+                    $file1->move('assets/uploads/dealer_car_photos/', $filename1);
+                    $photo1 = 'assets/uploads/dealer_car_photos/'.$filename1;
+                }
                 
-                if (!empty($image1)) {
-                    $image1 = optional($req->file('image1'))->getClientOriginalName();
-                    $image1name = time() . '.' . $image1;
-                    $req->file('image1')->move('dealer_car_photos', $image1name);
+                $file2 = $req->file('image2');
+                if ($file2) {
+                    $extension = $file2->getClientOriginalExtension();
+                    $filename2 = time().'2.'.$extension;
+                    $file2->move('assets/uploads/dealer_car_photos/', $filename2);
+                    $photo2 = 'assets/uploads/dealer_car_photos/'.$filename2;
                 }
 
-                elseif (!empty($image2)) {
-                    $image2 = optional($req->file('image2'))->getClientOriginalName();
-                    $image2name = time() . '.' . $image2;
-                    $req->file('image2')->move('dealer_car_photos', $image2name);
+                $file3 = $req->file('image3');
+                if ($file3) {
+                    $extension = $file3->getClientOriginalExtension();
+                    $filename3 = time().'3.'.$extension;
+                    $file3->move('assets/uploads/dealer_car_photos/', $filename3);
+                    $photo3 = 'assets/uploads/dealer_car_photos/'.$filename3;
                 }
 
-                elseif (!empty($image3)) {
-                    $image3 = optional($req->file('image3'))->getClientOriginalName();
-                    $image3name = time() . '.' . $image3;
-                    $req->file('image3')->move('dealer_car_photos', $image3name);
+                $file4 = $req->file('image4');
+                if ($file4) {
+                    $extension = $file4->getClientOriginalExtension();
+                    $filename4 = time().'4.'.$extension;
+                    $file4->move('assets/uploads/dealer_car_photos/', $filename4);
+                    $photo4 = 'assets/uploads/dealer_car_photos/'.$filename4;
                 }
 
-                elseif (!empty($image4)) {
-                    $image4 = optional($req->file('image4'))->getClientOriginalName();
-                    $image4name = time() . '.' . $image4;
-                    $req->file('image4')->move('dealer_car_photos', $image4name);
-                }
-
-                elseif (!empty($image5)) {
-                    $image5 = optional($req->file('image5'))->getClientOriginalName();
-                    $image5name = time() . '.' . $image5;
-                    $req->file('image5')->move('dealer_car_photos', $image5name);
+                $file5 = $req->file('image5');
+                if ($file5) {
+                    $extension = $file5->getClientOriginalExtension();
+                    $filename5 = time().'5.'.$extension;
+                    $file5->move('assets/uploads/dealer_car_photos/', $filename5);
+                    $photo5 = 'assets/uploads/dealer_car_photos/'.$filename5;
                 }
 
                 $data = [
@@ -362,12 +406,11 @@ class CarController extends Controller
                
                 $update = Cars::where('id',$req->car_id)->update($data);
                 $images = [
-
-                    'photo1' => isset($req->image1) ? ('dealer_car_photos/'.$image1name) : $carImage->photo1,
-                    'photo2' => isset($req->image2) ? ('dealer_car_photos/'.$image2name) : $carImage->photo2,
-                    'photo3' => isset($req->image3) ? ('dealer_car_photos/'.$image3name) : $carImage->photo3,
-                    'photo4' => isset($req->image4) ? ('dealer_car_photos/'.$image4name) : $carImage->photo4,
-                    'photo5' => isset($req->image5) ? ('dealer_car_photos/'.$image5name) : $carImage->photo5,
+                    'photo1' => isset($req->image1) ? $photo1 : $carImage->photo1,
+                    'photo2' => isset($req->image2) ? $photo2 : $carImage->photo2,
+                    'photo3' => isset($req->image3) ? $photo3 : $carImage->photo3,
+                    'photo4' => isset($req->image4) ? $photo4 : $carImage->photo4,
+                    'photo5' => isset($req->image5) ? $photo5 : $carImage->photo5,
                     'updated_at' => Carbon::now()
                     
                 ];
@@ -513,6 +556,4 @@ class CarController extends Controller
             ],500);
         }
     }
-
-    
 }

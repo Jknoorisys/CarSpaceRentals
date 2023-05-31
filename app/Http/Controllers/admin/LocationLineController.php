@@ -161,7 +161,7 @@ class LocationLineController extends Controller
 
                 DB::table('admin_activities')->insert($adminData);
 
-                $laneData['plotDetails'] = DB::table('plots')->where([['location_id', '=', $location_id],['line_id', '=', $id]])->orderBy('plot_name')->get();
+                $laneData['plotDetails'] = DB::table('plots')->where([['location_id', '=', $location_id],['line_id', '=', $id]])->orderBy('plot_direction')->orderBy('plot_position')->get();
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.add-line.success'),
@@ -338,7 +338,7 @@ class LocationLineController extends Controller
             $lineDetails = DB::table('plot_lines')->where('id', '=', $line_id)->first();
 
             if (!empty($lineDetails)) {
-                $lineDetails->plots = DB::table('plots')->where('line_id', '=', $line_id)->orderBy('plot_name')->get();
+                $lineDetails->plots = DB::table('plots')->where('line_id', '=', $line_id)->orderBy('plot_direction')->orderBy('plot_position')->get();
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-line-details.success'),

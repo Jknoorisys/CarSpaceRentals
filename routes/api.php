@@ -19,6 +19,7 @@ use App\Http\Controllers\dealers\ProfileController;
 use App\Http\Controllers\dealers\CarController;
 use App\Http\Controllers\dealers\PaymentPlotController;
 use App\Http\Controllers\dealers\PaymentFcarController;
+use App\Http\Controllers\stripe\PlotBookingController;
 // Users
 use App\Http\Controllers\users\AuthController;
 use App\Http\Controllers\users\ProfileController as UserProfileController;
@@ -154,6 +155,7 @@ Route::prefix('dealer')->group( function () {
         // Dealer Locations Module By Javeriya Kauser
         Route::post('get-all-locations' , [LocationController::class, 'getLocations']); 
         Route::post('get-location-details' , [LocationController::class, 'getLocationDetails']); 
+        Route::post('get-all-car-brands' , [CarController::class, 'getCarBrands']); 
     
         Route::post('get-locations-list' , [LocationController::class, 'getLocationList']); 
         Route::post('get-lanes-based-on-location' , [LocationController::class, 'getLinesBasedOnLocations']); 
@@ -173,6 +175,14 @@ Route::prefix('dealer')->group( function () {
         Route::post('orange_payment_for_plot_booking',[PaymentPlotController::class,'orange_payment_for_plot_booking']);
         Route::post('orange_payment_for_car_booking',[PaymentFcarController::class,'orange_payment_for_car_booking']);
         Route::post('orange_payment_plot_success',[PaymentPlotController::class,'orange_payment_plot_success']);
+
+        // Stripe Payment By Javeriya
+        Route::prefix('stripe')->group( function () {
+            Route::post('plot-booking',[PlotBookingController::class,'plotPayment']);
+            Route::post('plot-booking-successful',[PlotBookingController::class,'plotPaymentSuccessfull']);
+            Route::post('plot-booking-failed',[PlotBookingController::class,'plotPaymentFailed']);
+
+        });
 
     });
 });
