@@ -194,7 +194,7 @@ class LocationController extends Controller
                 $availableLines = [];
 
                 foreach ($locationLines as $line) {
-                    $availableLines[] = $line->line_name;
+                    // $availableLines[] = $line->line_name;
                     $availablePlots = [];
 
                     $locationPlots = DB::table('plots')->where('location_id', '=' , $location_id)->orderBy('plot_direction')->orderBy('plot_position')->where('line_id', '=' , $line->id)->get();
@@ -228,15 +228,19 @@ class LocationController extends Controller
                             $availablePlots[] = $bookedPlots;
                         }
                     }
-                    $availableLines[] = $availablePlots;
+                    // $availableLines[] = $availablePlots;
+                    $availableLines[] = [
+                        'lane' => $line->line_name,
+                        'plots' => $availablePlots,
+                    ];
                 }                
                 
-                $locationDetails->plots = $availableLines;
+                $locationDetails->details = $availableLines;
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-location-details.success'),
-                    'total_lines' => $locationDetails->plots ? $total_lines : 0,
-                    'total_plots' => $locationDetails->plots ? $total_plots : 0,
+                    'total_lines' => $locationDetails->details ? $total_lines : 0,
+                    'total_plots' => $locationDetails->details ? $total_plots : 0,
                     'data'      => $locationDetails
                 ],200);
             } else {
