@@ -171,9 +171,10 @@ Route::prefix('dealer')->group( function () {
         Route::post('assign-car' , [CarController::class, 'assignCarToPlot']);
         Route::post('unassign-car' , [CarController::class, 'unassignCarFromPlot']);
 
+        //Orange Payment by Aaisha Shaikh
         Route::post('orange_payment_for_plot_booking',[PaymentPlotController::class,'orange_payment_for_plot_booking']);
         Route::post('orange_payment_for_car_booking',[PaymentFcarController::class,'orange_payment_for_car_booking']);
-        Route::post('orange_payment_success',[PaymentPlotController::class,'orange_payment_success']);
+        Route::post('orange_payment_plot_success',[PaymentPlotController::class,'orange_payment_plot_success']);
 
         // Stripe Payment By Javeriya
         Route::prefix('stripe')->group( function () {

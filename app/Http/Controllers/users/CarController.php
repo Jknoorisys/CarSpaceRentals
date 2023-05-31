@@ -185,12 +185,12 @@ class CarController extends Controller
             $brand = $req->car_brand_id ? $req->car_brand_id : '';
             $price = $req->car_price ? $req->car_price : '';
 
-            $db = DB::table('bookings')->join('plots','plots.id','=','bookings.plot_id')
-                                        ->join('locations','locations.id','=','bookings.location_id')
-                                        ->join('dealers','dealers.id','=','bookings.dealer_id')
-                                        ->join('cars','cars.id','=','bookings.car_id')
-                                        ->join('brands','brands.id','=','cars.brand')
-                                        ->join('car_photos','car_photos.car_id','=','cars.id')
+            $db = DB::table('bookings')->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                        ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                        ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                        ->leftJoin('cars','cars.id','=','bookings.car_id')
+                                        ->leftJoin('brands','brands.id','=','cars.brand')
+                                        ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                         ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                                         'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
                                         'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
@@ -198,12 +198,13 @@ class CarController extends Controller
 
                 if (!empty($condition)) 
                 {
-                    $db->where('cars.condition', 'LIKE', "%$condition%");
+                    $db->where('cars.condition',$condition);
                 }
 
                 if(!empty($type))
                 {
-                    $db->where('cars.type', 'LIKE', "%$type%");
+                    $t = explode(',',$type);
+                    $db->whereIn('cars.type',$t);
                 }
 
                 if(!empty($year))
@@ -213,12 +214,14 @@ class CarController extends Controller
 
                 if(!empty($fuel_type))
                 {
-                    $db->where('cars.fuel_type', 'LIKE', "%$fuel_type%");
+                    $fuel = explode(',',$fuel_type);
+                    $db->whereIn('cars.fuel_type',$fuel);
                 }
 
                 if(!empty($brand))
                 {
-                    $db->where('cars.brand', 'LIKE', "%$brand%");
+                    $b = explode(',',$brand);
+                    $db->whereIn('cars.brand',$b);
                 }
                 
                 if(!empty($price))
