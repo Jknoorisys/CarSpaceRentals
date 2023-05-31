@@ -415,11 +415,11 @@ class CarController extends Controller
                
                 $update = Cars::where('id',$req->car_id)->update($data);
                 $images = [
-                    'photo1' => isset($req->image1) ? ('dealer_car_photos/'.$image1name) : $carImage->photo1,
-                    'photo2' => isset($req->image2) ? ('dealer_car_photos/'.$image2name) : $carImage->photo2,
-                    'photo3' => isset($req->image3) ? ('dealer_car_photos/'.$image3name) : $carImage->photo3,
-                    'photo4' => isset($req->image4) ? ('dealer_car_photos/'.$image4name) : $carImage->photo4,
-                    'photo5' => isset($req->image5) ? ('dealer_car_photos/'.$image5name) : $carImage->photo5,
+                    'photo1' => isset($req->image1) ? ('dealer_car_photos/'.$filename1) : $carImage->photo1,
+                    'photo2' => isset($req->image2) ? ('dealer_car_photos/'.$filename2) : $carImage->photo2,
+                    'photo3' => isset($req->image3) ? ('dealer_car_photos/'.$filename3) : $carImage->photo3,
+                    'photo4' => isset($req->image4) ? ('dealer_car_photos/'.$filename4) : $carImage->photo4,
+                    'photo5' => isset($req->image5) ? ('dealer_car_photos/'.$filename5) : $carImage->photo5,
                     'updated_at' => Carbon::now()
                     
                 ];
