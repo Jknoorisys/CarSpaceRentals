@@ -23,8 +23,6 @@ return new class extends Migration
             $table->string('pay_token');
             $table->string('payment_id');
             $table->string('payment_method');
-            // $table->string('parkIn_date');
-            // $table->string('parkOut_date');
             $table->string('amount');
             $table->enum('payment_for',['plot','car'])->default('plot');
             $table->enum('status',['paid','unpaid'])->default('unpaid');

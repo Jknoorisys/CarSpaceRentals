@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentPlotController extends Controller
 {
-    public function __construct() 
+    public function __construct()
     {
         $lang = (isset($_POST['language']) && !empty($_POST['language'])) ? $_POST['language'] : 'en';
         App::setlocale($lang);
@@ -23,11 +23,19 @@ class PaymentPlotController extends Controller
     public function orange_payment_for_plot_booking(Request $req)
     {
         $validator = Validator::make($req->all(), [
-            'language'          =>   'required',
-            'dealer_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
-            'location_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
-            'plots_id' => ['required'],
-            'amount' => 'required',
+            'language'          =>  'required',
+            'dealer_id'         =>  ['required', 'alpha_dash', Rule::notIn('undefined')],
+            'location_id'       =>  ['required', 'alpha_dash', Rule::notIn('undefined')],
+            'line_id'           =>  ['required', 'alpha_dash', Rule::notIn('undefined')],
+            'plot_ids'          =>  'required',
+            'amount_paid'       => 'required',
+            'no_of_plots'       => 'required|numeric',
+            'duration'          => 'required|numeric',
+            'duration_type'     => 'required', Rule::in(['day', 'week', 'month', 'year']),
+            'park_in_date'      => 'required',
+            'park_out_date'     => 'required',
+            'rent'              => 'required',
+
         ]);
 
         if ($validator->fails()) {
@@ -37,11 +45,35 @@ class PaymentPlotController extends Controller
                 'errors'    => $validator->errors()
             ], 400);
         }
-        
-        try 
-        {
-            // $plots_ids = explode(',',$req->plots_id);
-            // return $plots_ids;
+
+        try {
+            $dealer_id = $req->dealer_id;
+            $dealer = validateDealer($dealer_id);
+            if (empty($dealer) || $dealer->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-dealer'),
+                ],400);
+            }
+
+            $location_id = $req->location_id;
+            $location = validateLocation($location_id);
+            if (empty($location) || $location->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-location'),
+                ],400);
+            }
+
+            $line_id = $req->line_id;
+            $line = validateLine($line_id);
+            if (empty($line) || $line->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-line'),
+                ],400);
+            }
+
             $ch = curl_init("https://api.orange.com/oauth/v3/token?");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 'Authorization: Basic REpMRWMwSVBjeGZ3VndjaGpxV004dm1PWXBqQU5FNXg6M3FNNGk4UkwzNFlHQ2RJNw=='
@@ -52,11 +84,7 @@ class PaymentPlotController extends Controller
             $orange_token = curl_exec($ch);
             curl_close($ch);
             $token_details = json_decode($orange_token, TRUE);
-            // return $token_details;
             $token = 'Bearer ' . $token_details['access_token'];
-            // $lang = $this->session->userdata('language');
-            // if($lang=='french') $lang = 'fr';
-            // else $lang = 'en';
 
             // get payment link
             $order_id = rand(1000000, 000000) . "_plot_booking";
@@ -65,15 +93,15 @@ class PaymentPlotController extends Controller
                 json_encode(
                     array(
                         "merchant_key" => "0e40eab1",
-                        //   "currency" => "EUR", 
+                        //   "currency" => "EUR",
                         "currency" => "XAF",
                         //"currency" => "OUV", 
                         "order_id" => $order_id,
-                        "amount" => $req->amount,
-                        "return_url" => "http://fb.com",
-                        "cancel_url" => "http://google.com",
-                        "notif_url" => "http://google.com",
-                        "lang" => "en",
+                        "amount" => $req->amount_paid,
+                        "return_url" => url(''),
+                        "cancel_url" => url('api/dealer/orage/plot-booking-failed'),
+                        "notif_url" => url('api/dealer/orage/plot-booking-successful'),
+                        "lang" => $req->language,
                         "reference" => "Plot Booking"
                     )
                 );
@@ -95,32 +123,44 @@ class PaymentPlotController extends Controller
             // return $url_details;
 
             if (isset($url_details)) {
-
+                $dealer = DB::table('dealers')->where('id', $req->dealer_id)->first();
+                // return $dealer->email;
                 $booking_detail = array(
-                    'id' => Str::uuid(),
-                    'plots_id' => $req->plots_id,
-                    'cars_id' => '-',
-                    'location_id' => $req->location_id,
-                    'dealer_id' => $req->dealer_id,
-                    'notif_token' => $url_details['notif_token'],
-                    'pay_token' => $url_details['pay_token'],
-                    'payment_id' => 'orange_' . $data['order_id'],
-                    'payment_method' => 'orange',
-                    'amount' => $req->amount,
-                    'payment_for' => 'plot',
-                    'status' => 'unpaid',
-                    'created_at' => Carbon::now(),
+                    'id'                 => Str::uuid(),
+                    'plot_ids'           => $req->plot_ids,
+                    'location_id'        => $req->location_id,
+                    'line_id'            => $req->line_id,
+                    'dealer_id'          => $req->dealer_id,
+                    'notification_token' => $url_details['notif_token'],
+                    'session_id'         => $url_details['pay_token'],//payment_token
+                    'payment_id'         => 'orange_' . $data['order_id'],
+                    'payment_method'     => 'orange',
+                    'amount_paid'        => $req->amount_paid,
+                    'payment_for'        => 'plot',
+                    'no_of_plots'        => $req->no_of_plots,
+                    'duration'           => $req->duration,
+                    'duration_type'      => $req->duration_type,
+                    'park_in_date'       => $req->park_in_date,
+                    'park_out_date'      => $req->park_out_date,
+                    'rent'               => $req->rent,
+                    'payer_email'        => $dealer->email,
+                    'currency'           => $data['currency'],
+                    'created_at'         => Carbon::now(),
                 );
                 // return $booking_detail;
                 if (!empty($booking_detail)) {
-
-                    $save_booking = DB::table('payment_transactions')->insert($booking_detail);
+                    
+                    $save_booking = DB::table('payment_histories')->insert($booking_detail);
                     if ($save_booking) {
-
+                        $data = [
+                            "pay_token" => $url_details['pay_token'],
+                            "notif_token" => $url_details['notif_token'],
+                            "orange_redirect_url" => $url_details['payment_url']
+                        ];
                         return response()->json(
                             [
                                 'status'    => 'success',
-                                'payment_url' => $url_details,
+                                'data' => $data,
                                 'message'   => __('msg.dealer.payment.redirect_success'),
                             ],
                             200
@@ -145,13 +185,13 @@ class PaymentPlotController extends Controller
         }
     }
 
-    public function orange_payment_success(Request $req)
+    public function orange_payment_plot_success(Request $req)
     {
         $validator = Validator::make($req->all(), [
             'language'          =>   'required',
             'dealer_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
             'pay_token'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
-            
+
         ]);
 
         if ($validator->fails()) {
@@ -162,8 +202,9 @@ class PaymentPlotController extends Controller
             ], 400);
         }
         try {
-            $pay_token = $req->pay_token;
-            $data = DB::table('payment_transactions')->where('pay_token',$req->pay_token)->take(1)->first(); 
+
+            // $pay_token = $req->pay_token;
+            $data = DB::table('payment_transactions')->where('pay_token', $req->pay_token)->take(1)->first();
             $order_payment_id =  $data->payment_id;
             $amount = $data->amount;
             $pay_token = $data->pay_token;
@@ -175,11 +216,11 @@ class PaymentPlotController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
             $orange_token = curl_exec($ch);
-            return $orange_token;
+            // return $orange_token;
             curl_close($ch);
             $token_details = json_decode($orange_token, TRUE);
             $token = 'Bearer ' . $token_details['access_token'];
-            
+
             // get payment link
             $json_post_data = json_encode(
                 array(
@@ -188,7 +229,7 @@ class PaymentPlotController extends Controller
                     "pay_token" => $pay_token
                 )
             );
-            echo $json_post_data; die();
+            // echo $json_post_data; die();
             $ch = curl_init("https://api.orange.com/orange-money-webpay/cm/v1/transactionstatus?");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
                 "Content-Type: application/json",
@@ -203,10 +244,11 @@ class PaymentPlotController extends Controller
             curl_close($ch);
             $payment_details = json_decode($payment_res, TRUE);
             $transaction_id = $payment_details['txnid'];
-            echo json_encode($payment_details); die();
+            echo json_encode($payment_details);
+            die();
 
             if ($payment_details['status'] == 'SUCCESS' && $data['status'] == 'unpaid') {
-                $success_payment = DB::table('payment_transactions')->where('pay_token',$req->paytoken)->update(['status','paid']);
+                $success_payment = DB::table('payment_transactions')->where('pay_token', $req->paytoken)->update(['status', 'paid']);
                 return $success_payment;
             } else {
                 return "false";

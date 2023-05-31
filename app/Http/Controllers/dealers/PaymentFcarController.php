@@ -72,7 +72,7 @@ class PaymentFcarController extends Controller
                         "return_url" => "http://fb.com",
                         "cancel_url" => "http://google.com",
                         "notif_url" => "http://google.com",
-                        "lang" => "en",
+                        "lang" => $req->language,
                         "reference" => "Featured Cars"
                     )
                 );
@@ -135,6 +135,33 @@ class PaymentFcarController extends Controller
                     }
                 }
             }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'failed',
+                'message' => __('msg.user.error'),
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function orange_car_payment_succss(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'language'          =>   'required',
+            'dealer_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
+            'pay_token'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
+            
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => __('msg.user.validation.fail'),
+                'errors'    => $validator->errors()
+            ], 400);
+        }
+        try {
+
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
