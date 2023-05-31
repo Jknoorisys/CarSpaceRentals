@@ -285,7 +285,7 @@ class LocationController extends Controller
                 ];
 
                 $total = $db->count();
-                $locationPlots = $db->orderBy('sc.plot_position')->get();
+                $locationPlots = $db->orderBy('plot_direction')->orderBy('plot_position')->get();
                 $availablePlots = [];
                 foreach ($locationPlots as $plot) {
                     $bookedPlots = DB::table('bookings as sc')
@@ -670,6 +670,7 @@ class LocationController extends Controller
                             ->where('sc.car_id', '=', '')
                             ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
                             ->distinct()
+                            ->orderBy('plots.plot_direction')
                             ->orderBy('plots.plot_position')
                             ->get(['plots.*','sc.id as booking_id']);
 
