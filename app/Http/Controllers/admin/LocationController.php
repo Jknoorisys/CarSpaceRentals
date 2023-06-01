@@ -27,7 +27,7 @@ class LocationController extends Controller
             'lat'                  => 'required',
             'long'                 => 'required',
             'location'             => 'required',
-            'layout'               => 'required|image|mimes:jpeg,png,jpg,svg',
+            'layout'               => 'required|image|mimes:jpeg,png,jpg,svg,pdf',
             'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
@@ -308,7 +308,6 @@ class LocationController extends Controller
             'lat'                  => 'required',
             'long'                 => 'required',
             'location'             => 'required',
-            'layout'               => 'required|image|mimes:jpeg,png,jpg,svg',
             'admin_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'admin_type'  => ['required', 
                 Rule::in(['user', 'dealer'])
@@ -342,7 +341,7 @@ class LocationController extends Controller
                     'message'   => trans('msg.helper.invalid-location'),
                 ],400);
             }
-
+            // return $oldLocation->layout;
             $name      = $request->name ? $request->name : '';
             $lat       = $request->lat ? $request->lat : '';
             $long      = $request->long ? $request->long : '';
@@ -361,7 +360,7 @@ class LocationController extends Controller
                 'lat'           => $lat, 
                 'long'          => $long,
                 'location'      => $location,
-                'layout'        => $request->file('layout') ? $photo : '',
+                'layout'        => $request->file('layout') ? $photo : $oldLocation->layout,
                 'updated_at'    => Carbon::now()
             ];
 
