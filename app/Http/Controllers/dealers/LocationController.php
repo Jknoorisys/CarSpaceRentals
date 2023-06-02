@@ -432,6 +432,7 @@ class LocationController extends Controller
         }
     }
 
+    // My Plots
     public function getDealerPlots(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -540,7 +541,7 @@ class LocationController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('cars')->where('dealer_id', '=', $dealer_id);
+            $db = DB::table('cars')->where('dealer_id', '=', $dealer_id)->where('status', '=', 'active');
 
             $search = $request->search ? $request->search : '';
             if (!empty($search)) {
@@ -638,11 +639,12 @@ class LocationController extends Controller
         }
     }
 
-    public function getPlotsBasedOnLocation(Request $request)
+    public function getDealerLanesBasedOnLocation(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'language'  => 'required',
-            'location_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
         ]);
 
         if($validator->fails()){
@@ -655,7 +657,17 @@ class LocationController extends Controller
 
         try {
 
+            $dealer_id = $request->dealer_id;
+            $dealer = validateDealer($dealer_id);
+            if (empty($dealer) || $dealer->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-dealer'),
+                ],400);
+            }
+
             $location_id = $request->location_id;
+
             $location = validateLocation($location_id);
             if (empty($location) || $location->status != 'active') {
                 return response()->json([
@@ -664,21 +676,117 @@ class LocationController extends Controller
                 ],400);
             }
 
-            $plots = DB::table('bookings as sc')
-                            ->where('sc.location_id', '=', $location_id)
-                            ->whereIn('sc.status', ['active', 'upcoming'])
-                            ->where('sc.car_id', '=', '')
-                            ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
-                            ->distinct()
-                            ->orderBy('plots.plot_direction')
-                            ->orderBy('plots.plot_position')
-                            ->get(['plots.*','sc.id as booking_id']);
+            $lanes = DB::table('bookings as sc')
+                        ->where('sc.dealer_id', '=', $dealer_id)
+                        ->where('sc.location_id', '=', $location_id)
+                        ->whereIn('sc.status', ['active', 'upcoming'])
+                        ->leftJoin('plot_lines', 'plot_lines.id', '=', 'sc.line_id')
+                        ->distinct()
+                        ->orderBy('plot_lines.line_name')
+                        ->get(['plot_lines.*']);
 
-            if (!($plots->isEmpty())) {
+            if (!($lanes->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-lanes.success'),
+                    'data'      => $lanes
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.get-dealer-lanes.failure'),
+                    'data'      => []
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getPlotsBasedOnLocation(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
+            'lane_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+
+            $dealer_id = $request->dealer_id;
+            $dealer = validateDealer($dealer_id);
+            if (empty($dealer) || $dealer->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-dealer'),
+                ],400);
+            }
+            
+            $location_id = $request->location_id;
+            $line_id     = $request->lane_id ? $request->lane_id : '';
+
+            $location = validateLocation($location_id);
+            if (empty($location) || $location->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-location'),
+                ],400);
+            }
+
+            $line = validateLine($line_id);
+            if (empty($line) || $line->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-line'),
+                ],400);
+            }
+
+            $db = DB::table('plots as sc')->where('sc.location_id', '=' , $location_id)->where('sc.line_id', '=' , $line_id);
+
+            $total = $db->count();
+            $locationPlots = $db->orderBy('plot_direction')->orderBy('plot_position')->get();
+            $availablePlots = [];
+                foreach ($locationPlots as $plot) {
+                    $bookedPlots = DB::table('bookings as sc')
+                                        ->where('sc.plot_id', '=' , $plot->id)
+                                        ->where('sc.location_id', '=' , $location_id)
+                                        ->where('sc.line_id', '=' , $line_id)
+                                        ->where('sc.dealer_id', '=', $dealer_id)
+                                        ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
+                                        ->whereIn('sc.status', ['active', 'upcoming'])
+                                        ->first(['sc.id as booking_id','sc.car_id','plots.*', DB::raw("'enabled' as status")]);
+
+                    if (empty($bookedPlots)) {
+                        $plot->booking_id = '';
+                        $plot->car_id = '';
+                        $plot->status = 'disabled';
+                        $availablePlots[] = $plot;
+                    } else {
+                        if ($bookedPlots->car_id) {
+                            $bookedPlots->status = 'disabled';
+                        }
+                        $availablePlots[] = $bookedPlots;
+                    }
+                }
+
+            if (!empty($availablePlots)) {
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.dealer.get-dealer-plots.success'),
-                    'data'      => $plots
+                    'data'      => $availablePlots
                 ],200);
             } else {
                 return response()->json([

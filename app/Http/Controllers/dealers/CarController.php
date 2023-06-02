@@ -455,14 +455,13 @@ class CarController extends Controller
         }
     }
     
-    // By Javeriya Kauser (not developed)
+    // By Javeriya Kauser
     public function assignCarToPlot(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'language'   => 'required',
             'car_id'     => ['required','alpha_dash', Rule::notIn('undefined')],
             'booking_id' => ['required','alpha_dash', Rule::notIn('undefined')],
-            'plot_id'    => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
         if($validator->fails()){
@@ -475,7 +474,6 @@ class CarController extends Controller
 
         try {
             $booking_id = $request->booking_id;
-            $plot_id = $request->plot_id;
             $car_id = $request->car_id;
 
             $car = validateCar($car_id);
@@ -486,22 +484,32 @@ class CarController extends Controller
                 ],400);
             }
 
-            $plot = validatePlot($plot_id);
-            if (empty($plot) || $plot->status != 'active') {
+            $booking = DB::table('bookings')->where('id', '=', $booking_id)->whereIn('status', ['active', 'upcoming'])->first();
+            if (!empty($booking)) {
+                $data = [
+                    'car_id' => $car_id,
+                    'updated_at' => Carbon::now()
+                ];
+
+                $assign = DB::table('bookings')->where('id', '=', $booking_id)->update($data);
+                if ($assign) {
+                    DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'yes']);
+                    return response()->json([
+                        'status'    => 'failed',
+                        'message'   => trans('msg.dealer.assign-car.success'),
+                    ],400);
+                } else {
+                    return response()->json([
+                        'status'    => 'failed',
+                        'message'   => trans('msg.dealer.assign-car.failure'),
+                    ],400);
+                }
+            } else {
                 return response()->json([
                     'status'    => 'failed',
-                    'message'   => trans('msg.helper.invalid-plot'),
+                    'message'   => trans('msg.dealer.assign-car.invalid'),
                 ],400);
             }
-
-            $dealerPlot = DB::table('bookings as sc')
-                                ->where('sc.id', '=', $booking_id)
-                                ->whereIn('sc.status', ['active', 'upcoming'])
-                                ->where('sc.car_id', '=', '')
-                                ->first(['sc.*']);
-
-                                return $dealerPlot;
-
         } catch (\Throwable $e) {
             return response()->json([
                 'status'    => 'failed',
@@ -517,7 +525,6 @@ class CarController extends Controller
             'language'   => 'required',
             'car_id'     => ['required','alpha_dash', Rule::notIn('undefined')],
             'booking_id' => ['required','alpha_dash', Rule::notIn('undefined')],
-            'plot_id'    => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
         if($validator->fails()){
@@ -530,7 +537,6 @@ class CarController extends Controller
 
         try {
             $booking_id = $request->booking_id;
-            $plot_id = $request->plot_id;
             $car_id = $request->car_id;
 
             $car = validateCar($car_id);
@@ -541,22 +547,32 @@ class CarController extends Controller
                 ],400);
             }
 
-            $plot = validatePlot($plot_id);
-            if (empty($plot) || $plot->status != 'active') {
+            $booking = DB::table('bookings')->where('id', '=', $booking_id)->where('car_id', '=', $car_id)->first();
+            if (!empty($booking)) {
+                $data = [
+                    'car_id' => '',
+                    'updated_at' => Carbon::now()
+                ];
+
+                $unassign = DB::table('bookings')->where('id', '=', $booking_id)->update($data);
+                if ($unassign) {
+                    DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'no']);
+                    return response()->json([
+                        'status'    => 'failed',
+                        'message'   => trans('msg.dealer.unassign-car.success'),
+                    ],400);
+                } else {
+                    return response()->json([
+                        'status'    => 'failed',
+                        'message'   => trans('msg.dealer.unassign-car.failure'),
+                    ],400);
+                }
+            } else {
                 return response()->json([
                     'status'    => 'failed',
-                    'message'   => trans('msg.helper.invalid-plot'),
+                    'message'   => trans('msg.dealer.unassign-car.invalid'),
                 ],400);
             }
-
-            $dealerPlot = DB::table('bookings as sc')
-                                ->where('sc.id', '=', $booking_id)
-                                ->whereIn('sc.status', ['active', 'upcoming'])
-                                ->where('sc.car_id', '=', '')
-                                ->first(['sc.*']);
-
-                                return $dealerPlot;
-
         } catch (\Throwable $e) {
             return response()->json([
                 'status'    => 'failed',
