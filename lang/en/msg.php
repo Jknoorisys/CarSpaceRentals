@@ -449,6 +449,7 @@ return [
         'Day'           => 'Day',
         'Days'          => 'Days',
         'Dear'          => 'Dear',
+        'Car'           => 'Car',
         'Description'   => 'Description',
         'Unit Price'    => 'Unit Price',
         'Subtotal'      => 'Subtotal',
