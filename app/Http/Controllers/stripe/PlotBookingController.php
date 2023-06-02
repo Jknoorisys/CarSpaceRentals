@@ -252,8 +252,7 @@ class PlotBookingController extends Controller
                     []
                 );
 
-                // if($session->payment_status == "paid" && $session->status == "complete"){
-                if($session){
+                if($session->payment_status == "paid" && $session->status == "complete"){
 
                     $payment_data  =  [
                         'payment_id'     => $session->payment_intent,
