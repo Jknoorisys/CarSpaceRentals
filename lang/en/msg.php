@@ -214,6 +214,11 @@ return [
             'success' => 'Featured Car Details Fetched Successfully',
             'failed'   => 'Featured Car Not Found'
         ],
+
+        'get-payment-history' => [
+            'success' => 'Payment History',
+            'failed' => 'Failed to load Payment History'
+        ],
     ],
 
 
@@ -361,6 +366,11 @@ return [
         'payment' => [
             'redirect_success' => 'Payment Redirect Successful',
             'redirect_fail' => 'Unable To Redirect To Payment'
+        ],
+
+        'get-featured-car-price' => [
+            'success' => 'Featured Car Price',
+            'failed' => 'Featured Car Price Not Found'
         ],
 
     ],
