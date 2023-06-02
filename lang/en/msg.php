@@ -333,10 +333,27 @@ return [
             'failure' => 'No Location Found',
         ],
 
+        'get-dealer-lanes' => [
+            'success' => 'Dealer Lane List Fetched Successfully',
+            'failure' => 'No Lane Found',
+        ],
+
         'get-available-plots' => [
             'success' => 'Available Plots List Fetched Successfully',
             'failure' => 'No Plot Available',
             'invalid-duration-type' => 'Invalid Duration Type',
+        ],
+
+        'assign-car' => [
+            'success' => 'Car Assigned to Plot Successfully',
+            'failure' => 'Unable to Assign Car, please try again...',
+            'invalid' => 'Invalid Booking Id',
+        ],
+
+        'unassign-car' => [
+            'success' => 'Car Unassigned from Plot Successfully',
+            'failure' => 'Unable to Unassign Car, please try again...',
+            'invalid' => 'Invalid Booking Id',
         ],
 
         // Dealer Auth and Profile Module By Aaisha Shaikh

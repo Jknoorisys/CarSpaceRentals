@@ -37,11 +37,16 @@ class ExpirePlotBooking extends Command
         $bookings = Bookings::where('park_out_date', $now)->where('status', '=', 'active')->get();
 
         foreach ($bookings as $booking) {
+            $car_id = $booking->car_id;
             // Expire the plot booking
             $booking->car_id = '';
             $booking->status = 'expired';
             $booking->updated_at = Carbon::now();
-            $booking->save();
+            $booked = $booking->save();
+
+            if ($booked) {
+                DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'no']);
+            }
         }
 
         $this->info('Plot bookings expired successfully.');
