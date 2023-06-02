@@ -408,7 +408,7 @@ class CarController extends Controller
                     'kms_driven' => isset($req->kms_driven) ? $req->kms_driven : $car->kms_driven,
                     'price' => isset($req->price) ? $req->price : $car->price,
                     'description' => isset($req->description) ? $req->description : $car->description,
-                    'color' => isset($req->color) ? $req->color : $req->car->color,
+                    'color' => isset($req->color) ? $req->color : $req->color,
                     'top_speed' => isset($req->top_speed) ? $req->top_speed : $car->top_speed,
                     'updated_at' => Carbon::now()
                 ];
