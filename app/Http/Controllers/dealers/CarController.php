@@ -184,7 +184,7 @@ class CarController extends Controller
                     $extension = $file5->getClientOriginalExtension();
                     $filename5 = time().'5.'.$extension;
                     $file5->move('assets/uploads/dealer_car_photos/', $filename5);
-                    $photo5 = 'dealer_car_photos/'.$filename5;
+                    $photo5 = 'assets/uploads/dealer_car_photos/'.$filename5;
                 }
 
                 $carImage = [
@@ -356,40 +356,40 @@ class CarController extends Controller
                 if ($file1) {
                     $extension = $file1->getClientOriginalExtension();
                     $filename1 = time().'1.'.$extension;
-                    $file1->move('dealer_car_photos/', $filename1);
-                    $photo1 = 'dealer_car_photos/'.$filename1;
+                    $file1->move('assets/uploads/dealer_car_photos/', $filename1);
+                    $photo1 = 'assets/uploads/dealer_car_photos/'.$filename1;
                 }
                 
                 $file2 = $req->file('image2');
                 if ($file2) {
                     $extension = $file2->getClientOriginalExtension();
                     $filename2 = time().'2.'.$extension;
-                    $file2->move('dealer_car_photos/', $filename2);
-                    $photo2 = 'dealer_car_photos/'.$filename2;
+                    $file2->move('assets/uploads/dealer_car_photos/', $filename2);
+                    $photo2 = 'assets/uploads/dealer_car_photos/'.$filename2;
                 }
 
                 $file3 = $req->file('image3');
                 if ($file3) {
                     $extension = $file3->getClientOriginalExtension();
                     $filename3 = time().'3.'.$extension;
-                    $file3->move('dealer_car_photos/', $filename3);
-                    $photo3 = 'dealer_car_photos/'.$filename3;
+                    $file3->move('assets/uploads/dealer_car_photos/', $filename3);
+                    $photo3 = 'assets/uploads/dealer_car_photos/'.$filename3;
                 }
 
                 $file4 = $req->file('image4');
                 if ($file4) {
                     $extension = $file4->getClientOriginalExtension();
                     $filename4 = time().'4.'.$extension;
-                    $file4->move('dealer_car_photos/', $filename4);
-                    $photo4 = 'dealer_car_photos/'.$filename4;
+                    $file4->move('assets/uploads/dealer_car_photos/', $filename4);
+                    $photo4 = 'assets/uploads/dealer_car_photos/'.$filename4;
                 }
 
                 $file5 = $req->file('image5');
                 if ($file5) {
                     $extension = $file5->getClientOriginalExtension();
                     $filename5 = time().'5.'.$extension;
-                    $file5->move('dealer_car_photos/', $filename5);
-                    $photo5 = 'dealer_car_photos/'.$filename5;
+                    $file5->move('assets/uploads/dealer_car_photos/', $filename5);
+                    $photo5 = 'assets/uploads/dealer_car_photos/'.$filename5;
                 }
 
                 $data = [
@@ -415,11 +415,11 @@ class CarController extends Controller
                
                 $update = Cars::where('id',$req->car_id)->update($data);
                 $images = [
-                    'photo1' => isset($req->image1) ? ('dealer_car_photos/'.$filename1) : $carImage->photo1,
-                    'photo2' => isset($req->image2) ? ('dealer_car_photos/'.$filename2) : $carImage->photo2,
-                    'photo3' => isset($req->image3) ? ('dealer_car_photos/'.$filename3) : $carImage->photo3,
-                    'photo4' => isset($req->image4) ? ('dealer_car_photos/'.$filename4) : $carImage->photo4,
-                    'photo5' => isset($req->image5) ? ('dealer_car_photos/'.$filename5) : $carImage->photo5,
+                    'photo1' => isset($req->image1) ? ('assets/uploads/dealer_car_photos/'.$filename1) : $carImage->photo1,
+                    'photo2' => isset($req->image2) ? ('assets/uploads/dealer_car_photos/'.$filename2) : $carImage->photo2,
+                    'photo3' => isset($req->image3) ? ('assets/uploads/dealer_car_photos/'.$filename3) : $carImage->photo3,
+                    'photo4' => isset($req->image4) ? ('assets/uploads/dealer_car_photos/'.$filename4) : $carImage->photo4,
+                    'photo5' => isset($req->image5) ? ('assets/uploads/dealer_car_photos/'.$filename5) : $carImage->photo5,
                     'updated_at' => Carbon::now()
                     
                 ];
