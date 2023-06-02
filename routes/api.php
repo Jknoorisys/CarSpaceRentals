@@ -19,6 +19,7 @@ use App\Http\Controllers\dealers\ProfileController;
 use App\Http\Controllers\dealers\CarController;
 use App\Http\Controllers\dealers\PaymentPlotController;
 use App\Http\Controllers\dealers\PaymentFcarController;
+use App\Http\Controllers\stripe\FeaturedCarContoller;
 use App\Http\Controllers\stripe\PlotBookingController;
 // Users
 use App\Http\Controllers\users\AuthController;
@@ -179,9 +180,15 @@ Route::prefix('dealer')->group( function () {
 
         // Stripe Payment By Javeriya
         Route::prefix('stripe')->group( function () {
+            // Plot Booking
             Route::post('plot-booking',[PlotBookingController::class,'plotPayment']);
             Route::post('plot-booking-successful',[PlotBookingController::class,'plotPaymentSuccessfull']);
             Route::post('plot-booking-failed',[PlotBookingController::class,'plotPaymentFailed']);
+
+            // Featured Car Booking
+            Route::post('featured-car-booking',[FeaturedCarContoller::class,'featuredCarPayment']);
+            Route::post('featured-car-booking-successful',[FeaturedCarContoller::class,'featuredCarPaymentSuccessfull']);
+            Route::post('featured-car-booking-failed',[FeaturedCarContoller::class,'featuredCarPaymentFailed']);
 
         });
 

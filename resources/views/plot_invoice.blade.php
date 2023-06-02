@@ -107,7 +107,7 @@
 						<table>
 							<tr>
 								<td>
-									<h1>Invoice</h1>
+									<h1>{{ trans('msg.stripe.Invoice') }}</h1>
 								</td>
 							</tr>
 						</table>
@@ -126,9 +126,9 @@
 
 								<td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
 								<td style="text-align: left">
-									<b >Invoice No</b> <br/>
-									<b class="text-bold">Start Date:</b> <br/>
-									<b class="text-bold">Expire Date:</b> <br/>
+									<b >{{ trans('msg.stripe.Invoice No') }}</b> <br/>
+									<b class="text-bold">{{ trans('msg.stripe.Start Date') }}</b> <br/>
+									<b class="text-bold">{{ trans('msg.stripe.Expire Date') }}</b> <br/>
 								</td>
 
 								<td >
@@ -144,11 +144,11 @@
 
 			<table cellpadding="0" cellspacing="0">
 				<tr class="heading" align="center">
-					<td>Location</td>
-					<td>Lane</td>
-					<td>Duration</td>
-					<td>Plots</td>
-					<td>Amount</td>
+					<td>{{ trans('msg.stripe.Location') }}</td>
+					<td>{{ trans('msg.stripe.Lane') }}</td>
+					<td>{{ trans('msg.stripe.Duration') }}</td>
+					<td>{{ trans('msg.stripe.Plots') }}</td>
+					<td>{{ trans('msg.stripe.Amount') }}</td>
 					<td></td>
 				</tr>
 				@foreach ($plots as $index => $plot)
@@ -172,14 +172,14 @@
 					<td style="border:none"></td>
 					<td style="border:none"></td>
 					<td style="border:none"></td>
-					<td style="border-bottom: 1px solid #eee;border-top: 1px solid #eee;">Total</td>
+					<td style="border-bottom: 1px solid #eee;border-top: 1px solid #eee;">{{ trans('msg.stripe.Total') }}</td>
 					<td style="border-bottom: 1px solid #eee;border-top: 1px solid #eee">£{{ $amount_paid }}</td>
 				</tr>
 				<tr align="center">
 					<td></td>
 					<td></td>
 					<td></td>
-					<td style="border-bottom: 1px solid #eee; background-color: #dffef8;"><b>Amount Paid</b></td>
+					<td style="border-bottom: 1px solid #eee; background-color: #dffef8;"><b>{{ trans('msg.stripe.Amount Paid') }}</b></td>
 					<td style="border-bottom: 1px solid #eee; background-color: #dffef8;">£{{ $amount_paid }}</td>
 				</tr>
 			</table>

@@ -413,6 +413,8 @@ return [
     ],
 
     'No problem! Just click on the button below and you’ll be on your way.' => 'No problem! Just click on the button below and you’ll be on your way.',
+    'This email serves to confirm the successful setup of your subscription with Us.' => 'This email serves to confirm the successful setup of your subscription with Us.',
+    'We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.' => 'We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.',
 
     // Stripe Payment By Javeriya Kauser
     'stripe' => [
@@ -435,13 +437,20 @@ return [
         'Thank you for your trust!' => 'Thank you for your trust!',
         'Invoice'       => 'Invoice',
         'Invoice No'    => 'Invoice No',
-        'Date'          => 'Date',
-        'Description'   => 'Description',
-        'Qty'           => 'Qty',
-        'Unit Price'    => 'Unit Price',
-        'Amount'        => 'Amount',
-        'Subtotal'      => 'Subtotal',
+        'Start Date'    => 'Start Date',
+        'Expire Date'   => 'Expire Date',
+        'Location'      => 'Location',
+        'Lane'          => 'Lane',
+        'Duration'      => 'Duration',
         'Total'         => 'Total',
-        'Amount Paid'   => 'Amount Paid'    
+        'Amount Paid'   => 'Amount Paid',    
+        'Plots'         => 'Plots',
+        'Amount'        => 'Amount',
+        'Day'           => 'Day',
+        'Days'          => 'Days',
+        'Dear'          => 'Dear',
+        'Description'   => 'Description',
+        'Unit Price'    => 'Unit Price',
+        'Subtotal'      => 'Subtotal',
     ],
 ];
