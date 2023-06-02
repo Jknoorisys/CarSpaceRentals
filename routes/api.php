@@ -17,6 +17,7 @@ use App\Http\Controllers\dealers\AuthController as DealersAuthController;
 use App\Http\Controllers\dealers\LocationController;
 use App\Http\Controllers\dealers\ProfileController;
 use App\Http\Controllers\dealers\CarController;
+use App\Http\Controllers\dealers\FeaturedCarController as DealersFeaturedCarController;
 use App\Http\Controllers\dealers\PaymentPlotController;
 use App\Http\Controllers\dealers\PaymentFcarController;
 use App\Http\Controllers\stripe\PlotBookingController;
@@ -125,6 +126,8 @@ Route::prefix('admin')->group(function () {
         Route::post('getFeaturedCar' , [FeaturedCarController::class, 'getFeaturedCar']);
         Route::post('GetDetailsFeaturedCar' , [FeaturedCarController::class, 'GetDetailsFeaturedCar']);
 
+        //Transaction History By Aaisha Shaikh
+        Route::post('TransactionHistory', [FeaturedCarController::class, 'TransactionHistory']);
     });
 });
 
@@ -177,6 +180,10 @@ Route::prefix('dealer')->group( function () {
         Route::post('orange_payment_for_car_booking',[PaymentFcarController::class,'orange_payment_for_car_booking']);
         Route::post('orange_payment_plot_success',[PaymentPlotController::class,'orange_payment_plot_success']);
 
+        //Featured Car by Aaisha Shaikh
+        Route::post('getFeaturedcarPrice',[DealersFeaturedCarController::class,'getFeaturedcarPrice']);
+
+        
         // Stripe Payment By Javeriya
         Route::prefix('stripe')->group( function () {
             Route::post('plot-booking',[PlotBookingController::class,'plotPayment']);
