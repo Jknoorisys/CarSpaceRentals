@@ -249,6 +249,7 @@ class FeaturedCarContoller extends Controller
 
                     if ($update) {
                         $booking_data = [
+                            'id'            => Str::uuid(),
                             'dealer_id'     => $payment_details->dealer_id,
                             'car_id'        => $payment_details->car_id,
                             'start_date'    => $payment_details ? $payment_details->park_in_date : '',
