@@ -397,4 +397,34 @@ return [
 
     'No problem! Just click on the button below and you’ll be on your way.' => 'No problem! Just click on the button below and you’ll be on your way.',
 
+    // Stripe Payment By Javeriya Kauser
+    'stripe' => [
+        'session' => [
+            'success' => 'Stripe Session Created Successfully!',
+            'failure' => 'Unable to Create Stripe Session, Please try again...',
+            'invalid' => 'Invalid Location, try again...',
+            'not-found' => 'Dealer Not Found!'
+        ],
+
+        'success' => 'Payment Successfull!',
+        'failure' => 'Unable to Pay, Please try again...',
+        'invalid' => 'Something Went Wrong, Please try again...',
+        'paid'    => 'Already Paid!',
+        'expaired' => 'Session Expaired!',
+
+        // Invoice
+        'This email serves to confirm the successful setup of your subscription with Us.' => 'This email serves to confirm the successful setup of your subscription with Us.',
+        'We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.' => 'We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.',
+        'Thank you for your trust!' => 'Thank you for your trust!',
+        'Invoice'       => 'Invoice',
+        'Invoice No'    => 'Invoice No',
+        'Date'          => 'Date',
+        'Description'   => 'Description',
+        'Qty'           => 'Qty',
+        'Unit Price'    => 'Unit Price',
+        'Amount'        => 'Amount',
+        'Subtotal'      => 'Subtotal',
+        'Total'         => 'Total',
+        'Amount Paid'   => 'Amount Paid'    
+    ],
 ];
