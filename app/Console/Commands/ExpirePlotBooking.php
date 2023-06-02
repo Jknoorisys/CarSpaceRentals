@@ -38,6 +38,7 @@ class ExpirePlotBooking extends Command
 
         foreach ($bookings as $booking) {
             // Expire the plot booking
+            $booking->car_id = '';
             $booking->status = 'expired';
             $booking->updated_at = Carbon::now();
             $booking->save();
