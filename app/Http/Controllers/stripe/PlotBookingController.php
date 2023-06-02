@@ -256,6 +256,7 @@ class PlotBookingController extends Controller
 
                     $payment_data  =  [
                         'payment_id'     => $session->payment_intent,
+                        'payer_email'    => $session->customer_details->email ? $session->customer_details->email : '',
                         'amount_paid'    => $session->amount_total/100,
                         'payment_status' => $session->payment_status,
                         'session_status' => $session->status,

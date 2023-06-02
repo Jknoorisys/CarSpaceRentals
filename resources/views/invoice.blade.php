@@ -160,18 +160,18 @@
 						<td style="border:none">{{ $plot['plot_name'] }}</td>
 						<td style="border:none">£{{ $plot['rent'] }}</td>
 					@else
-						<td></td>
-						<td></td>
-						<td></td>
+						<td style="border:none"></td>
+						<td style="border:none"></td>
+						<td style="border:none"></td>
 						<td style="border:none">{{ $plot['plot_name'] }}</td>
 						<td style="border:none">£{{ $plot['rent'] }}</td>
 					@endif
 				</tr>
 				@endforeach
 				<tr align="center">
-					<td></td>
-					<td></td>
-					<td></td>
+					<td style="border:none"></td>
+					<td style="border:none"></td>
+					<td style="border:none"></td>
 					<td style="border-bottom: 1px solid #eee;border-top: 1px solid #eee;">Total</td>
 					<td style="border-bottom: 1px solid #eee;border-top: 1px solid #eee">£{{ $amount_paid }}</td>
 				</tr>
