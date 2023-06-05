@@ -196,7 +196,7 @@ class CarController extends Controller
                                         ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                                         'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
                                         'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
-                                        'locations.lat as location_latitude','locations.long as location_longitude',
+                                        'locations.lat as location_latitude','locations.long as location_longitude','locations.location as location_address',
                                         'brands.name as car_brand_name','car_photos.photo1 as car_image');
 
                 if (!empty($condition)) 
