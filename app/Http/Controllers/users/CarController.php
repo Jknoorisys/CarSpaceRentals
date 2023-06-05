@@ -184,6 +184,7 @@ class CarController extends Controller
             $fuel_type = $req->fuel_type ? $req->fuel_type  : '';
             $brand = $req->car_brand_id ? $req->car_brand_id : '';
             $price = $req->car_price ? $req->car_price : '';
+            $search = $req->search ? $req->search : '';
 
             $db = DB::table('bookings')->leftJoin('plots','plots.id','=','bookings.plot_id')
                                         ->leftJoin('locations','locations.id','=','bookings.location_id')
@@ -227,6 +228,11 @@ class CarController extends Controller
                 if(!empty($price))
                 {
                     $db->where('cars.price', 'LIKE', "%$price%");
+                }
+                
+                if (!empty($search)) {
+
+                    $db->where('cars.name', 'LIKE', "%$search%");
                 }
                 
                 $total = $db->count();
