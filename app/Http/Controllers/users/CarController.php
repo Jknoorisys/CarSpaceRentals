@@ -192,6 +192,7 @@ class CarController extends Controller
                                         ->leftJoin('cars','cars.id','=','bookings.car_id')
                                         ->leftJoin('brands','brands.id','=','cars.brand')
                                         ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
+                                        ->where('bookings.status','=','active')
                                         ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
                                         'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
                                         'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
@@ -234,7 +235,7 @@ class CarController extends Controller
 
                     $db->where('cars.name', 'LIKE', "%$search%");
                 }
-                
+
                 $total = $db->count();
 
                 $filter = $db->offset(($page_number - 1) * $per_page)
