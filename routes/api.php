@@ -128,7 +128,7 @@ Route::prefix('admin')->group(function () {
         Route::post('GetDetailsFeaturedCar' , [FeaturedCarController::class, 'GetDetailsFeaturedCar']);
 
         //Transaction History By Aaisha Shaikh
-        Route::post('TransactionHistory', [FeaturedCarController::class, 'TransactionHistory']);
+        Route::post('transaction-history', [DashboardController::class, 'TransactionHistory']);
     });
 });
 
