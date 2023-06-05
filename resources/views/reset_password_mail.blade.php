@@ -568,7 +568,7 @@
                                                                                             <tr>
                                                                                                 <td align="center" valign="top" class="r20-i nl2go-default-textstyle" style="color: #392f65; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; word-break: break-word; line-height: 1.1; text-align: center;">
                                                                                                     <div>
-                                                                                                        <h1 class="default-heading1" style="margin: 0; color: #392f65; font-family: Vollkorn,Georgia,Times,Times New Roman,serif,Arial; font-size: 48px; word-break: break-word;"><span style="color: #0a1717; font-size: 32px;">{{ trans('msg.email.Forgot Password') }}.?</span></h1>
+                                                                                                        <h1 class="default-heading1" style="margin: 0; color: #392f65; font-family: Vollkorn,Georgia,Times,Times New Roman,serif,Arial; font-size: 48px; word-break: break-word;"><span style="color: #0a1717; font-size: 32px;">{{ trans('msg.email.Forgot Password') }}?</span></h1>
                                                                                                     </div>
                                                                                                 </td>
                                                                                             </tr>
