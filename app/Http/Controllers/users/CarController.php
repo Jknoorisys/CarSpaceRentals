@@ -552,4 +552,54 @@ class CarController extends Controller
             ], 500);
         }
     }
+
+    public function getCarBrands(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'language' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try {
+           $db = DB::table('brands');
+
+            $search = $request->search ? $request->search : '';
+            if (!empty($search)) {
+                $db->where('name', 'LIKE', "%$search%");
+            }
+            
+            $total = $db->count();
+
+            $brands = $db->orderBy('name')
+                        ->get();
+
+            if (!($brands->isEmpty())) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.admin.get-brands.success'),
+                    'total'     => $total,
+                    'data'      => $brands
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.admin.get-brands.failure'),
+                    'data'      => [],
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
 }
