@@ -166,8 +166,8 @@ Route::prefix('dealer')->group( function () {
         Route::post('get-dealer-cars' , [LocationController::class, 'getDealerCars']); 
         Route::post('get-dealer-plots' , [LocationController::class, 'getDealerPlots']); 
         Route::post('get-dealer-locations' , [LocationController::class, 'getDealerLocations']); 
-        Route::post('get-lanes-based-on-location' , [LocationController::class, 'getDealerLanesBasedOnLocation']);
-        Route::post('get-plots-based-on-location' , [LocationController::class, 'getPlotsBasedOnLocation']); 
+        Route::post('get-dealer-lanes-based-on-location' , [LocationController::class, 'getDealerLanesBasedOnLocation']);
+        Route::post('get-dealer-plots-based-on-location' , [LocationController::class, 'getPlotsBasedOnLocation']); 
         Route::post('get-dealer-all-plots-list' , [LocationController::class, 'getDealerAllPlotsList']); 
 
         Route::post('assign-car' , [CarController::class, 'assignCarToPlot']);
