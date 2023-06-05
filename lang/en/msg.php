@@ -373,7 +373,7 @@ return [
 
         'car' => [
             'success' => 'Car added successfuly',
-            'fail' => 'Unable to add add',
+            'fail' => 'Unable to Fetch the Car Details',
             'carnotfound' => 'Car not found',
             'carupdated' => 'Car Updated Successfuly!',
             'carnotupdate' => 'Unable to update the car',

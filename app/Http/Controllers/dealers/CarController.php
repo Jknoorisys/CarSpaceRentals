@@ -275,17 +275,17 @@ class CarController extends Controller
                         //                 'dealers.name as dealer_name','dealers.email as dealer_email',
                         //                 'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
                         //                 ->get();
-                        foreach ($cars as $car) {
+                        // foreach ($cars as $car) {
                             $cars->location = DB::table('bookings')->where('car_id', '=', $req->car_id)
                                                     ->leftJoin('plots','plots.id','=','bookings.plot_id')
                                                     ->leftJoin('locations','locations.id','=','bookings.location_id')
                                                     ->leftJoin('cars','cars.id','=','bookings.car_id')
                                                     ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
                                                     ->first(['bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
-                                            'dealers.name as dealer_name','dealers.email as dealer_email',
+                                            'dealers.name as dealer_name','dealers.email as dealer_email','locations.lat as location_latitude','locations.long as location_longitude','locations.location as location_address',
                                             'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company']);
                             $cars->photos = DB::table('car_photos')->where('car_id', '=', $req->car_id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
-                        }
+                        // }
         
                         // $car_detail = $carDetails;
                         // $car_images = $carImages;
