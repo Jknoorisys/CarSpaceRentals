@@ -18,6 +18,7 @@ class DashboardController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function dashboard(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -62,8 +63,7 @@ class DashboardController extends Controller
         }
     }
 
-    
-
+    // by Aaisha Shaikh
     public function TransactionHistory(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -71,14 +71,11 @@ class DashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(
-                [
+            return response()->json([
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    
                     'message'   =>  __('msg.user.validation.fail'),
-                ],
-                400
+                ],400
             );
         }
 
@@ -108,64 +105,59 @@ class DashboardController extends Controller
                 $transaction->orWhere('park_out_date', $search);
                 
             }
+
             $total = $transaction->count();
             $data = $transaction->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
                         ->get();
-        // return $data;
-        foreach($data as $row)
-        {
-            // return $row->car_id;
 
-            $plot_ids = $row->plot_ids;
-            $car_ids = $row->car_id;
-            // return $car_ids;
-            $plot_id_array = explode(',', $plot_ids);
-            $car_id_array = explode(',', $car_ids);
-            // return $car_id_array;
-            $plots = [];
-            $cars = [];
-            foreach($plot_id_array as $plot_id)
-            {
-                $plot = DB::table('plots')->where('id', $plot_id)->select('plot_name')->first();
-                if ($plot) {
-                    $plots[] = $plot->plot_name;
+            foreach($data as $row){
+                $plot_ids = $row->plot_ids;
+                $car_ids = $row->car_id;
+
+                $plot_id_array = explode(',', $plot_ids);
+                $car_id_array = explode(',', $car_ids);
+
+                $plots = [];
+                $cars = [];
+
+                foreach($plot_id_array as $plot_id)
+                {
+                    $plot = DB::table('plots')->where('id', $plot_id)->select('plot_name')->first();
+
+                    if ($plot) {
+                        $plots[] = $plot->plot_name;
+                    }
                 }
-            }
-            foreach($car_id_array as $cid)
-            {
-                $car = DB::table('cars')->where('id', $cid)->select('name')->first();
-                if ($car) {
-                    $cars[] = $car->name;
+
+                foreach($car_id_array as $cid)
+                {
+                    $car = DB::table('cars')->where('id', $cid)->select('name')->first();
+
+                    if ($car) {
+                        $cars[] = $car->name;
+                    }
                 }
-            }
-        
-            $row->plots = $plots;
-            $row->cars = $cars;
             
-
-
-
-        }
-        
-
-        if(!empty($transaction))
-        {
-            return response()->json([
-                'status'    => 'success',
-                'message'   => trans('msg.admin.get-payment-history.success'),
-                'total'     => $total,
-                'data'      => $data,
-            ], 200);
-        }
-        else
-        {
-            return response()->json([
-                'status'    => 'failed',
-                'message'   => trans('msg.admin.get-payment-history.failed'),
+                $row->plots = $plots;
+                $row->cars = $cars;
                 
-            ], 400);
-        }    
+            }
+
+            if(!empty($transaction)){
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.admin.get-payment-history.success'),
+                    'total'     => $total,
+                    'data'      => $data,
+                ], 200);
+            }else{
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.admin.get-payment-history.failed'),
+                    
+                ], 400);
+            }    
 
         } catch (\Throwable $e) {
             return response()->json([
