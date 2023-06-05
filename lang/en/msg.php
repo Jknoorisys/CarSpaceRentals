@@ -408,6 +408,7 @@ return [
     'email' => [
         'Email Verification' => 'Email Verification',
         'Forget Password'    => 'Forget Password',
+        'Forgot Password'    => 'Forgot Password',
         'Reset Your Password' => 'Reset Your Password',
         'Welcome on Board'   => 'Welcome on Board',
         'Visit Our Platform' => 'Visit Our Platform',
