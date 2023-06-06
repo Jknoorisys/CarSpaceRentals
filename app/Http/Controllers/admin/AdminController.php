@@ -19,6 +19,7 @@ class AdminController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getAllAdmins(Request $request)
     {
         $validator = Validator::make($request->all(), [

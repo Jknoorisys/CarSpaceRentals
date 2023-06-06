@@ -19,6 +19,7 @@ class FeaturedcarPriceController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getFeaturedcarPrice(Request $request)
     {
         $validator = Validator::make($request->all(), [

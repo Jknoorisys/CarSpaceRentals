@@ -72,49 +72,41 @@ class CarController extends Controller
         }
     }
 
+    // By Aaisha Shaikh
     public function addCar(Request $req)
     {
         $validator = Validator::make($req->all(), [
-            'language' => 'required',
-            'dealer_id'   => 'required',
-            'car_codition' => [
-                'required' ,
-                Rule::in(['Old','New']),
-            ],
-            'car_name' => 'required',
-            'car_brand' => ['required','alpha_dash', Rule::notIn('undefined')],
-            'year_register' => 'required',
-            'milage' => 'required',
-            'car_type' => [
-                'required',
-                Rule::in(['Manual','Automatic']),
-            ],
-            'fuel_type' => [
-                'required',
-                Rule::in(['Diesel','Petrol','Gas']),
-            ],
-            'no_seats' => 'required|numeric',
-            'year_manufacture' => 'required',
-            'ownership' => 'required',
+            'language'          => 'required',
+            'dealer_id'         => 'required',
+            'car_codition'      => ['required' ,Rule::in(['Old','New'])],
+            'car_name'          => 'required',
+            'car_brand'         => ['required','alpha_dash', Rule::notIn('undefined')],
+            'year_register'     => 'required',
+            'milage'            => 'required',
+            'car_type'          => ['required', Rule::in(['Manual','Automatic'])],
+            'fuel_type'         => ['required', Rule::in(['Diesel','Petrol','Gas'])],
+            'no_seats'          => 'required|numeric',
+            'year_manufacture'  => 'required',
+            'ownership'         => 'required',
             'insurance_validity' => 'required',
-            'engin' => 'required',
-            'kms_driven' => 'required',
-            'price' => 'required|numeric',
-            'description' => 'required',
-            'image1'     => 'required_without_all:image2,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
-            'image2'     => 'required_without_all:image1,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
-            'image3'     => 'required_without_all:image2,image1,image4,image5||image||mimes:jpeg,png,jpg,svg',
-            'image4'     => 'required_without_all:image2,image3,image1,image5||image||mimes:jpeg,png,jpg,svg',
-            'image5'     => 'required_without_all:image2,image3,image4,image1||image||mimes:jpeg,png,jpg,svg',
-            'color' => 'required',
-            'top_speed' => 'required'
+            'engin'             => 'required',
+            'kms_driven'        => 'required',
+            'price'             => 'required|numeric',
+            'description'       => 'required',
+            'image1'            => 'required_without_all:image2,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
+            'image2'            => 'required_without_all:image1,image3,image4,image5||image||mimes:jpeg,png,jpg,svg',
+            'image3'            => 'required_without_all:image2,image1,image4,image5||image||mimes:jpeg,png,jpg,svg',
+            'image4'            => 'required_without_all:image2,image3,image1,image5||image||mimes:jpeg,png,jpg,svg',
+            'image5'            => 'required_without_all:image2,image3,image4,image1||image||mimes:jpeg,png,jpg,svg',
+            'color'             => 'required',
+            'top_speed'         => 'required'
         ]);
         
-        if ($validator->fails()) {
+        if($validator->fails()){
             return response()->json([
                 'status'    => 'failed',
-                'errors'    =>  $validator->errors(),
-                'message'   =>  __('msg.user.validation.fail'),
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
             ],400);
         }
 
@@ -124,26 +116,26 @@ class CarController extends Controller
 
             if(!empty($dealer)){
                 $car = [
-                    'id' => Str::uuid(),
+                    'id'        => Str::uuid(),
                     'dealer_id' => $req->dealer_id, 
                     'condition' => $req->car_codition, 
-                    'name' => $req->car_name,
-                    'brand' => $req->car_brand, 
+                    'name'      => $req->car_name,
+                    'brand'     => $req->car_brand, 
                     'year_of_registration' => $req->year_register, 
-                    'milage' => $req->milage, 
+                    'milage'    => $req->milage, 
                     'year_of_manufacturing' => $req->year_manufacture, 
-                    'type' => $req->car_type, 
+                    'type'      => $req->car_type, 
                     'fuel_type' => $req->fuel_type, 
                     'no_of_seats' => $req->no_seats, 
                     'ownership' => $req->ownership, 
                     'insurance_validity' => $req->insurance_validity,
-                    'engin' => $req->engin, 
+                    'engin'     => $req->engin, 
                     'kms_driven' => $req->kms_driven, 
                     'top_speed' => $req->top_speed, 
-                    'color' => $req->color,
-                    'price' => $req->price, 
+                    'color'     => $req->color,
+                    'price'     => $req->price, 
                     'description' => $req->description, 
-                    'status' => 'active', 
+                    'status'    => 'active', 
                     'created_at' => Carbon::now()
                 ];
 
@@ -236,7 +228,7 @@ class CarController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language'  => 'required',
-            'car_id' => ['required','alpha_dash', Rule::notIn('undefined')],
+            'car_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'dealer_id' => ['required','alpha_dash', Rule::notIn('undefined')]
         ]);
 
@@ -255,43 +247,18 @@ class CarController extends Controller
                 $dealer_car = DB::table('cars')->where('id',$req->car_id)->first();
                 if(!empty($dealer_car)){
                     $cars = DB::table('cars')->leftJoin('brands','brands.id','=','cars.brand')
-                                            // ->leftjoin('car_photos','car_photos.car_id','=','cars.id')
+                                            ->leftJoin('dealers','dealers.id','=','cars.dealer_id')
                                             ->where('cars.id',$req->car_id)->where('cars.dealer_id',$req->dealer_id)
-                                            ->select('cars.*','brands.name as brand_name')
+                                            ->select('cars.*','brands.name as brand_name','dealers.name as dealer_name','dealers.email as dealer_email','dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
                                             ->first();
-                                            // return $cars;
 
                     if(!empty($cars)){
-                        // $carImages = DB::table('car_photos')->leftJoin('cars','cars.id','=','car_photos.car_id')
-                                                        // ->where('car_photos.id',$req->car_id)->get();
-                        // $carDetails = DB::table('bookings')
-                        //                 ->leftJoin('locations','locations.id','=','bookings.location_id')
-                        //                 ->leftJoin('plots','plots.id','=','bookings.plot_id')
-                        //                 ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
-                        //                 ->leftJoin('cars','cars.id','=','bookings.car_id')
-                        //                 ->where('bookings.car_id',$req->car_id)
-                        //                 ->where('bookings.dealer_id',$req->dealer_id)
-                        //                 ->select('bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
-                        //                 'dealers.name as dealer_name','dealers.email as dealer_email',
-                        //                 'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company')
-                        //                 ->get();
-                        // foreach ($cars as $car) {
                             $cars->location = DB::table('bookings')->where('car_id', '=', $req->car_id)
                                                     ->leftJoin('plots','plots.id','=','bookings.plot_id')
                                                     ->leftJoin('locations','locations.id','=','bookings.location_id')
-                                                    ->leftJoin('cars','cars.id','=','bookings.car_id')
-                                                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
-                                                    ->first(['bookings.*','locations.name as location_name','plots.plot_name as plot_name','cars.name as car_name',
-                                            'dealers.name as dealer_name','dealers.email as dealer_email','locations.lat as location_latitude','locations.long as location_longitude','locations.location as location_address',
-                                            'dealers.mobile as dealer_mobile_no','dealers.company as dealer_company']);
+                                                    ->first(['bookings.*','locations.name as location_name','plots.plot_name as plot_name','locations.lat as location_latitude','locations.long as location_longitude','locations.location as location_address']);
                             $cars->photos = DB::table('car_photos')->where('car_id', '=', $req->car_id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
-                        // }
-        
-                        // $car_detail = $carDetails;
-                        // $car_images = $carImages;
-                        // $car->Details = $car_detail;
-                        // $car->Images = $car_images;
-
+                        
                         return response()->json([
                             'status'    => 'success',
                             'message'   => __('msg.dealer.car.cardetail'),
@@ -348,10 +315,11 @@ class CarController extends Controller
         try 
         {
             $car = DB::table('cars')->find($req->car_id);
-            $carImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
 
             if(!empty($car))
-            {                
+            {             
+                $carImage = DB::table('car_photos')->where('car_id',$req->car_id)->first();
+   
                 $file1 = $req->file('image1');
                 if ($file1) {
                     $extension = $file1->getClientOriginalExtension();
@@ -415,11 +383,11 @@ class CarController extends Controller
                
                 $update = Cars::where('id',$req->car_id)->update($data);
                 $images = [
-                    'photo1' => isset($req->image1) ? ('assets/uploads/dealer_car_photos/'.$filename1) : $carImage->photo1,
-                    'photo2' => isset($req->image2) ? ('assets/uploads/dealer_car_photos/'.$filename2) : $carImage->photo2,
-                    'photo3' => isset($req->image3) ? ('assets/uploads/dealer_car_photos/'.$filename3) : $carImage->photo3,
-                    'photo4' => isset($req->image4) ? ('assets/uploads/dealer_car_photos/'.$filename4) : $carImage->photo4,
-                    'photo5' => isset($req->image5) ? ('assets/uploads/dealer_car_photos/'.$filename5) : $carImage->photo5,
+                    'photo1' => isset($req->image1) ? $photo1 : $carImage->photo1,
+                    'photo2' => isset($req->image2) ? $photo2 : $carImage->photo2,
+                    'photo3' => isset($req->image3) ? $photo3 : $carImage->photo3,
+                    'photo4' => isset($req->image4) ? $photo4 : $carImage->photo4,
+                    'photo5' => isset($req->image5) ? $photo5 : $carImage->photo5,
                     'updated_at' => Carbon::now()
                     
                 ];

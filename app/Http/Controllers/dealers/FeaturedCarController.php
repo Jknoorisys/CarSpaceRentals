@@ -18,13 +18,16 @@ class FeaturedCarController extends Controller
         App::setlocale($lang);
     }
 
+    // By Aaisha Shaikh 
+    
+    // Not Required
     public function addCarToFeaturedList(Request $req)
     {
         $validator = Validator::make($req->all(), [
             'language'          =>  'required',
             'dealer_id'         =>  ['required', 'alpha_dash', Rule::notIn('undefined')],
             'car_id'            =>  ['required', 'alpha_dash', Rule::notIn('undefined')],
-            'start_date'       => 'required',
+            'start_date'        => 'required',
             'end_date'          => 'required',
             'faetured_days'     => 'required',
             
@@ -88,6 +91,4 @@ class FeaturedCarController extends Controller
             ],500);
         }
     }
-
-
 }
