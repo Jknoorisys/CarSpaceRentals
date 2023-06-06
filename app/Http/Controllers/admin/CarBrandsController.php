@@ -18,6 +18,7 @@ class CarBrandsController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getCarBrands(Request $request)
     {
         $validator = Validator::make($request->all(), [

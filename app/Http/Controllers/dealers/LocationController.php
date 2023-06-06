@@ -18,6 +18,7 @@ class LocationController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getLocations(Request $request)
     {
         $validator = Validator::make($request->all(), [

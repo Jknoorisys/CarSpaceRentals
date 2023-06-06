@@ -18,6 +18,7 @@ class DealerController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getDealers(Request $request)
     {
         $validator = Validator::make($request->all(), [

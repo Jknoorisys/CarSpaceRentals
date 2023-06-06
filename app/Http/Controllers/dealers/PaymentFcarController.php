@@ -19,6 +19,7 @@ class PaymentFcarController extends Controller
         App::setlocale($lang);
     }
 
+    // By Aaisha Shaikh
     public function orange_payment_for_car_booking(Request $req)
     {
         $validator = Validator::make($req->all(), [

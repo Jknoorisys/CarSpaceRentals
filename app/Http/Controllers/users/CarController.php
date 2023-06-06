@@ -18,7 +18,9 @@ class CarController extends Controller
         App::setlocale($lang);
     }
 
-    // Not required
+    // By Aaisha Shaikh
+
+    // Not Required
     public function CarList(Request $req)
     {
         $validator = Validator::make($req->all(), [
