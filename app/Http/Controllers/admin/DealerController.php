@@ -430,7 +430,9 @@ class DealerController extends Controller
             $total = $db->count();
             $plots = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
-                                    ->orderBy('locations.name')
+                                    ->orderBy('sc.park_in_date')
+                                    ->orderBy('plots.plot_direction')
+                                    ->orderBy('plots.plot_position')
                                     ->get(['sc.*','plots.plot_name','cars.name as car_name','locations.name as location_name']);
 
             if (!($plots->isEmpty())) {
