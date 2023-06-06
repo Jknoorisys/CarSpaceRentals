@@ -147,7 +147,7 @@ class ProfileController extends Controller
             'name' => 'regex:/^[\pL\s]+$/u|min:3',
             'mobile' => 'numeric',
             'company' => 'regex:/^[\pL\s]+$/u|min:3',
-            'email' => 'unique:dealers',
+            // 'email' => 'unique:dealers',
             'profile_image' => 'image|mimes:jpg,jpeg,svg,png'
         ]);
 
@@ -166,7 +166,7 @@ class ProfileController extends Controller
             $dealer_id  = $request->dealer_id;
             $name      = $request->name;
             $mobile    = $request->mobile;
-            $email   = $request->email;
+            // $email   = $request->email;
             $company_name   = $request->company_name;
 
             $dealer = DB::table('dealers')->where('id', $dealer_id)->first();
@@ -184,7 +184,7 @@ class ProfileController extends Controller
                     'name'       => (isset($name) && !empty($name)) ? $name : $dealer->name,
                     'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $dealer->mobile,
                     'profile'    => $request->profile_image ? $photo : $dealer->profile,
-                    'email'      => (isset($email) && !empty($email)) ? $email : $dealer->email,
+                    // 'email'      => (isset($email) && !empty($email)) ? $email : $dealer->email,
                     'company'    => (isset($company_name) && !empty($company_name)) ? $company_name : $dealer->company,
                     'updated_at' => Carbon::now()
                 );

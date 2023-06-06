@@ -142,7 +142,7 @@ class ProfileController extends Controller
             'user_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
             'name' => 'required|string',
             'mobile' => 'required|numeric',
-            'email' => 'required|email|unique:users',
+            // 'email' => 'required|email|unique:users',
             'profile_image' => 'image|mimes:jpg,jpeg,svg,png'
         ]);
 
@@ -161,7 +161,7 @@ class ProfileController extends Controller
             $user_id  = $request->user_id;
             $name      = $request->name;
             $mobile    = $request->mobile;
-            $email   = $request->email;
+            // $email   = $request->email;
 
             $user = DB::table('users')->where('id', $user_id)->first();
             if (!empty($user)) {
@@ -177,7 +177,7 @@ class ProfileController extends Controller
                     'name'       => (isset($name) && !empty($name)) ? $name : $user->name,
                     'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $user->mobile,
                     'profile'    => $request->profile_image ? $photo : $user->profile,
-                    'email'      => (isset($email) && !empty($email)) ? $email : $user->email,
+                    // 'email'      => (isset($email) && !empty($email)) ? $email : $user->email,
                     'updated_at' => Carbon::now()
                 );
 
