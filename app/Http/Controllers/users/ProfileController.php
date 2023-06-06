@@ -101,10 +101,12 @@ class ProfileController extends Controller
 
                 $saveProfile = User::where('id', $req->user_id)->update(['profile' => $req->profile ? $photo : '', 'updated_at' => Carbon::now()]);
                 if ($saveProfile) {
+                    $userDetails = DB::table('users')->where('id', '=', $req->user_id)->first();
                     return response()->json(
                         [
                             'status'    => 'success',
                             'message'   =>  __('msg.user.profile.image'),
+                            'data'      => $userDetails,
                         ],
                         200
                     );
