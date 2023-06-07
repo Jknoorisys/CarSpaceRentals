@@ -463,9 +463,9 @@ class CarController extends Controller
                 if ($assign) {
                     DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'yes']);
                     return response()->json([
-                        'status'    => 'failed',
+                        'status'    => 'success',
                         'message'   => trans('msg.dealer.assign-car.success'),
-                    ],400);
+                    ],200);
                 } else {
                     return response()->json([
                         'status'    => 'failed',
@@ -526,9 +526,9 @@ class CarController extends Controller
                 if ($unassign) {
                     DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'no']);
                     return response()->json([
-                        'status'    => 'failed',
+                        'status'    => 'success',
                         'message'   => trans('msg.dealer.unassign-car.success'),
-                    ],400);
+                    ],200);
                 } else {
                     return response()->json([
                         'status'    => 'failed',
