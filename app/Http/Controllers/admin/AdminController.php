@@ -253,7 +253,7 @@ class AdminController extends Controller
             $total = $db->count();
             $activities = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
-                                    ->orderBy('admin_activities.created_at'.'desc')
+                                    ->orderBy('admin_activities.created_at','desc')
                                     ->get();
 
             if (!($activities->isEmpty())) {
