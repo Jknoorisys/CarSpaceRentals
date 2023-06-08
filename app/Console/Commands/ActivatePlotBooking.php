@@ -44,7 +44,9 @@ class ActivatePlotBooking extends Command
 
             if ($booked) {
                 $car_id = $booking->car_id ? $booking->car_id : '';
-                !empty($car_id) ? DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'yes']) : '';
+                if (!empty($car_id)) {
+                    DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'yes']);
+                }
             }
         }
 
