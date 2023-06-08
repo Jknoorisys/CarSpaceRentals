@@ -405,7 +405,10 @@ class CarController extends Controller
                         ->leftjoin('brands','brands.id','=','cars.brand')
                         ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                         ->where('cars.is_featured','=','yes')
-                        ->select('cars.*','locations.name as location_name','brands.name as brand_name','car_photos.photo1 as car_image');
+                        ->where('cars.is_assgined','=','yes')
+                        ->select('cars.*','locations.name as location_name','locations.lat as location_latitude',
+                        'locations.long as location_longitude','locations.location as location_address',
+                        'brands.name as brand_name','car_photos.photo1 as car_image');
                         
             
             $total = $db->count();
@@ -461,21 +464,17 @@ class CarController extends Controller
             $car = DB::table('cars')->where('id', '=', $req->car_id)->first();
             if(!empty($car))
             {
-                $car_details = DB::table('bookings')->leftJoin('cars','cars.id','=','bookings.car_id')
+                $car_details = DB::table('cars')->leftJoin('bookings','bookings.car_id','=','cars.id')
                                     ->leftJoin('locations','locations.id','=','bookings.location_id')
-                                    ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                    ->leftJoin('dealers','dealers.id','=','cars.dealer_id')
                                     ->leftJoin('plots','plots.id','=','bookings.plot_id')
                                     ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                     ->where('cars.id','=',$req->car_id)
-                                    ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
-                                    'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
-                                    'cars.fuel_type as car_fuel_type','cars.year_of_registration as car_year_of_registration',
-                                    'cars.kms_driven as car_kms_driven','cars.ownership as car_ownership',
-                                    'cars.insurance_validity as car_insurance_validity','cars.no_of_seats as car_seats',
-                                    'cars.milage as car_milage','cars.engin as car_engin','cars.description as car_description',
-                                    'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
-                                    'locations.location as car_location','plots.plot_name as car_plot_name',
-                                    'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
+                                    ->where('cars.is_assgined','=','yes')
+                                    ->select('cars.*','locations.name as location_name',
+                                    'locations.location as car_location','locations.lat as location_latitude',
+                                    'locations.long as location_longitude','plots.plot_name as car_plot_name',
+                                    'dealers.name as dealer_name','dealers.email as dealer_email',
                                     'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
                                     'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
                                     'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5'
@@ -535,23 +534,21 @@ class CarController extends Controller
 
             if(!empty($car))
             {
-                $car_details = DB::table('bookings')->leftJoin('cars','cars.id','=','bookings.car_id')
-                                    ->leftJoin('locations','locations.id','=','bookings.location_id')
+                $car_details = DB::table('cars')->leftJoin('bookings','bookings.car_id','=','cars.id')
                                     ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
                                     ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                    ->leftjoin('locations','locations.id','=','bookings.location_id')
                                     ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                     ->where('cars.id','=',$req->car_id)
-                                    ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
-                                    'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
-                                    'cars.fuel_type as car_fuel_type','cars.year_of_registration as car_year_of_registration',
-                                    'cars.kms_driven as car_kms_driven','cars.ownership as car_ownership',
-                                    'cars.insurance_validity as car_insurance_validity','cars.no_of_seats as car_seats',
-                                    'cars.milage as car_milage','cars.engin as car_engin','cars.description as car_description',
-                                    'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
-                                    'locations.location as car_location','plots.plot_name as car_plot_name',
-                                    'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
-                                    'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
-                                    'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
+                                    ->where('cars.is_assgined','=','yes')
+                                    ->select('cars.*','locations.name as location_name',
+                                    'locations.location as car_location','locations.lat as location_latitude',
+                                    'locations.long as location_longitude','plots.plot_name as car_plot_name',
+                                    'dealers.name as dealer_name','dealers.email as dealer_email',
+                                    'dealers.company as dealer_company','dealers.profile as dealer_profile',
+                                    'dealers.mobile as dealer_mobile_no',
+                                    'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2',
+                                    'car_photos.photo3 as car_image3',
                                     'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5'
                                     )->first();
 
@@ -562,6 +559,7 @@ class CarController extends Controller
                                         // ->leftjoin('brands','brands.id','=','cars.brand')
                                         ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                         ->where('cars.is_featured','=','yes')
+                                        ->where('cars.is_assgined','=','yes')
                                         ->where('cars.dealer_id','=',$car_details->dealer_id)
                                         ->select('cars.*','locations.name as location_name',
                                         'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
@@ -619,21 +617,18 @@ class CarController extends Controller
             $dealer = DB::table('dealers')->where('id', '=', $req->dealer_id)->first();
             if(!empty($dealer))
             {
-                $car = DB::table('bookings')->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
-                            ->leftJoin('cars','cars.id','=','bookings.car_id')
+                $car = DB::table('cars')->leftJoin('dealers','dealers.id','=','cars.dealer_id')
+                            ->leftJoin('bookings','bookings.car_id','=','cars.id')
                             ->leftJoin('locations','locations.id','=','bookings.location_id')
                             ->leftJoin('plots','plots.id','=','bookings.plot_id')
                             ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
-                            ->where('bookings.dealer_id','=',$req->dealer_id)
-                            ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
-                            'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
-                            'cars.fuel_type as car_fuel_type','cars.year_of_registration as car_year_of_registration',
-                            'cars.kms_driven as car_kms_driven','cars.ownership as car_ownership',
-                            'cars.insurance_validity as car_insurance_validity','cars.no_of_seats as car_seats',
-                            'cars.milage as car_milage','cars.engin as car_engin','cars.description as car_description',
-                            'cars.top_speed as car_speed','cars.color as car_color','locations.name as location_name',
+                            ->where('cars.dealer_id','=',$req->dealer_id)
+                            // ->where('cars.is_featured','=','yes')
+                            ->where('cars.is_assgined','=','yes')
+                            ->select('cars.*','locations.name as location_name','locations.lat as location_latitude',
+                            'locations.long as location_longitude',
                             'locations.location as car_location','plots.plot_name as car_plot_name',
-                            'cars.price as car_price','dealers.name as dealer_name','dealers.email as dealer_email',
+                            'dealers.name as dealer_name','dealers.email as dealer_email',
                             'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
                             'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
                             'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5')
