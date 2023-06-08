@@ -186,77 +186,185 @@ class CarController extends Controller
             $price = $req->car_price ? $req->car_price : '';
             $search = $req->search ? $req->search : '';
 
-            $db = DB::table('bookings')->leftJoin('plots','plots.id','=','bookings.plot_id')
-                                        ->leftJoin('locations','locations.id','=','bookings.location_id')
-                                        ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
-                                        ->leftJoin('cars','cars.id','=','bookings.car_id')
-                                        ->leftJoin('brands','brands.id','=','cars.brand')
-                                        ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
-                                        ->where('bookings.status','=','active')
-                                        ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
-                                        'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
-                                        'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
-                                        'locations.lat as location_latitude','locations.long as location_longitude','locations.location as location_address',
-                                        'brands.name as car_brand_name','car_photos.photo1 as car_image');
+            $db = DB::table('cars')->leftJoin('dealers','dealers.id','=','cars.dealer_id')
+                                    ->leftJoin('bookings','bookings.car_id','=','cars.id')
+                                    ->leftJoin('locations','bookings.location_id','=','locations.id')
+                                    ->leftJoin('brands','brands.id','=','cars.brand')
+                                    ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
+                                    ->where('cars.is_assgined','=','yes')
+                                    ->select('cars.*','dealers.name as dealer_name','brands.name as brand_name',
+                                'locations.name as location_name','car_photos.photo1 as car_image',
+                                'locations.lat as location_latitude','locations.long as location_longitude',
+                                'locations.location as location_address');
 
-                if (!empty($condition)) 
-                {
-                    $db->where('cars.condition',$condition);
-                }
+                                if (!empty($condition)) 
+                                {
+                                    $db->where('cars.condition',$condition);
+                                }
 
-                if(!empty($type))
-                {
-                    $t = explode(',',$type);
-                    $db->whereIn('cars.type',$t);
-                }
+                                if(!empty($type))
+                                {
+                                    $t = explode(',',$type);
+                                    $db->whereIn('cars.type',$t);
+                                }
 
-                if(!empty($year))
-                {
-                    $db->where('cars.year_of_manufacturing', 'LIKE', "%$year%");
-                }
+                                if(!empty($year))
+                                {
+                                    $db->where('cars.year_of_manufacturing', 'LIKE', "%$year%");
+                                }
 
-                if(!empty($fuel_type))
-                {
-                    $fuel = explode(',',$fuel_type);
-                    $db->whereIn('cars.fuel_type',$fuel);
-                }
+                                if(!empty($fuel_type))
+                                {
+                                    $fuel = explode(',',$fuel_type);
+                                    $db->whereIn('cars.fuel_type',$fuel);
+                                }
 
-                if(!empty($brand))
-                {
-                    $b = explode(',',$brand);
-                    $db->whereIn('cars.brand',$b);
-                }
+                                if(!empty($brand))
+                                {
+                                    $b = explode(',',$brand);
+                                    $db->whereIn('cars.brand',$b);
+                                }
+                                
+                                if(!empty($price))
+                                {
+                                    $db->where('cars.price', 'LIKE', "%$price%");
+                                }
+                                
+                                if (!empty($search)) {
+
+                                    $db->where('cars.name', 'LIKE', "%$search%");
+                                }
+
+                                $total = $db->count();
+
+                                $filter = $db->offset(($page_number - 1) * $per_page)
+                                            ->limit($per_page)
+                                            ->get();
+                                            if (!($filter->isEmpty())) {
+                                                    return response()->json([
+                                                        'status'    => 'success',
+                                                        'message'   => trans('msg.user.get-car.success'),
+                                                        'total'     => $total,
+                                                        'data'      => $filter
+                                                    ],200);
+                                                } else {
+                                                    return response()->json([
+                                                        'status'    => 'success',
+                                                        'message'   => trans('msg.user.get-car.failure'),
+                                                        'data'      => [],
+                                                    ],200);
+                                                }
+                                    // ->get();
+                                    // return $db;
+            // $bookings = DB::table('bookings')->where('bookings.status','=','active')->get();
+            // // return $bookings->car_id;
+            // // if(!empty($bookings['car_id']))
+            // $bookedCars = [];
+            // foreach($bookings as $row)
+            // {
+            //     $car_id = $row->car_id;
+            //     if(!empty($car_id))
+            //     {
+            //         $db = DB::table('bookings')->leftJoin('plots','plots.id','=','bookings.plot_id')
+            //                                                 ->leftJoin('locations','locations.id','=','bookings.location_id')
+            //                                                 ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+            //                                                 ->leftJoin('cars','cars.id','=','bookings.car_id')
+            //                                                 ->leftJoin('brands','brands.id','=','cars.brand')
+            //                                                 ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
+            //                                                 ->where('bookings.status','=','active')
+            //                                                 ->where('bookings.car_id','=',$car_id)
+            //                                                 ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
+            //                                                 'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
+            //                                                 'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
+            //                                                 'locations.lat as location_latitude','locations.long as location_longitude','locations.location as location_address',
+            //                                                 'brands.name as car_brand_name','car_photos.photo1 as car_image');
                 
-                if(!empty($price))
-                {
-                    $db->where('cars.price', 'LIKE', "%$price%");
-                }
+            //                                                 if (!empty($condition)) 
+            //                     {
+            //                         $db->where('cars.condition',$condition);
+            //                     }
+
+            //                     if(!empty($type))
+            //                     {
+            //                         $t = explode(',',$type);
+            //                         $db->whereIn('cars.type',$t);
+            //                     }
+
+            //                     if(!empty($year))
+            //                     {
+            //                         $db->where('cars.year_of_manufacturing', 'LIKE', "%$year%");
+            //                     }
+
+            //                     if(!empty($fuel_type))
+            //                     {
+            //                         $fuel = explode(',',$fuel_type);
+            //                         $db->whereIn('cars.fuel_type',$fuel);
+            //                     }
+
+            //                     if(!empty($brand))
+            //                     {
+            //                         $b = explode(',',$brand);
+            //                         $db->whereIn('cars.brand',$b);
+            //                     }
+                                
+            //                     if(!empty($price))
+            //                     {
+            //                         $db->where('cars.price', 'LIKE', "%$price%");
+            //                     }
+                                
+            //                     if (!empty($search)) {
+
+            //                         $db->where('cars.name', 'LIKE', "%$search%");
+            //                     }
+
+            //                     $total = $db->count();
+
+            //                     $filter = $db->offset(($page_number - 1) * $per_page)
+            //                                 ->limit($per_page)
+            //                                 ->first();
+
+                                            
+            //                     $bookedCars[] = $filter;
+                                
+
+
+            //     }
                 
-                if (!empty($search)) {
+            // }
+            // if ($bookedCars) {
+            //     return response()->json([
+            //         'status'    => 'success',
+            //         'message'   => trans('msg.user.get-car.success'),
+            //         'total'     => $total,
+            //         'data'      => $bookedCars
+            //     ],200);
+            // } else {
+            //     return response()->json([
+            //         'status'    => 'success',
+            //         'message'   => trans('msg.user.get-car.failure'),
+            //         'data'      => [],
+            //     ],200);
+            // }
 
-                    $db->where('cars.name', 'LIKE', "%$search%");
-                }
+            
+        //    return $db->car_id;
+            
+                // $db =DB::table('bookings')->leftJoin('plots','plots.id','=','bookings.plot_id')
+                //                         ->leftJoin('locations','locations.id','=','bookings.location_id')
+                //                         ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                //                         ->leftJoin('cars','cars.id','=','bookings.car_id')
+                //                         ->leftJoin('brands','brands.id','=','cars.brand')
+                //                         ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
+                //                         ->where('bookings.status','=','active')
+                //                         ->select('bookings.*','cars.name as car_name','cars.condition as car_condition',
+                //                         'cars.year_of_manufacturing as car_manufacture_year','cars.type as car_type',
+                //                         'cars.fuel_type as car_fuel_type','cars.price as car_price','locations.name as location_name',
+                //                         'locations.lat as location_latitude','locations.long as location_longitude','locations.location as location_address',
+                //                         'brands.name as car_brand_name','car_photos.photo1 as car_image');
 
-                $total = $db->count();
+                           
 
-                $filter = $db->offset(($page_number - 1) * $per_page)
-                            ->limit($per_page)
-                            ->get();
-
-                if (!($filter->isEmpty())) {
-                    return response()->json([
-                        'status'    => 'success',
-                        'message'   => trans('msg.user.get-car.success'),
-                        'total'     => $total,
-                        'data'      => $filter
-                    ],200);
-                } else {
-                    return response()->json([
-                        'status'    => 'success',
-                        'message'   => trans('msg.user.get-car.failure'),
-                        'data'      => [],
-                    ],200);
-                }
+                
             
         } catch (\Throwable $e) {
             return response()->json([
