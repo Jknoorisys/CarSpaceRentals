@@ -469,7 +469,7 @@ class LocationController extends Controller
 
             $db = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
-                        ->whereIn('sc.status', ['active', 'upcoming'])
+                        // ->whereIn('sc.status', ['active', 'upcoming'])
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
                         ->leftJoin('cars', 'cars.id', '=', 'sc.car_id');
