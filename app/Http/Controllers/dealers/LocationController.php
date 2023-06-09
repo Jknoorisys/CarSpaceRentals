@@ -771,7 +771,7 @@ class LocationController extends Controller
                                         ->where('sc.line_id', '=' , $line_id)
                                         ->where('sc.dealer_id', '=', $dealer_id)
                                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
-                                        ->whereIn('sc.status', ['active', 'upcoming'])
+                                        ->where('sc.status', 'active')
                                         ->first(['sc.id as booking_id','sc.car_id','plots.*', DB::raw("'enabled' as status")]);
 
                     if (empty($bookedPlots)) {

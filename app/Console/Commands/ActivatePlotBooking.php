@@ -42,12 +42,12 @@ class ActivatePlotBooking extends Command
             $booking->updated_at = Carbon::now();
             $booked = $booking->save();
 
-            if ($booked) {
-                $car_id = $booking->car_id ? $booking->car_id : '';
-                if (!empty($car_id)) {
-                    DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'yes']);
-                }
-            }
+            // if ($booked) {
+            //     $car_id = $booking->car_id ? $booking->car_id : '';
+            //     if (!empty($car_id)) {
+            //         DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'yes']);
+            //     }
+            // }
         }
 
         $this->info('Plot bookings activated successfully.');
