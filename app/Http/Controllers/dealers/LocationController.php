@@ -487,7 +487,7 @@ class LocationController extends Controller
             $plots = $db->orderBy('park_in_date')
                         ->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
-                        ->get(['locations.name as location_name', 'plots.plot_name as plot_name', 'cars.name as car_name', 'sc.*']);
+                        ->get(['locations.name as location_name','locations.location','locations.lat', 'locations.long', 'plots.plot_name as plot_name', 'cars.name as car_name', 'sc.*']);
 
             if (!($plots->isEmpty())) {
                 return response()->json([
