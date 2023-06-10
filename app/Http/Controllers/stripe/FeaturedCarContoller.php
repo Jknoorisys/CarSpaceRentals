@@ -78,8 +78,10 @@ class FeaturedCarContoller extends Controller
             $rent           = $request->rent;
 
             // Set the success and cancel URLs for the checkout session
-            $success_url = url('api/dealer/stripe/featured-car-booking-successful');
-            $cancel_url = url('api/dealer/stripe/featured-car-booking-failed');
+            // $success_url = url('api/dealer/stripe/featured-car-booking-successful');
+            $success_url = 'http://localhost:4200/landing-page-dealer/my-cars/success';
+            // $cancel_url = url('api/dealer/stripe/featured-car-booking-failed');
+            $cancel_url = 'http://localhost:4200/landing-page-dealer/my-cars/failure';
 
             // Create a new Stripe checkout session object 
             $session = \Stripe\Checkout\Session::Create([
