@@ -39,10 +39,11 @@ class FeaturedCarContoller extends Controller
             'language'      => 'required',
             'dealer_id'     => ['required','alpha_dash', Rule::notIn('undefined')],
             'car_id'        => ['required','alpha_dash', Rule::notIn('undefined')],
+            'booking_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
             'featured_days' => 'required|numeric',
             'start_date'    => 'required',
             'end_date'      => 'required',
-            'rent'        => 'required',
+            'rent'          => 'required',
         ]);
 
         if($validator->fails()){
@@ -78,7 +79,15 @@ class FeaturedCarContoller extends Controller
                     'message'   => trans('msg.dealer.get-available-plots.invalid-start_date'),
                 ],400);
             }
-            
+
+            $booking = DB::table('bookings')->where('id', '=', $request->booking_id)->where('status', '=', 'active')->first();
+            if (!empty($booking) && ($booking->park_out_date < $request->end_date)) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-available-plots.invalid-end_date'),
+                ],400);
+            }
+
             $featured_days = $request->featured_days;
             $start_date    = $request->start_date;
             $end_date      = $request->end_date;

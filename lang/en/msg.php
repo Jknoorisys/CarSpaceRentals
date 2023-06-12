@@ -344,10 +344,11 @@ return [
         ],
 
         'get-available-plots' => [
-            'success' => 'Available Plots List Fetched Successfully',
-            'failure' => 'No Plot Available',
+            'success'               => 'Available Plots List Fetched Successfully',
+            'failure'               => 'No Plot Available',
             'invalid-duration-type' => 'Invalid Duration Type',
-            'invalid-start_date'    => 'Only Future Dates are Allowed'
+            'invalid-start_date'    => 'Only Future Dates are Allowed',
+            'invalid-end_date'      => 'End Date should be less than or equal to to park_out date'
         ],
 
         'assign-car' => [
