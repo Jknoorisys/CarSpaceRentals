@@ -85,6 +85,13 @@ class PlotBookingController extends Controller
                 ],400);
             }
 
+            if ($request->park_in_date <= Carbon::today()->format('Y-m-d')) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-available-plots.invalid-start_date'),
+                ],400);
+            }
+
             $plot_ids = $request->plot_ids;
             $rent     = $request->rent;
 

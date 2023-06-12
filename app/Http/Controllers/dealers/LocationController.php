@@ -251,6 +251,13 @@ class LocationController extends Controller
                 ],400);
             }
 
+            if ($request->start_date <= Carbon::today()->format('Y-m-d')) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-available-plots.invalid-start_date'),
+                ],400);
+            }
+
             $duration_type = $request->duration_type;
             $duration = $request->duration;
             $start_date = Carbon::createFromFormat('Y-m-d', $request->start_date);
