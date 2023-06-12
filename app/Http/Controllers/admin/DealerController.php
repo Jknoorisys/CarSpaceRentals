@@ -42,8 +42,8 @@ class DealerController extends Controller
 
             $search = $request->search ? $request->search : '';
             if (!empty($search)) {
-                $db->where('name', 'LIKE', "%$search%");
-                $db->orWhere('email', 'LIKE', "%$search%");
+                $db->where([['name', 'LIKE', "%$search%"],['is_admin', '=', 'no']]);
+                $db->orWhere([['email', 'LIKE', "%$search%"],['is_admin', '=', 'no']]);
             }
 
             $total = $db->count();
