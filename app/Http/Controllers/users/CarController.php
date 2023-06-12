@@ -536,6 +536,7 @@ class CarController extends Controller
             {
                 $car_details = DB::table('cars')->leftJoin('bookings','bookings.car_id','=','cars.id')
                                     ->leftJoin('dealers','dealers.id','=','bookings.dealer_id')
+                                    ->leftJoin('brands','brands.id','=','cars.brand')
                                     ->leftJoin('plots','plots.id','=','bookings.plot_id')
                                     ->leftjoin('locations','locations.id','=','bookings.location_id')
                                     ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
@@ -546,7 +547,7 @@ class CarController extends Controller
                                     'locations.long as location_longitude','plots.plot_name as car_plot_name',
                                     'dealers.name as dealer_name','dealers.email as dealer_email',
                                     'dealers.company as dealer_company','dealers.profile as dealer_profile',
-                                    'dealers.mobile as dealer_mobile_no',
+                                    'dealers.mobile as dealer_mobile_no','brands.name as brand_name',
                                     'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2',
                                     'car_photos.photo3 as car_image3',
                                     'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5'
@@ -556,12 +557,12 @@ class CarController extends Controller
                     $featured_car = DB::table('cars')->leftjoin('dealers','dealers.id','=','cars.dealer_id')
                                         ->leftjoin('bookings','bookings.car_id','=','cars.id')
                                         ->leftjoin('locations','locations.id','=','bookings.location_id')
-                                        // ->leftjoin('brands','brands.id','=','cars.brand')
+                                        ->leftjoin('brands','brands.id','=','cars.brand')
                                         ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
                                         ->where('cars.is_featured','=','yes')
                                         ->where('cars.is_assgined','=','yes')
                                         ->where('cars.dealer_id','=',$car_details->dealer_id)
-                                        ->select('cars.*','locations.name as location_name',
+                                        ->select('cars.*','locations.name as location_name','brands.name as brand_name',
                                         'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
                                         'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5')
                                         ->get();
@@ -619,6 +620,7 @@ class CarController extends Controller
             {
                 $car = DB::table('cars')->leftJoin('dealers','dealers.id','=','cars.dealer_id')
                             ->leftJoin('bookings','bookings.car_id','=','cars.id')
+                            ->leftJoin('brands','brands.id','=','cars.brand')
                             ->leftJoin('locations','locations.id','=','bookings.location_id')
                             ->leftJoin('plots','plots.id','=','bookings.plot_id')
                             ->leftJoin('car_photos','car_photos.car_id','=','cars.id')
@@ -629,7 +631,7 @@ class CarController extends Controller
                             'locations.long as location_longitude',
                             'locations.location as car_location','plots.plot_name as car_plot_name',
                             'dealers.name as dealer_name','dealers.email as dealer_email',
-                            'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no',
+                            'dealers.company as dealer_company','dealers.profile as dealer_profile','dealers.mobile as dealer_mobile_no','brands.name as brand_name',
                             'car_photos.photo1 as car_image1','car_photos.photo2 as car_image2','car_photos.photo3 as car_image3',
                             'car_photos.photo4 as car_image4','car_photos.photo5 as car_image5')
                             ->get();
