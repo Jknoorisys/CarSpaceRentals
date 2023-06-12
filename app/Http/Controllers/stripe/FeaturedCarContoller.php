@@ -72,6 +72,13 @@ class FeaturedCarContoller extends Controller
                 ],400);
             }
 
+            if ($request->start_date <= Carbon::today()->format('Y-m-d')) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-available-plots.invalid-start_date'),
+                ],400);
+            }
+            
             $featured_days = $request->featured_days;
             $start_date    = $request->start_date;
             $end_date      = $request->end_date;

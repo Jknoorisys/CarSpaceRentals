@@ -347,6 +347,7 @@ return [
             'success' => 'Available Plots List Fetched Successfully',
             'failure' => 'No Plot Available',
             'invalid-duration-type' => 'Invalid Duration Type',
+            'invalid-start_date'    => 'Only Future Dates are Allowed'
         ],
 
         'assign-car' => [
