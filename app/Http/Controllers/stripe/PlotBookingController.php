@@ -96,10 +96,8 @@ class PlotBookingController extends Controller
             $rent     = $request->rent;
 
             // Set the success and cancel URLs for the checkout session
-            // $success_url = url('api/dealer/stripe/plot-booking-successful');
-            $success_url = 'http://localhost:4200/landing-page-dealer/success';
-            // $cancel_url = url('api/dealer/stripe/plot-booking-failed');
-            $cancel_url = 'http://localhost:4200/landing-page-dealer/failure';
+            $success_url = 'https://tabanimasala.com/carspacerental-site/landing-page-dealer/success';
+            $cancel_url = 'https://tabanimasala.com/carspacerental-site/landing-page-dealer/failure';
 
             // Create a new Stripe checkout session object 
             $session = \Stripe\Checkout\Session::Create([
