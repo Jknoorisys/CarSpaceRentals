@@ -38,12 +38,14 @@ class CustomerController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('users')->where('is_admin', '=', 'no')->where('is_verified', '=', 'yes');
+            $db = DB::table('users')
+                    // ->where('is_admin', '=', 'no')
+                    ->where('is_verified', '=', 'yes');
 
             $search = $request->search ? $request->search : '';
             if (!empty($search)) {
-                $db->where([['name', 'LIKE', "%$search%"],['is_admin', '=', 'no']]);
-                $db->orWhere([['email', 'LIKE', "%$search%"],['is_admin', '=', 'no']]);
+                $db->where('name', 'LIKE', "%$search%");
+                $db->orWhere('email', 'LIKE', "%$search%");
             }
 
             $total = $db->count();
