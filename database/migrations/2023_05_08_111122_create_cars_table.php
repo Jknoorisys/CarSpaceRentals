@@ -35,7 +35,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('is_featured',['no','yes'])->default('no');
             $table->enum('is_assgined',['no','yes'])->default('no');
-            $table->enum('status',['active','inactive'])->default('active');
+            $table->enum('status',['active','inactive','deleted'])->default('active');
             $table->timestamps();
         });
     }

@@ -424,6 +424,58 @@ class CarController extends Controller
     }
     
     // By Javeriya Kauser
+
+    public function deleteCar(Request $request)
+    {
+        
+        $validator = Validator::make($request->all(), [
+            'language'  => 'required',
+            'car_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.Validation Failed!'),
+                'errors'    => $validator->errors()
+            ],400);
+        }
+
+        try 
+        {
+            $car_id = $request->car_id;
+
+            $car = validateCar($car_id);
+            if (empty($car) || $car->status != 'active') {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.helper.invalid-car'),
+                ],400);
+            }
+
+            $delete = DB::table('cars')->where('id', '=', $car_id)->update(['status' => 'deleted', 'updated_at' => Carbon::now()]);
+            if ($delete) {
+                DB::table('car_photos')->where('car_id', '=', $car_id)->update(['status' => 'deleted', 'updated_at' => Carbon::now()]);
+
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.dealer.delete-car.success'),
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.delete-car.failure'),
+                ],400);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
     public function assignCarToPlot(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -363,6 +363,11 @@ return [
             'invalid' => 'Invalid Booking Id',
         ],
 
+        'delete-car' => [
+            'success' => 'Car Deleted Successfully',
+            'failure' => 'Unable to Delete Car, please try again...',
+        ],
+
         // Dealer Auth and Profile Module By Aaisha Shaikh
         'profile' => [
             'success' => 'Dealer Profile',
