@@ -106,6 +106,7 @@ Route::prefix('admin')->group(function () {
         Route::post('get-location' , [AdminLocationController::class, 'getLocation']); 
         Route::post('edit-location' , [AdminLocationController::class, 'updateLocation']); 
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
+        Route::post('get-available-plots' , [AdminLocationController::class, 'getAvailablePlots']); 
 
         // Manage Location Lines
         Route::post('add-lane' , [LocationLineController::class, 'addLocationLine']); 
@@ -176,6 +177,8 @@ Route::prefix('dealer')->group( function () {
 
         Route::post('assign-car' , [CarController::class, 'assignCarToPlot']);
         Route::post('unassign-car' , [CarController::class, 'unassignCarFromPlot']);
+
+        Route::post('delete-car' , [CarController::class, 'deleteCar']);
 
         //Orange Payment by Aaisha Shaikh
         Route::post('orange_payment_for_plot_booking',[PaymentPlotController::class,'orange_payment_for_plot_booking']);
