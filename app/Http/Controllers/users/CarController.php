@@ -605,4 +605,13 @@ class CarController extends Controller
             ],500);
         }
     }
+
+    public function getUserIpAddress(Request $request)
+    {
+        $userIpAddress = $request->ip();
+        
+        // You can use $userIpAddress for further processing
+        
+        return $userIpAddress;
+    }
 }
