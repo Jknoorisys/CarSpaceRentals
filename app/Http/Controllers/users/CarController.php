@@ -608,10 +608,28 @@ class CarController extends Controller
 
     public function getUserIpAddress(Request $request)
     {
-        $userIpAddress = $request->ip();
-        
-        // You can use $userIpAddress for further processing
-        
-        return $userIpAddress;
+        try {
+            $userIpAddress = $request->ip();
+
+            if (!empty($userIpAddress)) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.user.get-ip-address.success'),
+                    'data'      => $userIpAddress
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.user.get-ip-address.failure'),
+                    'data'      => [],
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
     }
 }
