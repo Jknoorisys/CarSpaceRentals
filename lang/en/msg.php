@@ -235,6 +235,11 @@ return [
             'login' => 'Login Successfull'
         ],
 
+        'get-ip-address' => [
+            'success' => 'IP Address Fetched Successfully',
+            'failed'   => 'Unable to Fetch IP Address'
+        ],
+
         'register' => [
             'success' => 'OTP Sent on Registered Email',
             'fail' => 'Failed to Send OTP, Please try again...',
