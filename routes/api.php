@@ -57,17 +57,18 @@ Route::prefix('user')->group( function () {
     Route::post('CarDetails',[UserCarController::class,'CarDetails']);
     Route::post('Car_details_and_featured_car',[UserCarController::class,'Car_details_and_featured_car']);
     Route::post('other_car_from_same_dealer',[UserCarController::class,'other_car_from_same_dealer']);
+    Route::get('get-ip-address',[UserCarController::class,'getUserIpAddress']);
 
     Route::group(['middleware' => 'jwt.verify'], function () {
     
-    //Profile
-    Route::post('getProfile',[UserProfileController::class,'getProfile']);
-    Route::post('UpdateProfile',[UserProfileController::class,'UpdateProfile']);
-    Route::post('UpdateProfileDetail',[UserProfileController::class,'UpdateProfileDetail']);
+        //Profile
+        Route::post('getProfile',[UserProfileController::class,'getProfile']);
+        Route::post('UpdateProfile',[UserProfileController::class,'UpdateProfile']);
+        Route::post('UpdateProfileDetail',[UserProfileController::class,'UpdateProfileDetail']);
 
-    Route::post('logout',[AuthController::class,'logout']);
-   
-});
+        Route::post('logout',[AuthController::class,'logout']);
+    
+    });
 });
 
 // Admin Panel By Javeriya Kauser
