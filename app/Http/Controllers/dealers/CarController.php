@@ -453,9 +453,9 @@ class CarController extends Controller
                 ],400);
             }
 
-            $delete = DB::table('cars')->where('id', '=', $car_id)->update(['status' => 'deleted', 'updated_at' => Carbon::now()]);
+            $delete = DB::table('cars')->where('id', '=', $car_id)->delete();
             if ($delete) {
-                DB::table('car_photos')->where('car_id', '=', $car_id)->update(['status' => 'deleted', 'updated_at' => Carbon::now()]);
+                DB::table('car_photos')->where('car_id', '=', $car_id)->delete();
 
                 return response()->json([
                     'status'    => 'success',
