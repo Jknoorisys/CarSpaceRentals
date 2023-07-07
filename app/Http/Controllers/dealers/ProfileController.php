@@ -20,6 +20,7 @@ class ProfileController extends Controller
         App::setlocale($lang);
     }
     
+    // By Aaisha Shaikh
     public function getProfile(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -33,7 +34,7 @@ class ProfileController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  __('msg.user.validation.fail'),
+                    'message'   =>  trans('msg.user.validation.fail'),
                 ],
                 400
             );
@@ -46,7 +47,7 @@ class ProfileController extends Controller
                     [
                         'status'    => 'success',
                         'data' => $dealer,
-                        'message'   =>  __('msg.dealer.profile.success'),
+                        'message'   =>  trans('msg.dealer.profile.success'),
                     ],
                     200
                 );
@@ -54,7 +55,7 @@ class ProfileController extends Controller
                 return response()->json(
                     [
                         'status'    => 'failed',
-                        'message'   =>  __('msg.dealer.profile.dealernotfound'),
+                        'message'   =>  trans('msg.dealer.profile.dealernotfound'),
                     ],
                     400
                 );
@@ -62,7 +63,7 @@ class ProfileController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
-                'message' =>  __('msg.user.error'),
+                'message' =>  trans('msg.user.error'),
                 'error'   => $e->getMessage()
             ], 500);
         }
@@ -81,7 +82,7 @@ class ProfileController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  __('msg.user.validation.fail'),
+                    'message'   =>  trans('msg.user.validation.fail'),
                 ],
                 400
             );
@@ -106,7 +107,7 @@ class ProfileController extends Controller
                     return response()->json(
                         [
                             'status'    => 'success',
-                            'message'   =>  __('msg.dealer.profile.image'),
+                            'message'   =>  trans('msg.dealer.profile.image'),
                             'data' => $updatedProfile,
                         ],
                         200
@@ -115,7 +116,7 @@ class ProfileController extends Controller
                     return response()->json(
                         [
                             'status'    => 'failed',
-                            'message'   =>  __('msg.dealer.profile.notimage'),
+                            'message'   =>  trans('msg.dealer.profile.notimage'),
                         ],
                         400
                     );
@@ -124,7 +125,7 @@ class ProfileController extends Controller
                 return response()->json(
                     [
                         'status'    => 'failed',
-                        'message'   =>  __('msg.dealer.profile.dealernotfound'),
+                        'message'   =>  trans('msg.dealer.profile.dealernotfound'),
                     ],
                     400
                 );
@@ -132,7 +133,7 @@ class ProfileController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
-                'message' =>  __('msg.user.error'),
+                'message' =>  trans('msg.user.error'),
                 'error'   => $e->getMessage()
             ], 500);
         }
@@ -146,7 +147,7 @@ class ProfileController extends Controller
             'name' => 'regex:/^[\pL\s]+$/u|min:3',
             'mobile' => 'numeric',
             'company' => 'regex:/^[\pL\s]+$/u|min:3',
-            'email' => 'unique:dealers',
+            // 'email' => 'unique:dealers',
             'profile_image' => 'image|mimes:jpg,jpeg,svg,png'
         ]);
 
@@ -155,7 +156,7 @@ class ProfileController extends Controller
                 [
                     'status'    => 'failed',
                     'errors'    =>  $validator->errors(),
-                    'message'   =>  __('msg.user.validation.fail'),
+                    'message'   =>  trans('msg.user.validation.fail'),
                 ],
                 400
             );
@@ -165,7 +166,7 @@ class ProfileController extends Controller
             $dealer_id  = $request->dealer_id;
             $name      = $request->name;
             $mobile    = $request->mobile;
-            $email   = $request->email;
+            // $email   = $request->email;
             $company_name   = $request->company_name;
 
             $dealer = DB::table('dealers')->where('id', $dealer_id)->first();
@@ -183,7 +184,7 @@ class ProfileController extends Controller
                     'name'       => (isset($name) && !empty($name)) ? $name : $dealer->name,
                     'mobile'     => (isset($mobile) && !empty($mobile)) ? $mobile : $dealer->mobile,
                     'profile'    => $request->profile_image ? $photo : $dealer->profile,
-                    'email'      => (isset($email) && !empty($email)) ? $email : $dealer->email,
+                    // 'email'      => (isset($email) && !empty($email)) ? $email : $dealer->email,
                     'company'    => (isset($company_name) && !empty($company_name)) ? $company_name : $dealer->company,
                     'updated_at' => Carbon::now()
                 );
@@ -194,20 +195,20 @@ class ProfileController extends Controller
                     $storeInfo = DB::table('dealers')->where('id', $dealer_id)->where('status', 'active')->first();
                     return response()->json([
                         'status'  =>  'success',
-                        'message' => __('msg.dealer.profile.updated'),
+                        'message' => trans('msg.dealer.profile.updated'),
                         'patient' => $storeInfo,
                     ], 200);
                 } else {
                     return response()->json([
                         'status'      => 'failed',
-                        'message'     => __('msg.dealer.profile.notupdated'),
+                        'message'     => trans('msg.dealer.profile.notupdated'),
                     ], 400);
                 }
             } else {
                 return response()->json(
                     [
                         'status'    => 'failed',
-                        'message'   =>  __('msg.dealer.profile.dealernotfound'),
+                        'message'   =>  trans('msg.dealer.profile.dealernotfound'),
                     ],
                     400
                 );
@@ -215,7 +216,7 @@ class ProfileController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'status'  => 'failed',
-                'message' =>  __('msg.user.error'),
+                'message' =>  trans('msg.user.error'),
                 'error'   => $e->getMessage()
             ], 500);
         }

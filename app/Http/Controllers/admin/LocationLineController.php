@@ -19,6 +19,7 @@ class LocationLineController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function addLocationLine(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -291,6 +292,7 @@ class LocationLineController extends Controller
             $total = $db->count();
             $lines = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
+                                    ->orderBy('locations.name')
                                     ->orderBy('sc.line_name')
                                     ->get(['locations.name as location_name', 'sc.*']);
 

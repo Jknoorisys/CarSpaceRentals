@@ -25,6 +25,7 @@ class AuthController extends Controller
         App::setlocale($lang);
     }
 
+    // By Aaisha Shaikh
     public function register(Request $req)
     {
         $validator = Validator::make($req->all(), [

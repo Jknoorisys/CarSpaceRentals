@@ -43,7 +43,7 @@ class ExpireFeaturedCarBooking extends Command
            $booked = $booking->save();
 
             if ($booked) {
-                Cars::where('id', '=', $booking->car_id)->update(['is_featued' => 'no', 'updated_at' => Carbon::now()]);
+                Cars::where('id', '=', $booking->car_id)->update(['is_featured' => 'no', 'updated_at' => Carbon::now()]);
             }
        }
 

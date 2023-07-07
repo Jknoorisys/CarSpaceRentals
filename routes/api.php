@@ -20,6 +20,7 @@ use App\Http\Controllers\dealers\CarController;
 use App\Http\Controllers\dealers\FeaturedCarController as DealersFeaturedCarController;
 use App\Http\Controllers\dealers\PaymentPlotController;
 use App\Http\Controllers\dealers\PaymentFcarController;
+use App\Http\Controllers\stripe\FeaturedCarContoller;
 use App\Http\Controllers\stripe\PlotBookingController;
 // Users
 use App\Http\Controllers\users\AuthController;
@@ -56,17 +57,18 @@ Route::prefix('user')->group( function () {
     Route::post('CarDetails',[UserCarController::class,'CarDetails']);
     Route::post('Car_details_and_featured_car',[UserCarController::class,'Car_details_and_featured_car']);
     Route::post('other_car_from_same_dealer',[UserCarController::class,'other_car_from_same_dealer']);
+    Route::get('get-ip-address',[UserCarController::class,'getUserIpAddress']);
 
     Route::group(['middleware' => 'jwt.verify'], function () {
     
-    //Profile
-    Route::post('getProfile',[UserProfileController::class,'getProfile']);
-    Route::post('UpdateProfile',[UserProfileController::class,'UpdateProfile']);
-    Route::post('UpdateProfileDetail',[UserProfileController::class,'UpdateProfileDetail']);
+        //Profile
+        Route::post('getProfile',[UserProfileController::class,'getProfile']);
+        Route::post('UpdateProfile',[UserProfileController::class,'UpdateProfile']);
+        Route::post('UpdateProfileDetail',[UserProfileController::class,'UpdateProfileDetail']);
 
-    Route::post('logout',[AuthController::class,'logout']);
-   
-});
+        Route::post('logout',[AuthController::class,'logout']);
+    
+    });
 });
 
 // Admin Panel By Javeriya Kauser
@@ -105,6 +107,7 @@ Route::prefix('admin')->group(function () {
         Route::post('get-location' , [AdminLocationController::class, 'getLocation']); 
         Route::post('edit-location' , [AdminLocationController::class, 'updateLocation']); 
         Route::post('change-location-status' , [AdminLocationController::class, 'changeLocationStatus']);
+        Route::post('get-available-plots' , [AdminLocationController::class, 'getAvailablePlots']); 
 
         // Manage Location Lines
         Route::post('add-lane' , [LocationLineController::class, 'addLocationLine']); 
@@ -128,7 +131,7 @@ Route::prefix('admin')->group(function () {
         Route::post('GetDetailsFeaturedCar' , [FeaturedCarController::class, 'GetDetailsFeaturedCar']);
 
         //Transaction History By Aaisha Shaikh
-        Route::post('TransactionHistory', [FeaturedCarController::class, 'TransactionHistory']);
+        Route::post('transaction-history', [DashboardController::class, 'TransactionHistory']);
     });
 });
 
@@ -169,12 +172,14 @@ Route::prefix('dealer')->group( function () {
         Route::post('get-dealer-cars' , [LocationController::class, 'getDealerCars']); 
         Route::post('get-dealer-plots' , [LocationController::class, 'getDealerPlots']); 
         Route::post('get-dealer-locations' , [LocationController::class, 'getDealerLocations']); 
-        Route::post('get-lanes-based-on-location' , [LocationController::class, 'getDealerLanesBasedOnLocation']);
-        Route::post('get-plots-based-on-location' , [LocationController::class, 'getPlotsBasedOnLocation']); 
+        Route::post('get-dealer-lanes-based-on-location' , [LocationController::class, 'getDealerLanesBasedOnLocation']);
+        Route::post('get-dealer-plots-based-on-location' , [LocationController::class, 'getPlotsBasedOnLocation']); 
         Route::post('get-dealer-all-plots-list' , [LocationController::class, 'getDealerAllPlotsList']); 
 
         Route::post('assign-car' , [CarController::class, 'assignCarToPlot']);
         Route::post('unassign-car' , [CarController::class, 'unassignCarFromPlot']);
+
+        Route::post('delete-car' , [CarController::class, 'deleteCar']);
 
         //Orange Payment by Aaisha Shaikh
         Route::post('orange_payment_for_plot_booking',[PaymentPlotController::class,'orange_payment_for_plot_booking']);
@@ -187,9 +192,15 @@ Route::prefix('dealer')->group( function () {
         
         // Stripe Payment By Javeriya
         Route::prefix('stripe')->group( function () {
+            // Plot Booking
             Route::post('plot-booking',[PlotBookingController::class,'plotPayment']);
             Route::post('plot-booking-successful',[PlotBookingController::class,'plotPaymentSuccessfull']);
             Route::post('plot-booking-failed',[PlotBookingController::class,'plotPaymentFailed']);
+
+            // Featured Car Booking
+            Route::post('featured-car-booking',[FeaturedCarContoller::class,'featuredCarPayment']);
+            Route::post('featured-car-booking-successful',[FeaturedCarContoller::class,'featuredCarPaymentSuccessfull']);
+            Route::post('featured-car-booking-failed',[FeaturedCarContoller::class,'featuredCarPaymentFailed']);
 
         });
 

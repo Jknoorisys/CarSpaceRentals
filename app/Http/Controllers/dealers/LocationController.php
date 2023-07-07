@@ -18,6 +18,7 @@ class LocationController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getLocations(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -250,6 +251,13 @@ class LocationController extends Controller
                 ],400);
             }
 
+            if ($request->start_date <= Carbon::today()->format('Y-m-d')) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-available-plots.invalid-start_date'),
+                ],400);
+            }
+
             $duration_type = $request->duration_type;
             $duration = $request->duration;
             $start_date = Carbon::createFromFormat('Y-m-d', $request->start_date);
@@ -468,7 +476,7 @@ class LocationController extends Controller
 
             $db = DB::table('bookings as sc')
                         ->where('sc.dealer_id', '=', $dealer_id)
-                        ->whereIn('sc.status', ['active', 'upcoming'])
+                        // ->whereIn('sc.status', ['active', 'upcoming'])
                         ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
                         ->leftJoin('cars', 'cars.id', '=', 'sc.car_id');
@@ -483,10 +491,12 @@ class LocationController extends Controller
             }
 
             $total = $db->count();
-            $plots = $db->orderBy('park_in_date')
+            $plots = $db->orderBy('created_at','desc')
+                        ->orderBy('plots.plot_direction')
+                        ->orderBy('plots.plot_position')
                         ->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
-                        ->get(['locations.name as location_name', 'plots.plot_name as plot_name', 'cars.name as car_name', 'sc.*']);
+                        ->get(['locations.name as location_name','locations.location','locations.lat', 'locations.long', 'plots.plot_name as plot_name', 'cars.name as car_name', 'sc.*']);
 
             if (!($plots->isEmpty())) {
                 return response()->json([
@@ -557,7 +567,11 @@ class LocationController extends Controller
             if (!($cars->isEmpty())) {
 
                 foreach ($cars as $car) {
-                    $car->location = DB::table('bookings')->where('car_id', '=', $car->id)->leftJoin('locations','locations.id','=','bookings.location_id')->first(['locations.*']);
+                    $car->location = DB::table('bookings')->where('car_id', '=', $car->id)
+                                                        ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                                        ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                                        ->first(['bookings.*','plots.plot_name','locations.name as location_name', 'locations.lat', 'locations.long', 'locations.location','locations.layout']);
+
                     $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
                 }
 
@@ -766,7 +780,7 @@ class LocationController extends Controller
                                         ->where('sc.line_id', '=' , $line_id)
                                         ->where('sc.dealer_id', '=', $dealer_id)
                                         ->leftJoin('plots', 'plots.id', '=', 'sc.plot_id')
-                                        ->whereIn('sc.status', ['active', 'upcoming'])
+                                        ->where('sc.status', 'active')
                                         ->first(['sc.id as booking_id','sc.car_id','plots.*', DB::raw("'enabled' as status")]);
 
                     if (empty($bookedPlots)) {

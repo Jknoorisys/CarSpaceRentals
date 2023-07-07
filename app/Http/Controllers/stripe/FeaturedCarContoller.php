@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Stripe\Stripe;
 
-class PlotBookingController extends Controller
+class FeaturedCarContoller extends Controller
 {
     private $stripe;
     private $stripe_key;
@@ -33,19 +33,16 @@ class PlotBookingController extends Controller
     }
     
     // By Javeriya Kauser
-    public function plotPayment(Request $request)
+    public function featuredCarPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'language'      => 'required',
             'dealer_id'     => ['required','alpha_dash', Rule::notIn('undefined')],
-            'location_id'   => ['required','alpha_dash', Rule::notIn('undefined')],
-            'lane_id'       => ['required','alpha_dash', Rule::notIn('undefined')],
-            'plot_ids'      => 'required',
-            'no_of_plots'   => 'required|numeric',
-            'duration'      => 'required|numeric',
-            'duration_type' => ['required', Rule::in(['day', 'week', 'month', 'year'])],
-            'park_in_date'  => 'required',
-            'park_out_date' => 'required',
+            'car_id'        => ['required','alpha_dash', Rule::notIn('undefined')],
+            'booking_id'    => ['required','alpha_dash', Rule::notIn('undefined')],
+            'featured_days' => 'required|numeric',
+            'start_date'    => 'required',
+            'end_date'      => 'required',
             'rent'          => 'required',
         ]);
 
@@ -67,37 +64,38 @@ class PlotBookingController extends Controller
                 ],400);
             }
 
-            $location_id = $request->location_id;
-            $location = validateLocation($location_id);
-            if (empty($location) || $location->status != 'active') {
+            $car_id = $request->car_id;
+            $car = validateCar($car_id);
+            if (empty($car) || $car->status != 'active') {
                 return response()->json([
                     'status'    => 'failed',
-                    'message'   => trans('msg.helper.invalid-location'),
+                    'message'   => trans('msg.helper.invalid-car'),
                 ],400);
             }
 
-            $line_id = $request->lane_id;
-            $line = validateLine($line_id);
-            if (empty($line) || $line->status != 'active') {
-                return response()->json([
-                    'status'    => 'failed',
-                    'message'   => trans('msg.helper.invalid-line'),
-                ],400);
-            }
-
-            if ($request->park_in_date <= Carbon::today()->format('Y-m-d')) {
+            if ($request->start_date <= Carbon::today()->format('Y-m-d')) {
                 return response()->json([
                     'status'    => 'failed',
                     'message'   => trans('msg.dealer.get-available-plots.invalid-start_date'),
                 ],400);
             }
 
-            $plot_ids = $request->plot_ids;
-            $rent     = $request->rent;
+            $booking = DB::table('bookings')->where('id', '=', $request->booking_id)->where('status', '=', 'active')->first();
+            if (!empty($booking) && ($booking->park_out_date < $request->end_date)) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.dealer.get-available-plots.invalid-end_date'),
+                ],400);
+            }
+
+            $featured_days = $request->featured_days;
+            $start_date    = $request->start_date;
+            $end_date      = $request->end_date;
+            $rent           = $request->rent;
 
             // Set the success and cancel URLs for the checkout session
-            $success_url = 'https://tabanimasala.com/carspacerental-site/landing-page-dealer/success';
-            $cancel_url = 'https://tabanimasala.com/carspacerental-site/landing-page-dealer/failure';
+            $success_url = 'https://tabanimasala.com/carspacerental-site/landing-page-dealer/my-cars/success';
+            $cancel_url = 'https://tabanimasala.com/carspacerental-site/landing-page-dealer/my-cars/failure';
 
             // Create a new Stripe checkout session object 
             $session = \Stripe\Checkout\Session::Create([
@@ -110,7 +108,7 @@ class PlotBookingController extends Controller
                         'currency'=> env('STRIPE_CURRENCY'),
                         'unit_amount'=> $rent * 100,
                         'product_data'=> [
-                            'name'=> 'Plot Booking',
+                            'name'=> 'Featued Car Booking',
                             ],
                         ],
                       'quantity'=> 1,
@@ -132,16 +130,13 @@ class PlotBookingController extends Controller
                 'id'                => Str::uuid(),
                 'session_id'        => $session->id,
                 'payment_method'    => 'stripe',
-                'payment_for'       => 'plot',
+                'payment_for'       => 'car',
                 'dealer_id'         => $dealer_id,
-                'location_id'       => $location_id,
-                'line_id'           => $line_id,
-                'plot_ids'          => $plot_ids,
-                'no_of_plots'       => $request->no_of_plots,
-                'duration'          => $request->duration,
-                'duration_type'     => $request->duration_type,
-                'park_in_date'      => $request->park_in_date,
-                'park_out_date'     => $request->park_out_date,
+                'car_id'            => $car_id,
+                'duration'          => $featured_days,
+                'duration_type'     => 'day',
+                'park_in_date'      => $start_date,
+                'park_out_date'     => $end_date,
                 'rent'              => $request->rent,
                 'currency'          => $session->currency,
                 'payment_status'    => $session->payment_status,
@@ -224,12 +219,11 @@ class PlotBookingController extends Controller
         }
     }
 
-    public function plotPaymentSuccessfull(Request $request)
+    public function featuredCarPaymentSuccessfull(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'language'   => 'required',
             'session_id' => 'required',
-            'selected_plots' => 'required|json'
         ]);
 
         if($validator->fails()){
@@ -243,7 +237,6 @@ class PlotBookingController extends Controller
         try{
 
             $session_id = $request->session_id;
-            $selected_plots = json_decode($request->selected_plots, TRUE);
 
             // Fetch payment details based on the given 'session_id' from the 'Bookings' table
             $payment_details = DB::table('payment_histories')->where('session_id', '=', $session_id)->first();
@@ -271,65 +264,40 @@ class PlotBookingController extends Controller
                     $update = DB::table('payment_histories')->where('session_id', '=', $payment_details->session_id)->update($payment_data);
 
                     if ($update) {
-                        foreach ($selected_plots as $plot) {
-                            $booking_data = [
-                                'id'            => Str::uuid(),
-                                'plot_id'       => $plot['plot_id'],
-                                'line_id'       => $payment_details->line_id,
-                                'location_id'   => $payment_details->location_id,
-                                'dealer_id'     => $payment_details->dealer_id,
-                                'park_in_date'  => $payment_details->park_in_date,
-                                'park_out_date' => $payment_details->park_out_date,
-                                'duration_type' => $payment_details->duration_type,
-                                'duration'      => $payment_details->duration,
-                                'rent'          => $plot['rent'],
-                                'created_at'    => Carbon::now()
-                            ];
-                            $booking = DB::table('bookings')->insert($booking_data);
-                        }
-                    }
+                        $booking_data = [
+                            'id'            => Str::uuid(),
+                            'dealer_id'     => $payment_details->dealer_id,
+                            'car_id'        => $payment_details->car_id,
+                            'start_date'    => $payment_details ? $payment_details->park_in_date : '',
+                            'end_date'      => $payment_details ? $payment_details->park_out_date : '',
+                            'featured_days' =>  $payment_details ? $payment_details->duration : '',
+                            'created_at'    => Carbon::now()
+                        ];
 
-                    if ($booking) {
+                        DB::table('featured_cars')->insert($booking_data);
                         $dealer = Dealers::find($payment_details->dealer_id);
                         $paymentDetails = DB::table('payment_histories as sc')
                                                 ->where('sc.id', '=', $payment_details->id)
-                                                ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
-                                                ->leftJoin('plot_lines', 'plot_lines.id', '=', 'sc.line_id')
-                                                ->first(['sc.*','locations.name as location_name','plot_lines.line_name']);
-
-                        foreach ($selected_plots as $plot) {
-                            $plotData = DB::table('plots')->where('plots.id', '=', $plot['plot_id'])
-                                                ->leftJoin('locations', 'locations.id', '=', 'plots.location_id')
-                                                ->leftJoin('plot_lines', 'plot_lines.id', '=', 'plots.line_id')
-                                                ->first(['plots.*','locations.name as location_name','plot_lines.line_name']);
-                            $plots[] = [
-                                'plot_id'       => $plot['plot_id'],
-                                'location_name'     => $plotData->location_name,
-                                'line_name'         => $plotData->line_name,
-                                'plot_name'     => $plotData->plot_name,
-                                'duration'     => $paymentDetails->duration.' '.ucfirst($paymentDetails->duration_type),
-                                'rent'          => $plot['rent'],
-                            ];
-                        }
+                                                ->leftJoin('cars', 'cars.id', '=', 'sc.car_id')
+                                                ->first(['sc.*','cars.name as car_name']);
 
                         // generate invoice pdf and send to customer
                         $invoice_data = [
                             'trxn_id'           => $payment_details->id,
-                            'invoice_number'    => (string)rand(10000, 20000),
+                            'invoice_number'    => (string)rand(10000000, 20000000),
                             'dealer_name'       => $dealer ? $dealer->name : '',
                             'dealer_email'      => $dealer ? $dealer->email : '',
-                            'park_in_date'      => $paymentDetails ? date('d M Y', strtotime($paymentDetails->park_in_date)) : '',
-                            'park_out_date'     => $paymentDetails ? date('d M Y', strtotime($paymentDetails->park_out_date)) : '',
-                            'location_name'     => $paymentDetails ? $paymentDetails->location_name : '',
-                            'line_name'         => $paymentDetails ? $paymentDetails->line_name : '',
-                            'plots'             => $plots ? $plots : '',
+                            'car_name'          => $paymentDetails ? $paymentDetails->car_name : '',
+                            'duration'          => $paymentDetails ? $paymentDetails->duration : '',
+                            'start_date'        => $paymentDetails ? date('d M Y', strtotime($paymentDetails->park_in_date)) : '',
+                            'end_date'          => $paymentDetails ? date('d M Y', strtotime($paymentDetails->park_out_date)) : '',
                             'amount_paid'       => $session->amount_total/100,
                             'currency'          => $session->currency,
                             'date'              => Carbon::now()->format('d.m.Y')
                         ];
 
                         // helper function tp generate and send invoice
-                        generatePlotInvoicePdf($invoice_data);
+                        generateCarInvoicePdf($invoice_data);
                     }
 
                     return response()->json([
@@ -410,7 +378,7 @@ class PlotBookingController extends Controller
         }
     }
 
-    public function plotPaymentFailed(Request $request){
+    public function featuredCarPaymentFailed(Request $request){
         $validator = Validator::make($request->all(), [
             'language'   => 'required',
             'session_id' => 'required',

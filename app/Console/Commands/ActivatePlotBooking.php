@@ -40,7 +40,14 @@ class ActivatePlotBooking extends Command
             // Expire the plot booking
             $booking->status = 'active';
             $booking->updated_at = Carbon::now();
-            $booking->save();
+            $booked = $booking->save();
+
+            // if ($booked) {
+            //     $car_id = $booking->car_id ? $booking->car_id : '';
+            //     if (!empty($car_id)) {
+            //         DB::table('cars')->where('id', '=', $car_id)->update(['is_assgined' => 'yes']);
+            //     }
+            // }
         }
 
         $this->info('Plot bookings activated successfully.');

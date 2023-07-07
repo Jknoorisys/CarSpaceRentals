@@ -18,6 +18,7 @@ class DealerController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getDealers(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -37,12 +38,14 @@ class DealerController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('dealers')->where('is_admin', '=', 'no')->where('is_verified', '=', 'yes');
+            $db = DB::table('dealers')
+                    ->where('is_admin', '!=', 'super_admin')
+                    ->where('is_verified', '=', 'yes');
 
             $search = $request->search ? $request->search : '';
             if (!empty($search)) {
-                $db->where('name', 'LIKE', "%$search%");
-                $db->orWhere('email', 'LIKE', "%$search%");
+                $db->where([['name', 'LIKE', "%$search%"],['is_admin', '!=', 'super_admin']]);
+                $db->orWhere([['email', 'LIKE', "%$search%"],['is_admin', '!=', 'super_admin']]);
             }
 
             $total = $db->count();
@@ -359,7 +362,10 @@ class DealerController extends Controller
             if (!($cars->isEmpty())) {
 
                 foreach ($cars as $car) {
-                    $car->location = DB::table('bookings')->where('car_id', '=', $car->id)->leftJoin('locations','locations.id','=','bookings.location_id')->first(['locations.*']);
+                    $car->location = DB::table('bookings')->where('car_id', '=', $car->id)
+                                                        ->leftJoin('locations','locations.id','=','bookings.location_id')
+                                                        ->leftJoin('plots','plots.id','=','bookings.plot_id')
+                                                        ->first(['bookings.*','plots.plot_name','locations.name as location_name', 'locations.lat', 'locations.long', 'locations.location','locations.layout']);
                     $car->photos = DB::table('car_photos')->where('car_id', '=', $car->id)->first(['id','car_id','photo1','photo2','photo3','photo4','photo5']);
                 }
 
@@ -429,7 +435,9 @@ class DealerController extends Controller
             $total = $db->count();
             $plots = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
-                                    ->orderBy('locations.name')
+                                    ->orderBy('sc.park_in_date')
+                                    ->orderBy('plots.plot_direction')
+                                    ->orderBy('plots.plot_position')
                                     ->get(['sc.*','plots.plot_name','cars.name as car_name','locations.name as location_name']);
 
             if (!($plots->isEmpty())) {

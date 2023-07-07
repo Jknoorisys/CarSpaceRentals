@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('photo3');
             $table->string('photo4');
             $table->string('photo5');
-            $table->enum('status',['active','inactive'])->default('active');
+            $table->enum('status',['active','inactive','deleted'])->default('active');
             $table->timestamps();
         });
     }

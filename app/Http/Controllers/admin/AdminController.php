@@ -19,6 +19,7 @@ class AdminController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getAllAdmins(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -252,7 +253,7 @@ class AdminController extends Controller
             $total = $db->count();
             $activities = $db->offset(($page_number - 1) * $per_page)
                                     ->limit($per_page)
-                                    ->orderBy('admin_activities.created_at')
+                                    ->orderBy('admin_activities.created_at','desc')
                                     ->get();
 
             if (!($activities->isEmpty())) {

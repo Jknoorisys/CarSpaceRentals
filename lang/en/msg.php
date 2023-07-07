@@ -221,7 +221,6 @@ return [
         ],
     ],
 
-
     // User By Aisha Shaikh 
     'user' => [
 
@@ -229,10 +228,15 @@ return [
 
         'validation' => [
             'fail' => 'Validation Failed!',
-            'inactive' => 'Inactive User',
+            'inactive' => 'Inactivated by Admin',
             'incpass' => 'Incorrect Password',
             'incmail' => 'Incorrect Email',
             'login' => 'Login Successfull'
+        ],
+
+        'get-ip-address' => [
+            'success' => 'IP Address Fetched Successfully',
+            'failed'   => 'Unable to Fetch IP Address'
         ],
 
         'register' => [
@@ -296,7 +300,6 @@ return [
       
     ],
 
-
     // Dealer
     'dealer' => [
 
@@ -348,9 +351,11 @@ return [
         ],
 
         'get-available-plots' => [
-            'success' => 'Available Plots List Fetched Successfully',
-            'failure' => 'No Plot Available',
+            'success'               => 'Available Plots List Fetched Successfully',
+            'failure'               => 'No Plot Available',
             'invalid-duration-type' => 'Invalid Duration Type',
+            'invalid-start_date'    => 'Only Future Dates are Allowed',
+            'invalid-end_date'      => 'End Date should be less than or equal to to park_out date'
         ],
 
         'assign-car' => [
@@ -363,6 +368,11 @@ return [
             'success' => 'Car Unassigned from Plot Successfully',
             'failure' => 'Unable to Unassign Car, please try again...',
             'invalid' => 'Invalid Booking Id',
+        ],
+
+        'delete-car' => [
+            'success' => 'Car Deleted Successfully',
+            'failure' => 'Unable to Delete Car, please try again...',
         ],
 
         // Dealer Auth and Profile Module By Aaisha Shaikh
@@ -412,6 +422,7 @@ return [
     'email' => [
         'Email Verification' => 'Email Verification',
         'Forget Password'    => 'Forget Password',
+        'Forgot Password'    => 'Forgot Password',
         'Reset Your Password' => 'Reset Your Password',
         'Welcome on Board'   => 'Welcome on Board',
         'Visit Our Platform' => 'Visit Our Platform',
@@ -427,6 +438,8 @@ return [
     ],
 
     'No problem! Just click on the button below and you’ll be on your way.' => 'No problem! Just click on the button below and you’ll be on your way.',
+    'This email serves to confirm the successful setup of your subscription with Us.' => 'This email serves to confirm the successful setup of your subscription with Us.',
+    'We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.' => 'We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.',
 
     // Stripe Payment By Javeriya Kauser
     'stripe' => [
@@ -449,13 +462,21 @@ return [
         'Thank you for your trust!' => 'Thank you for your trust!',
         'Invoice'       => 'Invoice',
         'Invoice No'    => 'Invoice No',
-        'Date'          => 'Date',
-        'Description'   => 'Description',
-        'Qty'           => 'Qty',
-        'Unit Price'    => 'Unit Price',
-        'Amount'        => 'Amount',
-        'Subtotal'      => 'Subtotal',
+        'Start Date'    => 'Start Date',
+        'Expire Date'   => 'Expire Date',
+        'Location'      => 'Location',
+        'Lane'          => 'Lane',
+        'Duration'      => 'Duration',
         'Total'         => 'Total',
-        'Amount Paid'   => 'Amount Paid'    
+        'Amount Paid'   => 'Amount Paid',    
+        'Plots'         => 'Plots',
+        'Amount'        => 'Amount',
+        'Day'           => 'Day',
+        'Days'          => 'Days',
+        'Dear'          => 'Dear',
+        'Car'           => 'Car',
+        'Description'   => 'Description',
+        'Unit Price'    => 'Unit Price',
+        'Subtotal'      => 'Subtotal',
     ],
 ];

@@ -18,7 +18,9 @@ class CarController extends Controller
         App::setlocale($lang);
     }
 
-    // Not required
+    // By Aaisha Shaikh
+
+    // Not Required
     public function CarList(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -697,6 +699,33 @@ class CarController extends Controller
                 return response()->json([
                     'status'    => 'success',
                     'message'   => trans('msg.admin.get-brands.failure'),
+                    'data'      => [],
+                ],200);
+            }
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'    => 'failed',
+                'message'   => trans('msg.error'),
+                'error'     => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getUserIpAddress(Request $request)
+    {
+        try {
+            $userIpAddress = $request->ip();
+
+            if (!empty($userIpAddress)) {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.user.get-ip-address.success'),
+                    'data'      => $userIpAddress
+                ],200);
+            } else {
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.user.get-ip-address.failure'),
                     'data'      => [],
                 ],200);
             }

@@ -18,6 +18,7 @@ class CustomerController extends Controller
         App::setlocale($lang);
     }
 
+    // By Javeriya Kauser
     public function getCustomers(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -37,12 +38,14 @@ class CustomerController extends Controller
             $per_page = 10;
             $page_number = $request->input(key:'page_number', default:1);
 
-            $db = DB::table('users')->where('is_admin', '=', 'no')->where('is_verified', '=', 'yes');
+            $db = DB::table('users')
+                    ->where('is_admin', '!=', 'super_admin')
+                    ->where('is_verified', '=', 'yes');
 
             $search = $request->search ? $request->search : '';
             if (!empty($search)) {
-                $db->where('name', 'LIKE', "%$search%");
-                $db->orWhere('email', 'LIKE', "%$search%");
+                $db->where([['name', 'LIKE', "%$search%"],['is_admin', '!=', 'super_admin']]);
+                $db->orWhere([['email', 'LIKE', "%$search%"],['is_admin', '!=', 'super_admin']]);
             }
 
             $total = $db->count();
