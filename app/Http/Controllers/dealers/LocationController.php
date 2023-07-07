@@ -492,7 +492,8 @@ class LocationController extends Controller
 
             $total = $db->count();
             $plots = $db->orderBy('created_at','desc')
-                        ->orderBy('plots.plot_name')
+                        ->orderBy('plots.plot_direction')
+                        ->orderBy('plots.plot_position')
                         ->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
                         ->get(['locations.name as location_name','locations.location','locations.lat', 'locations.long', 'plots.plot_name as plot_name', 'cars.name as car_name', 'sc.*']);
