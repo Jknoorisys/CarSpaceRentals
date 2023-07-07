@@ -229,7 +229,7 @@ return [
 
         'validation' => [
             'fail' => 'Validation Failed!',
-            'inactive' => 'Inactive User',
+            'inactive' => 'Inactivated by Admin',
             'incpass' => 'Incorrect Password',
             'incmail' => 'Incorrect Email',
             'login' => 'Login Successfull'
