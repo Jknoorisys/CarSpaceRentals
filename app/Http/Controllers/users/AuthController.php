@@ -35,11 +35,16 @@ class AuthController extends Controller
             'email'    => 'required|email|unique:users',
             'mobile'   => 'required|numeric|unique:users',
         ]);
-
+        $errors = [];
+        foreach ($validator->errors()->messages() as $key => $value) {
+            // if($key == 'email')
+                $key = 'error_message';
+                $errors[$key] = is_array($value) ? implode(',', $value) : $value;
+        }
         if ($validator->fails()) {
             return response()->json([
                 'status'    => 'failed',
-                'message'   => __('msg.user.validation.fail'),
+                'message'   => $errors['error_message'] ? $errors['error_message'] : __('msg.user.validation.fail'),
                 'errors'    => $validator->errors()
             ], 400);
         }
@@ -380,12 +385,17 @@ class AuthController extends Controller
             'password'   => 'required|max:20||min:8',
             'confirm_password' => 'required|same:password',
         ]);
-
+        $errors = [];
+        foreach ($validator->errors()->messages() as $key => $value) {
+            // if($key == 'email')
+                $key = 'error_message';
+                $errors[$key] = is_array($value) ? implode(',', $value) : $value;
+        }
         if ($validator->fails()) {
             return response()->json([
                 'status'    => 'failed',
                 'errors'    =>  $validator->errors(),
-                'message'   =>  __('msg.user.validation.fail'),
+                'message'   =>  $errors['error_message'] ? $errors['error_message'] : __('msg.user.validation.fail'),
             ], 400 );
         }
 
