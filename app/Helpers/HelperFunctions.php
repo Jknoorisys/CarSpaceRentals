@@ -64,7 +64,7 @@ use Illuminate\Support\Facades\Storage;
 
         // send invoice to customer
         $email = $invoice['dealer_email'];
-        $data1 = ['salutation' => __('msg.stripe.Dear'),'name'=> $invoice['dealer_name'], 'msg'=> trans('msg.stripe.This email serves to confirm the successful setup of your subscription with Us.'), 'msg1'=> trans('msg.We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.'),'msg2' => trans('msg.stripe.Thank you for your trust!')];
+        $data1 = ['salutation' => __('msg.stripe.Dear'),'name'=> $invoice['dealer_name'], 'msg'=> trans('msg.This email serves to confirm the successful setup of your subscription with Us.'), 'msg1'=> trans('msg.We are delighted to welcome you as a valued subscriber and are confident that you will enjoy the benefits of Premium Services.'),'msg2' => trans('msg.stripe.Thank you for your trust!')];
 
         Mail::send('invoice_email', $data1, function ($message) use ($pdf_name, $email, $pdf) {
             $message->to($email)->subject('Invoice');
