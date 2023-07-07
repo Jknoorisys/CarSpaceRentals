@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Dealers;
 class PaymentPlotController extends Controller
 {
     public function __construct()
@@ -98,9 +98,9 @@ class PaymentPlotController extends Controller
                         //"currency" => "OUV", 
                         "order_id" => $order_id,
                         "amount" => $req->amount_paid,
-                        "return_url" => url(''),
-                        "cancel_url" => url('api/dealer/orage/plot-booking-failed'),
-                        "notif_url" => url('api/dealer/orage/plot-booking-successful'),
+                        "return_url" => "https://www.fb.com",
+                        "cancel_url" => "https://www.google.com",
+                        "notif_url" => "https://www.google.com",
                         "lang" => $req->language,
                         "reference" => "Plot Booking"
                     )
@@ -189,8 +189,8 @@ class PaymentPlotController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language'          =>   'required',
-            'dealer_id'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
             'pay_token'   => ['required', 'alpha_dash', Rule::notIn('undefined')],
+            'selected_plots' => 'required|json'
 
         ]);
 
@@ -202,7 +202,7 @@ class PaymentPlotController extends Controller
             ], 400);
         }
         try {
-
+            $selected_plots = json_decode($req->selected_plots, TRUE);
             // $pay_token = $req->pay_token;
             $data = DB::table('payment_transactions')->where('pay_token', $req->pay_token)->take(1)->first();
             $order_payment_id =  $data->payment_id;
@@ -249,7 +249,74 @@ class PaymentPlotController extends Controller
 
             if ($payment_details['status'] == 'SUCCESS' && $data['status'] == 'unpaid') {
                 $success_payment = DB::table('payment_transactions')->where('pay_token', $req->paytoken)->update(['status', 'paid']);
-                return $success_payment;
+                // return $success_payment;
+                if ($success_payment) {
+                    foreach ($selected_plots as $plot) {
+                        $booking_data = [
+                            'id'            => Str::uuid(),
+                            'plot_id'       => $plot['plot_id'],
+                            'line_id'       => $payment_details->line_id,
+                            'location_id'   => $payment_details->location_id,
+                            'dealer_id'     => $payment_details->dealer_id,
+                            'park_in_date'  => $payment_details->park_in_date,
+                            'park_out_date' => $payment_details->park_out_date,
+                            'duration_type' => $payment_details->duration_type,
+                            'duration'      => $payment_details->duration,
+                            'rent'          => $plot['rent'],
+                            'created_at'    => Carbon::now()
+                        ];
+                        $booking = DB::table('bookings')->insert($booking_data);
+                    }
+                }
+
+                if ($booking) {
+                    $dealer = Dealers::find($payment_details->dealer_id);
+                    $paymentDetails = DB::table('payment_histories as sc')
+                                            ->where('sc.id', '=', $payment_details->id)
+                                            ->leftJoin('locations', 'locations.id', '=', 'sc.location_id')
+                                            ->leftJoin('plot_lines', 'plot_lines.id', '=', 'sc.line_id')
+                                            ->first(['sc.*','locations.name as location_name','plot_lines.line_name']);
+
+                    foreach ($selected_plots as $plot) {
+                        $plotData = DB::table('plots')->where('plots.id', '=', $plot['plot_id'])
+                                            ->leftJoin('locations', 'locations.id', '=', 'plots.location_id')
+                                            ->leftJoin('plot_lines', 'plot_lines.id', '=', 'plots.line_id')
+                                            ->first(['plots.*','locations.name as location_name','plot_lines.line_name']);
+                        $plots[] = [
+                            'plot_id'       => $plot['plot_id'],
+                            'location_name'     => $plotData->location_name,
+                            'line_name'         => $plotData->line_name,
+                            'plot_name'     => $plotData->plot_name,
+                            'duration'     => $paymentDetails->duration.' '.ucfirst($paymentDetails->duration_type),
+                            'rent'          => $plot['rent'],
+                        ];
+                    }
+
+                    // generate invoice pdf and send to customer
+                    $invoice_data = [
+                        'trxn_id'           => $payment_details->id,
+                        'invoice_number'    => (string)rand(10000, 20000),
+                        'dealer_name'       => $dealer ? $dealer->name : '',
+                        'dealer_email'      => $dealer ? $dealer->email : '',
+                        'park_in_date'      => $paymentDetails ? date('d M Y', strtotime($paymentDetails->park_in_date)) : '',
+                        'park_out_date'     => $paymentDetails ? date('d M Y', strtotime($paymentDetails->park_out_date)) : '',
+                        'location_name'     => $paymentDetails ? $paymentDetails->location_name : '',
+                        'line_name'         => $paymentDetails ? $paymentDetails->line_name : '',
+                        'plots'             => $plots ? $plots : '',
+                        'amount_paid'       => $session->amount_total/100,
+                        'currency'          => $session->currency,
+                        'date'              => Carbon::now()->format('d.m.Y')
+                    ];
+                    // return $invoice_data;
+
+                    // helper function tp generate and send invoice
+                    generateInvoicePdf($invoice_data);
+                }
+
+                return response()->json([
+                    'status'    => 'success',
+                    'message'   => trans('msg.stripe.success'),
+                ],200);
             } else {
                 return "false";
             }
@@ -261,4 +328,31 @@ class PaymentPlotController extends Controller
             ], 500);
         }
     }
+
+    public function orange_payment_plot_failed(Request $req)
+    {
+            $validator = Validator::make($req->all(), [
+                'language'   => 'required',
+                'session_id' => 'required',
+            ]);
+    
+            if($validator->fails()){
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.Validation Failed!'),
+                    'errors'    => $validator->errors()
+                ],400);
+            }
+    
+            try{
+
+            } catch (\Throwable $e) {
+                return response()->json([
+                    'status'    => 'failed',
+                    'message'   => trans('msg.error'),
+                    'error'     => $e->getMessage()
+                ],500);
+            }
+    }
+    
 }
