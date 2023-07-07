@@ -221,7 +221,6 @@ return [
         ],
     ],
 
-
     // User By Aisha Shaikh 
     'user' => [
 
@@ -296,7 +295,6 @@ return [
         ],
       
     ],
-
 
     // Dealer
     'dealer' => [
