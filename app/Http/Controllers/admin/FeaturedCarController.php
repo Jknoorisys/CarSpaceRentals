@@ -59,7 +59,7 @@ class FeaturedCarController extends Controller
             $total = $db->count();
             $brands = $db->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
-                        ->orderby('featured_cars.created_at','asc')
+                        ->orderby('featured_cars.created_at','desc')
                         ->get();
 
             if (!($brands->isEmpty())) {
