@@ -35,8 +35,8 @@ class DashboardController extends Controller
 
         try {
 
-            $data['tota_customers'] = DB::table('users')->where('is_verified', '=', 'yes')->count();
-            $data['tota_dealers']   = DB::table('dealers')->where('is_verified', '=', 'yes')->count();
+            $data['tota_customers'] = DB::table('users')->where('is_verified', '=', 'yes')->where('is_admin', '!=', 'super_admin')->count();
+            $data['tota_dealers']   = DB::table('dealers')->where('is_verified', '=', 'yes')->where('is_admin', '!=', 'super_admin')->count();
             $data['tota_locations'] = DB::table('locations')->count();
             $data['tota_plots']     = DB::table('plots')->count();
 
