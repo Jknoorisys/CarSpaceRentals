@@ -289,6 +289,10 @@ return [
             'success' => 'Car Details',
             'failure' => 'Car Details Not Found',
         ],
+        'get-featured-car' => [
+            'success' => 'Featured Car List',
+            'failure' => 'Car Not Found',
+        ],
       
     ],
 

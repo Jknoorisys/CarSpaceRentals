@@ -59,6 +59,7 @@ class FeaturedCarController extends Controller
             $total = $db->count();
             $brands = $db->offset(($page_number - 1) * $per_page)
                         ->limit($per_page)
+                        ->orderby('featured_cars.created_at','asc')
                         ->get();
 
             if (!($brands->isEmpty())) {
@@ -141,6 +142,7 @@ class FeaturedCarController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'language' => 'required',
+
         ]);
 
         if ($validator->fails()) {
@@ -171,6 +173,15 @@ class FeaturedCarController extends Controller
 
             
             $search = $req->search ? $req->search : '';
+            $startDate = $req->start_date ? $req->start_date : '';
+            $endDate = $req->end_date ? $req->end_date : '';
+            if(!empty($startDate && $endDate))
+            {
+                $transaction->whereDate('payment_histories.park_in_date','>=',$startDate);
+                $transaction->whereDate('payment_histories.park_out_date','<=',$endDate);
+                $transaction->orwhereDate('payment_histories.created_at','>=',$startDate);
+                $transaction->orwhereDate('payment_histories.created_at','<=',$endDate);
+            }
             if (!empty($search)) {
 
                 $transaction->where('locations.name', 'LIKE', "%$search%");
@@ -179,6 +190,7 @@ class FeaturedCarController extends Controller
                 $transaction->orWhere('plots.plot_name', 'LIKE', "%$search%");
                 $transaction->orWhere('park_in_date', $search);
                 $transaction->orWhere('park_out_date', $search);
+                $transaction->orWhereDate('payment_histories.created_at','=', $search);
                 
             }
             $total = $transaction->count();
