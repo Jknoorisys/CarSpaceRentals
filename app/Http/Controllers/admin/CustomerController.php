@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CustomerController extends Controller
 {
@@ -115,6 +116,12 @@ class CustomerController extends Controller
             if (!empty($user)) {
                 $statusChange = DB::table('users')->where('id', '=', $user_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
                 if ($statusChange) {
+
+                    // Retrieve the token for the user
+                    $token = JWTAuth::fromUser($user);
+
+                    // Invalidate the token
+                    JWTAuth::setToken($token)->invalidate();
 
                     $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';
                     $adminData = [
