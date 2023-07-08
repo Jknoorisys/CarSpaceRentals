@@ -117,11 +117,11 @@ class CustomerController extends Controller
                 $statusChange = DB::table('users')->where('id', '=', $user_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
                 if ($statusChange) {
 
-                    // Retrieve the token for the user
-                    $token = JWTAuth::fromUser($user);
+                    // // Retrieve the token for the user
+                    // $token = JWTAuth::fromUser($user);
 
-                    // Invalidate the token
-                    JWTAuth::setToken($token)->invalidate();
+                    // // Invalidate the token
+                    // JWTAuth::setToken($token)->invalidate();
 
                     $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';
                     $adminData = [
