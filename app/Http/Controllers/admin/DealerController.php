@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dealers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class DealerController extends Controller
 {
@@ -115,6 +117,16 @@ class DealerController extends Controller
             if (!empty($user)) {
                 $statusChange = DB::table('dealers')->where('id', '=', $user_id)->update(['status' => $status, 'updated_at' => Carbon::now()]);
                 if ($statusChange) {
+
+                    if($status == 'inactive'){
+                        $authUser = Dealers::find($user_id); 
+
+                        // Retrieve the token for the user
+                        $token = JWTAuth::fromUser($authUser);
+
+                        // Invalidate the token
+                        JWTAuth::setToken($token)->invalidate();
+                    }
 
                     $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';
                     $adminData = [
