@@ -125,7 +125,7 @@ class CustomerController extends Controller
                         $token = JWTAuth::fromUser($authUser);
 
                         // Invalidate the token
-                        JWTAuth::setToken($token)->invalidate();
+                        JWTAuth::parseToken($token)->invalidate();
                     }
 
                     $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';
