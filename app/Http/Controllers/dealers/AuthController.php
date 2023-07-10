@@ -383,6 +383,7 @@ class AuthController extends Controller
                         );
 
                         $dealer->token = $service->getSignedAccessTokenForUser($dealer, $claims);
+                        $dealer->save();
                         $currentDate = Carbon::now()->format('Y-m-d');
                         $currentTime = Carbon::now()->format('H:i:s');
 

@@ -29,7 +29,7 @@ class Jwtmiddleware
         if (is_null($header) && is_null($token)) {
             return response()->json(
                 [
-                    'status'       =>  "failed1",
+                    'status'       =>  "failed",
                     'errors'       =>  "",
                     'message'      =>  trans('validation.custom.input.tokenotfound'),
                 ],
@@ -45,7 +45,7 @@ class Jwtmiddleware
 
                 return response()->json(
                             [
-                                'status'       =>  "failed2",
+                                'status'       =>  "failed",
                                 'errors'       =>  "",
                                 'message'      =>  trans('validation.custom.input.invalidtoken'),
                             ],
@@ -56,7 +56,7 @@ class Jwtmiddleware
 
                 return response()->json(
                             [
-                                'status'       =>  "failed3",
+                                'status'       =>  "failed",
                                 'errors'       =>  "",
                                 'message'      =>  "Expired!",
                             ],
@@ -66,7 +66,7 @@ class Jwtmiddleware
             }else{
                 return response()->json(
                             [
-                                'status'       =>  "failed4",
+                                'status'       =>  "failed",
                                 'errors'       =>  "",
                                 'message'      =>  "Token Not Found",
                             ],

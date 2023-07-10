@@ -24,6 +24,7 @@ return new class extends Migration
             $table->enum('is_verified',['no','yes'])->default('no');
             $table->string('email_otp');
             $table->enum('is_admin',['no','admin','super_admin'])->default('no');
+            $table->text('token');
             $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
         });

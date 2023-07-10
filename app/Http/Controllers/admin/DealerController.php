@@ -119,13 +119,15 @@ class DealerController extends Controller
                 if ($statusChange) {
 
                     if($status == 'inactive'){
-                        $authUser = Dealers::find($user_id); 
+                        // $authUser = Dealers::find($user_id); 
 
-                        // Retrieve the token for the user
-                        $token = JWTAuth::fromUser($authUser);
+                        // // Retrieve the token for the user
+                        // $token = JWTAuth::fromUser($authUser);
 
-                        // Invalidate the token
-                        JWTAuth::setToken($token)->invalidate();
+                        // // Invalidate the token
+                        // JWTAuth::setToken($token)->invalidate();
+                        JWTAuth::setToken($user->token)->invalidate();
+                        DB::table('dealers')->where('id', '=', $user_id)->update(['token' => '']);
                     }
 
                     $status == 'active' ? $msg = 'activated' : $msg = 'inactivated';

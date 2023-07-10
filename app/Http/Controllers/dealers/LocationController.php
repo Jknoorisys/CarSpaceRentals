@@ -539,9 +539,8 @@ class LocationController extends Controller
 
         try {
             $dealer_id = $request->dealer_id;
-
             $dealer = validateDealer($dealer_id);
-            if (empty($dealer)) {
+            if (empty($dealer) || $dealer->status != 'active') {
                 return response()->json([
                     'status'    => 'failed',
                     'message'   => trans('msg.helper.invalid-dealer'),

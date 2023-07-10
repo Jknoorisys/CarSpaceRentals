@@ -246,7 +246,7 @@ class AuthController extends Controller
             $service = new Services();
             $email = $req->email;
             $password = $req->password;
-            $user  = user::where('email', '=', $email)->first();
+            $user = user::where('email', '=', $email)->first();
 
             if(!empty($user)) 
             {
@@ -258,6 +258,8 @@ class AuthController extends Controller
                         );
 
                         $user->token = $service->getSignedAccessTokenForUser($user, $claims);
+                        $user->save();
+
                         $currentDate = Carbon::now()->format('Y-m-d');
                         $currentTime = Carbon::now()->format('H:i:s');
 
