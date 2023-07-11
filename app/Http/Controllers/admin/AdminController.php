@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminController extends Controller
 {
@@ -121,6 +122,16 @@ class AdminController extends Controller
                 }
 
                 if ($statusChange) {
+
+                    if($status == 'inactive'){
+                        // Invalidate the token
+                        JWTAuth::setToken($user->token)->invalidate();
+                        if ($admin_type == 'user') {
+                            $user = DB::table('users')->where('id', '=', $admin_id)->update(['token' => '']);
+                        } else {
+                            $user = DB::table('dealers')->where('id', '=', $admin_id)->update(['token' => '']);
+                        }
+                    }
                     return response()->json([
                         'status'    => 'success',
                         'message'   => trans('msg.admin.admin-status.'.$status),
