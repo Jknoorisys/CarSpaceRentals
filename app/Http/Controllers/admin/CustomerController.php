@@ -119,11 +119,6 @@ class CustomerController extends Controller
                 if ($statusChange) {
 
                     if($status == 'inactive'){
-                        // $authUser = User::find($user_id); 
-
-                        // // Retrieve the token for the user
-                        // $token = JWTAuth::fromUser($authUser);
-
                         // Invalidate the token
                         JWTAuth::setToken($user->token)->invalidate();
                         DB::table('users')->where('id', '=', $user_id)->update(['token' => '']);
